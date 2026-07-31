@@ -272,7 +272,7 @@ function createRrAdapter(cred) {
   async function resolveSeed(seed) {
     const q = String(seed || "").trim();
     if (!q) return null;
-    if (/^\d+$/.test(q)) return q; // already an RR numeric id
+    if (/^\d+$/.test(q)) return Number(q); // RR numeric id — must be a NUMBER, RR 501s on string articleIds
     return cache.getOrFetch(`rr:seed:${q.toLowerCase()}`, async () => {
       const { items } = await runSearch({
         type: "singleSet", projectId: projectId || undefined,
@@ -281,7 +281,11 @@ function createRrAdapter(cred) {
         stringFilter: q, stringFilterTypes: ["title", "abstract"],
       }, { per: 1, polls: 3, delay: 700 });
       const top = items[0];
-      return top ? String((top.details && top.details.id) || top.id || "") : null;
+      // RR requires articleIds as NUMBERS; a String id makes POST /searches
+      // return 501 {"error":true,"reason":"Not Implemented"}. Verified live.
+      if (!top) return null;
+      const rawId = (top.details && top.details.id != null) ? top.details.id : top.id;
+      return rawId != null ? Number(rawId) : null;
     });
   }
 
@@ -383,7 +387,7 @@ function createRrAdapter(cred) {
         if (!pid) return needProject("author search");
         const n = Math.min(Math.max(Number(per) || 10, 1), 20);
         let ids = [];
-        if (Array.isArray(authorIds) && authorIds.length) ids = authorIds.map(String);
+        if (Array.isArray(authorIds) && authorIds.length) ids = authorIds.map(Number); // RR requires numeric ids (string authorIds 501 the same way)
         else if (!name) return { backend: "rr", authors: [], ...listResponse({ kind: "author", name, authorIds, per: n }, [], 0) };
         if (!ids.length) {
           const { items, totalCount } = await runSearch({

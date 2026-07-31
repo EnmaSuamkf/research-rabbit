@@ -1,7 +1,7 @@
 # Render Blueprint for the ResearchRabbit Copilot Stage 2 deployment.
 # Two Node web services on the free plan. No Flowise here (that is Stage 3).
 #
-# Secrets (RR_SESSION_COOKIE, RR_PROJECT_ID) are `sync: false` — they are set
+# Secrets (RR_SESSION_TOKEN, RR_PROJECT_ID) are `sync: false` — they are set
 # in the Render dashboard only, never committed. The openalex backend does not
 # need them, so they are left UNSET for Stage 2 (RR_BACKEND=openalex).
 #
@@ -37,7 +37,7 @@ services:
         value: "40"
       - key: ALLOWED_ORIGINS
         value: https://researchrabbit-mcp-server.onrender.com,https://researchrabbit-site.onrender.com,http://localhost:3000,http://localhost:8088
-      - key: RR_SESSION_COOKIE
+      - key: RR_SESSION_TOKEN
         sync: false
       - key: RR_PROJECT_ID
         sync: false

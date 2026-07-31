@@ -6,10 +6,12 @@
 // Listens on http://localhost:8822/mcp  (Streamable HTTP, stateless).
 //
 // Camino B — per-user ResearchRabbit credentials:
-//   A client (Claude Code / Cursor / Windsurf / VS Code) may send two request
+//   A client (Claude Code / Cursor / Windsurf / VS Code) may send request
 //   headers on every POST /mcp:
-//     X-RR-Cookie:      the SPRSESSION cookie value from app.researchrabbit.ai
-//     X-RR-Project-Id:  the user's projectId
+//     X-RR-Token:      the JWT sessionToken from app.researchrabbit.ai
+//                      (SPA localStorage: tokens → sessionToken)
+//     X-RR-Project-Id: the user's projectId (optional — the gateway can
+//                      auto-discover it via GET /projects)
 //   The server reads them once per request, closes them over a fresh server
 //   instance (stateless: one createServer(credCtx) per request — race-free),
 //   and forwards them to the gateway, which upgrades that single call to the
@@ -37,7 +39,7 @@ const PORT = Number(process.env.PORT || process.env.MCP_PORT || 8822);
 // Tool catalogue: 22 tools (12 on, 8 off, 2 write). Each maps to one gateway
 // endpoint. `seeds` take TITLES or DOIs — never invent numeric ids.
 // Each `call(args, ctx)` forwards the per-request ResearchRabbit credential
-// (ctx = {cookie, projectId}) to gw(), which adds X-RR-Cookie / X-RR-Project-Id
+// (ctx = {token, projectId}) to gw(), which adds X-RR-Token / X-RR-Project-Id
 // headers on the gateway call. ctx may be empty ({}) for anonymous (openalex) use.
 // ---------------------------------------------------------------------------
 const TOOLS = [
@@ -361,9 +363,10 @@ const TOOLS = [
 
 // ---------------------------------------------------------------------------
 // Gateway helper — returns { status, ok, data }
-// ctx = { cookie, projectId } (Camino B). Forwarded as X-RR-Cookie /
+// ctx = { token, projectId } (Camino B). Forwarded as X-RR-Token /
 // X-RR-Project-Id so the gateway can upgrade this single call to the rr backend
-// with the caller's own ResearchRabbit session. Empty ctx => anonymous (openalex).
+// with the caller's own ResearchRabbit session (JWT Bearer). Empty ctx =>
+// anonymous (openalex).
 // ---------------------------------------------------------------------------
 async function gw(method, path, query, body, ctx) {
   const url = new URL(GATEWAY + path);
@@ -374,7 +377,7 @@ async function gw(method, path, query, body, ctx) {
   }
   const headers = { Accept: "application/json" };
   if (body) headers["Content-Type"] = "application/json";
-  if (ctx && ctx.cookie) headers["X-RR-Cookie"] = String(ctx.cookie);
+  if (ctx && ctx.token) headers["X-RR-Token"] = String(ctx.token);
   if (ctx && ctx.projectId) headers["X-RR-Project-Id"] = String(ctx.projectId);
   const init = { method, headers };
   if (body) init.body = JSON.stringify(body);
@@ -451,7 +454,7 @@ app.get("/", (_req, res) =>
     gateway: GATEWAY,
     tools: TOOLS.map((t) => t.name),
     perRequestAuth:
-      "Camino B — send X-RR-Cookie + X-RR-Project-Id headers on POST /mcp to use your own ResearchRabbit session (forwarded to the gateway). Omit them for the anonymous openalex backend.",
+      "Camino B — send X-RR-Token (+ optional X-RR-Project-Id) headers on POST /mcp to use your own ResearchRabbit session (JWT forwarded to the gateway). Omit them for the anonymous openalex backend.",
   })
 );
 
@@ -460,7 +463,7 @@ app.post("/mcp", async (req, res) => {
   // Headers are case-insensitive via req.get(); values are kept only for this
   // request's server instance — never stored.
   const credCtx = {
-    cookie: req.get("X-RR-Cookie") || null,
+    token: req.get("X-RR-Token") || null,
     projectId: req.get("X-RR-Project-Id") || null,
   };
   const server = createServer(credCtx);
@@ -493,5 +496,5 @@ app.delete("/mcp", (_req, res) =>
 
 app.listen(PORT, () => {
   console.log(`ResearchRabbit MCP server listening on http://localhost:${PORT}/mcp`);
-  console.log(`Gateway: ${GATEWAY} | tools: ${TOOLS.length} | per-request RR auth: on (X-RR-Cookie / X-RR-Project-Id)`);
+  console.log(`Gateway: ${GATEWAY} | tools: ${TOOLS.length} | per-request RR auth: on (X-RR-Token / X-RR-Project-Id)`);
 });

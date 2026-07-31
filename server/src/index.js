@@ -5,12 +5,14 @@
 //
 // MULTI-TENANT backends (Camino A / B / C):
 //   Each request resolves a ResearchRabbit credential in this priority order:
-//     1. X-RR-Cookie (+ X-RR-Project-Id) request headers  — Camino B (MCP/editor)
-//     2. RR_SESSION_COOKIE (+ RR_PROJECT_ID) env vars      — Camino A (single shared account)
-//     3. the in-memory web credential store                 — Camino C (web "Connect account" panel)
-//   If a credential is present, that ONE request is served by the rr adapter
-//   bound to it; otherwise the default backend (RR_BACKEND, default openalex).
-//   No credential is logged or returned to clients.
+//     1. X-RR-Token (+ X-RR-Project-Id) request headers   — Camino B (MCP/editor)
+//     2. RR_SESSION_TOKEN (+ RR_PROJECT_ID) env vars       — Camino A (single shared account)
+//     3. the in-memory web credential store                — Camino C (web "Connect account" panel)
+//   The credential is a JWT sessionToken (from the SPA's localStorage), sent
+//   upstream as `Authorization: Bearer <token>`. If a credential is present,
+//   that ONE request is served by the rr adapter bound to it; otherwise the
+//   default backend (RR_BACKEND, default openalex). No credential is logged
+//   or returned to clients.
 //
 // Run:  node --env-file=.env src/index.js   (Node 20+ native fetch, no dotenv)
 // Listens on http://localhost:8821  (PORT wins; default 8821)
@@ -22,9 +24,8 @@ const openalex = require("./adapters/openalex");
 const createRrAdapter = require("./adapters/rr"); // factory
 
 const DEFAULT_BACKEND = (process.env.RR_BACKEND || "openalex").toLowerCase();
-const ENV_COOKIE = process.env.RR_SESSION_COOKIE || "";
+const ENV_TOKEN = process.env.RR_SESSION_TOKEN || "";
 const ENV_PROJECT = process.env.RR_PROJECT_ID || "";
-const RR_API_BASE = process.env.RR_API_BASE || "https://api.researchrabbit.ai";
 
 const PORT = process.env.PORT || 8821;
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || "http://localhost:3000")
@@ -37,10 +38,10 @@ const WEB_TTL = (Number(process.env.RR_WEB_CRED_TTL_SECONDS) || 86400) * 1000;
 // ---------------------------------------------------------------------------
 // Camino C — in-memory web credential store (single active account for the
 // web chat channel). Render free-tier restarts wipe it: the user reconnects.
-// TTL'd so a stale cookie is dropped after a day.
+// TTL'd so a stale token is dropped after a day.
 // ---------------------------------------------------------------------------
-let webCred = null; // { cookie, projectId, ts, user }
-function setWebCred(cookie, projectId, user) { webCred = { cookie, projectId, ts: Date.now(), user }; }
+let webCred = null; // { token, projectId, ts, user }
+function setWebCred(token, projectId, user) { webCred = { token, projectId, ts: Date.now(), user }; }
 function getWebCred() {
   if (!webCred) return null;
   if (Date.now() - webCred.ts > WEB_TTL) { webCred = null; return null; }
@@ -48,23 +49,17 @@ function getWebCred() {
 }
 function clearWebCred() { webCred = null; }
 
-// Cookie header builder (accepts bare SPRSESSION value or "name=value").
-function cookieHeader(cookie) {
-  const v = String(cookie || "").trim();
-  if (!v) return null;
-  return v.includes("=") ? v : `SPRSESSION=${v}`;
-}
-
 // ---------------------------------------------------------------------------
 // Per-request credential resolution (header → env → web-store → none).
+// The credential is a JWT sessionToken (Bearer), NOT a cookie.
 // ---------------------------------------------------------------------------
 function resolveCred(req) {
-  const hCookie = req.get("X-RR-Cookie");
+  const hToken = req.get("X-RR-Token");
   const hPid = req.get("X-RR-Project-Id");
-  if (hCookie) return { cookie: hCookie, projectId: hPid || "", source: "header" };
-  if (ENV_COOKIE) return { cookie: ENV_COOKIE, projectId: ENV_PROJECT, source: "env" };
+  if (hToken) return { token: hToken, projectId: hPid || "", source: "header" };
+  if (ENV_TOKEN) return { token: ENV_TOKEN, projectId: ENV_PROJECT, source: "env" };
   const w = getWebCred();
-  if (w) return { cookie: w.cookie, projectId: w.projectId, source: "web" };
+  if (w) return { token: w.token, projectId: w.projectId, source: "web" };
   return null;
 }
 
@@ -74,8 +69,8 @@ function resolveCred(req) {
 const adapterCache = new Map();
 function adapterFor(req) {
   const cred = resolveCred(req);
-  if (cred && cred.cookie) {
-    const sig = `${cred.source}|${cred.cookie}|${cred.projectId}`;
+  if (cred && cred.token) {
+    const sig = `${cred.source}|${cred.token}|${cred.projectId}`;
     let a = adapterCache.get(sig);
     if (!a) { a = createRrAdapter(cred); adapterCache.set(sig, a); }
     return { adapter: a, cred, backend: "rr" };
@@ -136,11 +131,11 @@ app.get("/", (_req, res) => {
     name: "ResearchRabbit Copilot gateway",
     backend: DEFAULT_BACKEND,
     multiTenant: true,
-    credentialSources: ["header (X-RR-Cookie / X-RR-Project-Id)", "env (RR_SESSION_COOKIE / RR_PROJECT_ID)", "web-store (/api/rr/connect)"],
+    credentialSources: ["header (X-RR-Token / X-RR-Project-Id)", "env (RR_SESSION_TOKEN / RR_PROJECT_ID)", "web-store (/api/rr/connect)"],
     endpoints: [
       "GET  /api/health                          (per-request: reflects the resolved backend)",
       "GET  /api/context",
-      "POST /api/rr/connect        {cookie, projectId?}   [Camino C: validate + store web cred]",
+      "POST /api/rr/connect        {token, projectId?}    [Camino C: validate + store web cred]",
       "GET  /api/rr/status                                [Camino C: is a web account connected?]",
       "DELETE /api/rr/disconnect                          [Camino C: drop the web cred]",
       "POST /api/search/keyword            {q, per?}",
@@ -179,33 +174,21 @@ app.get("/api/_cache", wrap(async (req, res) => res.json({ backend: req.backend,
 // as the active web credential. Validates via GET /users/me; best-effort
 // projectId discovery when one isn't supplied.
 app.post("/api/rr/connect", wrap(async (req, res) => {
-  const { cookie, projectId } = req.body || {};
-  if (!cookie) return res.status(400).json({ ok: false, backend: "rr", error: "cookie (SPRSESSION value) is required" });
-  const a = createRrAdapter({ cookie, projectId: projectId || "" });
+  const { token, projectId } = req.body || {};
+  if (!token) return res.status(400).json({ ok: false, backend: "rr", error: "token (sessionToken JWT from app.researchrabbit.ai localStorage) is required" });
+  const a = createRrAdapter({ token, projectId: projectId || "" });
   const user = await a.validate();
   if (!user) {
     return res.status(401).json({
       ok: false,
       backend: "rr",
-      error: "Invalid or expired ResearchRabbit session. Log in at https://app.researchrabbit.ai, then copy a fresh SPRSESSION cookie from DevTools.",
+      error: "Invalid or expired ResearchRabbit session. Log in at https://app.researchrabbit.ai, then copy a fresh sessionToken from localStorage (DevTools → Application → Local Storage → tokens).",
     });
   }
-  // Best-effort projectId discovery when not supplied.
+  // Auto-discover projectId via GET /projects when not supplied.
   let pid = projectId || "";
-  if (!pid) {
-    try {
-      const r = await fetch(`${RR_API_BASE}/folders?includeItemCounts=true&per=1&page=1`, {
-        headers: { Accept: "application/json", Cookie: cookieHeader(cookie) },
-      });
-      if (r.ok) {
-        const data = await r.json();
-        const folders = (data && (data.items || data)) || [];
-        const first = Array.isArray(folders) ? folders[0] : null;
-        if (first && first.projectId) pid = first.projectId;
-      }
-    } catch { /* non-fatal */ }
-  }
-  setWebCred(cookie, pid, user);
+  if (!pid) pid = (await a.discoverProjectId()) || "";
+  setWebCred(token, pid, user);
   res.json({
     ok: true,
     backend: "rr",
@@ -221,7 +204,7 @@ app.post("/api/rr/connect", wrap(async (req, res) => {
 app.get("/api/rr/status", wrap(async (_req, res) => {
   const w = getWebCred();
   if (!w) return res.json({ connected: false, backend: DEFAULT_BACKEND });
-  const a = createRrAdapter({ cookie: w.cookie, projectId: w.projectId });
+  const a = createRrAdapter({ token: w.token, projectId: w.projectId });
   const user = await a.validate();
   if (!user) {
     clearWebCred();
@@ -386,7 +369,7 @@ app.use((err, _req, res, _next) => {
 
 const server = app.listen(PORT, () => {
   console.log(`ResearchRabbit gateway listening on http://localhost:${PORT}`);
-  console.log(`[backend] default=${DEFAULT_BACKEND} | envCred=${!!ENV_COOKIE} | webCred=${!!webCred} | multiTenant=on`);
+  console.log(`[backend] default=${DEFAULT_BACKEND} | envCred=${!!ENV_TOKEN} | webCred=${!!webCred} | multiTenant=on`);
 });
 
 server.on("error", (err) => {

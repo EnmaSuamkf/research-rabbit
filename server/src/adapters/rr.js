@@ -4,18 +4,25 @@
 // caller's credential (Camino B header, Camino C web-store, or Camino A env),
 // so the gateway can be multi-tenant: each request uses its own session.
 //
-// cred = { cookie, projectId, source }
-//   cookie    — the SPRSESSION value (or full "SPRSESSION=…" string) from
-//               app.researchrabbit.ai. NEVER logged, NEVER returned to clients.
+// cred = { token, projectId, source }
+//   token     — the ResearchRabbit JWT sessionToken (from the SPA's
+//               localStorage: app.researchrabbit.ai → tokens → sessionToken).
+//               Sent upstream as `Authorization: Bearer <token>`.
+//               NEVER logged, NEVER returned to clients.
 //   projectId — the user's RR projectId. Required by almost every endpoint.
-//               If missing, methods return a structured "projectId required"
-//               message (the connect panel / MCP headers / env must supply it).
+//               Auto-discovered via GET /projects when not supplied.
 //
-// Upstream shapes are taken from researchrabbit-howto-api-en.html (captured
-// live from the SPA). Endpoint set:
-//   GET  /users/me                          validate the session
-//   POST /searches                          keyword (stringFilter) / network (set.articleIds + edgeMode)
-//   GET  /articles/{id}                     full article metadata (authors w/ h-index, abstract, dois)
+// AUTH MODEL (verified live): ResearchRabbit uses a JWT Bearer token, NOT a
+// cookie. The token lives in the SPA's localStorage under `tokens.sessionToken`
+// and is sent as `Authorization: Bearer <jwt>`. projectId is in localStorage
+// too (`projectId`) and is also recoverable via GET /projects (items[0].id).
+//
+// Endpoint set (verified against api.researchrabbit.ai):
+//   GET  /users/me                          validate the token (profile)
+//   GET  /projects                          list user projects → projectId
+//   POST /searches                          create a search (keyword/network)
+//   GET  /searches/{id}?projectId=          fetch a search's results
+//   GET  /articles/{id}                     full article metadata
 //   POST /search-sessions                   create a research thread
 //   GET  /search-sessions/{id}?projectId=   read a session + its steps
 //   PATCH /search-sessions/{id}/steps/{stepId}
@@ -26,11 +33,18 @@
 //   GET  /recent-articles?projectId=…       recently found
 //   GET  /readings?projectId=…              reading list
 //
-// VERIFICATION NOTE: these calls are implemented against the documented API
-// but could not be exercised end-to-end without a real session cookie — which
-// is exactly what Camino B/C let a user provide. Connecting an account is the
-// validation step. Field access is defensive (optional chaining + fallbacks)
-// so unexpected shape drift degrades to nulls rather than crashes.
+// SEARCH IS TWO-STEP + STRINGIFIED RESULTS:
+//   POST /searches creates the search and returns {id, ...} with an EMPTY
+//   results field. The actual hits come from GET /searches/{id}?projectId=…,
+//   whose `results` field is a STRINGIFIED JSON object that must be parsed to
+//   get .items[]. Each item is {id, score, details:{title, dois[], authors[],
+//   firstAuthor, authorString, publicationDate, publicationTitle,
+//   forwardEdgeCount, backwardEdgeCount, retracted, doctype, url, openAlexIds,
+//   abstract, ...}}.
+//
+// EDGE-COUNT SEMANTICS (verified against a 2024 paper):
+//   backwardEdgeCount = citations (cited-by, incoming)   → citedBy
+//   forwardEdgeCount  = references (outgoing)            → references
 
 const shape = require("../shape");
 const { TtlCache } = require("../cache");
@@ -46,29 +60,20 @@ function parseYear(d) {
   return m ? Number(m[1]) : null;
 }
 
-// Build the Cookie header from the credential. Accepts either the bare
-// SPRSESSION value or a full "SPRSESSION=…" / "name=value" string.
-function cookieHeader(cookie) {
-  const v = String(cookie || "").trim();
-  if (!v) return null;
-  if (v.includes("=")) return v;
-  return `SPRSESSION=${v}`;
-}
-
 function createRrAdapter(cred) {
-  const cookie = (cred && cred.cookie) || "";
+  const token = (cred && cred.token) || "";
   const projectId = (cred && cred.projectId) || "";
   const cache = new TtlCache();
   let discoveredProjectId = null;
 
-  const configured = !!cookie;
+  const configured = !!token;
 
   function notConfigured(what) {
     return {
       ok: false,
       backend: "rr",
       error: "RR backend not configured for this request.",
-      detail: `No ResearchRabbit session on this request. Provide X-RR-Cookie (+ X-RR-Project-Id) on the MCP call, connect an account via /api/rr/connect, or set RR_SESSION_COOKIE/RR_PROJECT_ID on the gateway. Needed for: ${what}.`,
+      detail: `No ResearchRabbit session on this request. Provide X-RR-Token on the MCP call, connect an account via /api/rr/connect, or set RR_SESSION_TOKEN on the gateway. Needed for: ${what}.`,
     };
   }
 
@@ -77,14 +82,14 @@ function createRrAdapter(cred) {
       ok: false,
       backend: "rr",
       error: "projectId is required for ResearchRabbit.",
-      detail: `Your session cookie is present but no projectId was supplied. Paste your projectId alongside SPRSESSION (Connect panel / X-RR-Project-Id header / RR_PROJECT_ID env). Needed for: ${what}.`,
+      detail: `Your session token is present but no projectId was supplied and it could not be auto-discovered. Reconnect your account via /api/rr/connect (which discovers it from /projects) or pass X-RR-Project-Id. Needed for: ${what}.`,
     };
   }
 
-  // Low-level upstream fetch, authenticated with this caller's cookie.
+  // Low-level upstream fetch, authenticated with this caller's JWT.
   async function rrFetch(pathname, { method = "GET", query, body } = {}) {
     if (!configured) {
-      const e = new Error("RR backend not configured (no session cookie)");
+      const e = new Error("RR backend not configured (no session token)");
       e.rrNotConfigured = true;
       throw e;
     }
@@ -94,7 +99,7 @@ function createRrAdapter(cred) {
         if (v !== undefined && v !== null && v !== "") url.searchParams.set(k, String(v));
       }
     }
-    const headers = { Accept: "application/json", Cookie: cookieHeader(cookie) };
+    const headers = { Accept: "application/json", Authorization: `Bearer ${token}` };
     const init = { method, headers };
     if (body) {
       headers["Content-Type"] = "application/json";
@@ -105,13 +110,13 @@ function createRrAdapter(cred) {
     let parsed;
     try { parsed = JSON.parse(text); } catch { parsed = { raw: text }; }
     if (res.status === 401 || res.status === 403) {
-      const e = new Error("Your ResearchRabbit session expired or is invalid. Reconnect your account (log in at app.researchrabbit.ai and paste SPRSESSION again).");
+      const e = new Error("Your ResearchRabbit session expired or is invalid. Reconnect your account (log in at app.researchrabbit.ai and paste a fresh sessionToken from localStorage).");
       e.status = res.status;
       e.rrAuth = true;
       throw e;
     }
     if (!res.ok) {
-      const e = new Error((parsed && (parsed.message || parsed.error)) || `RR upstream ${res.status}`);
+      const e = new Error((parsed && (parsed.message || parsed.reason || parsed.error)) || `RR upstream ${res.status}`);
       e.status = res.status;
       e.upstream = parsed;
       throw e;
@@ -131,11 +136,20 @@ function createRrAdapter(cred) {
     }
   }
 
-  // Best-effort projectId discovery when one wasn't supplied. Tries /folders
-  // (documented, folders carry projectId) and takes the first. Non-fatal.
+  // Best-effort projectId discovery via GET /projects (verified live:
+  // returns {items:[{id, name, ...}]}). Falls back to /folders if needed.
   async function ensureProjectId() {
     if (projectId) return projectId;
     if (discoveredProjectId) return discoveredProjectId;
+    try {
+      const data = await rrFetch("/projects");
+      const items = (data && (data.items || data)) || [];
+      const first = Array.isArray(items) ? items[0] : null;
+      if (first && first.id) {
+        discoveredProjectId = first.id;
+        return discoveredProjectId;
+      }
+    } catch { /* fall through to folders */ }
     try {
       const data = await rrFetch("/folders", { query: { includeItemCounts: "true", per: 1, page: 1 } });
       const folders = (data && (data.items || data)) || [];
@@ -146,6 +160,40 @@ function createRrAdapter(cred) {
       }
     } catch { /* fall through */ }
     return null;
+  }
+
+  // The `results` field on a search response is a STRINGIFIED JSON object.
+  // Parse it defensively into { items, totalCount }.
+  function parseResultsField(data) {
+    let r = data && data.results;
+    if (r == null) return { items: [], totalCount: 0 };
+    if (typeof r === "string") {
+      try { r = JSON.parse(r); } catch { return { items: [], totalCount: 0 }; }
+    }
+    const items = Array.isArray(r.items) ? r.items : (Array.isArray(r) ? r : []);
+    const totalCount = r.totalCount != null ? r.totalCount : ((r.metadata && r.metadata.total) != null ? r.metadata.total : items.length);
+    return { items, totalCount };
+  }
+
+  // SEARCH IS TWO-STEP: POST /searches creates the search (results empty),
+  // then GET /searches/{id}?projectId fetches the (async) results. Poll a
+  // few times because RR computes the hits asynchronously.
+  async function runSearch(body, { per = 10, page = 1, polls = 5, delay = 800 } = {}) {
+    const pid = body && body.projectId;
+    const created = await rrFetch("/searches", { method: "POST", body });
+    const searchId = created && (created.id || (created.data && created.data.id));
+    let pr = parseResultsField(created);
+    if (pr.items.length) return { searchId, items: pr.items, totalCount: pr.totalCount };
+    if (searchId) {
+      for (let i = 0; i < polls; i++) {
+        if (i > 0) await new Promise((res) => setTimeout(res, delay));
+        const data = await rrFetch(`/searches/${encodeURIComponent(searchId)}`, { query: { projectId: pid, per, page } });
+        pr = parseResultsField(data);
+        if (pr.items.length) return { searchId, items: pr.items, totalCount: pr.totalCount };
+      }
+      return { searchId, items: pr.items, totalCount: pr.totalCount };
+    }
+    return { searchId: null, items: [], totalCount: 0 };
   }
 
   // --- mapping RR -> canonical shape ---------------------------------------
@@ -164,15 +212,15 @@ function createRrAdapter(cred) {
       venue: d.publicationTitle || null,
       doi: shape.bareDoi(doi),
       url: d.url || shape.doiUrl(doi),
-      citedBy: Number(d.forwardEdgeCount != null ? d.forwardEdgeCount : 0),
-      references: Number(d.backwardEdgeCount != null ? d.backwardEdgeCount : 0),
+      citedBy: Number(d.backwardEdgeCount != null ? d.backwardEdgeCount : 0),
+      references: Number(d.forwardEdgeCount != null ? d.forwardEdgeCount : 0),
       doctype: d.doctype || null,
       retracted: !!d.retracted,
       score,
       // RR's network `score` reflects seed consensus; clamp into a plausible
       // seedHits count so the agent can say "connected to N of your seeds".
       seedHits: numSeeds ? Math.min(Math.max(Math.round(score), 0), numSeeds) : 0,
-      citationsPerYear: shape.citationsPerYear(d.forwardEdgeCount != null ? d.forwardEdgeCount : 0, year),
+      citationsPerYear: shape.citationsPerYear(d.backwardEdgeCount != null ? d.backwardEdgeCount : 0, year),
     };
   }
 
@@ -195,15 +243,15 @@ function createRrAdapter(cred) {
       venue: a.publicationTitle || null,
       doi: shape.bareDoi(doi),
       url: a.url || shape.doiUrl(doi),
-      citedBy: Number(a.forwardEdgeCount != null ? a.forwardEdgeCount : 0),
-      references: Number(a.backwardEdgeCount != null ? a.backwardEdgeCount : 0),
+      citedBy: Number(a.backwardEdgeCount != null ? a.backwardEdgeCount : 0),
+      references: Number(a.forwardEdgeCount != null ? a.forwardEdgeCount : 0),
       doctype: a.doctype || null,
       retracted: !!a.retracted,
       isOa: null,
       abstract: a.abstract || null,
       referencedWorkIds: [],
       relatedWorkIds: [],
-      citationsPerYear: shape.citationsPerYear(a.forwardEdgeCount != null ? a.forwardEdgeCount : 0, year),
+      citationsPerYear: shape.citationsPerYear(a.backwardEdgeCount != null ? a.backwardEdgeCount : 0, year),
       primaryLocationUrl: a.url || null,
     };
   }
@@ -219,28 +267,19 @@ function createRrAdapter(cred) {
   }
 
   // --- seed resolution (titles/DOIs -> RR numeric article ids) -------------
-  // RR searches by `stringFilter`. A title matches title+abstract; a DOI is
-  // best-effort (RR may index it). Top hit's id is the resolved seed.
+  // RR searches by `stringFilter` over title+abstract; top hit's id is the
+  // resolved seed. DOIs are best-effort (RR may index them as a hit).
   async function resolveSeed(seed) {
     const q = String(seed || "").trim();
     if (!q) return null;
     if (/^\d+$/.test(q)) return q; // already an RR numeric id
     return cache.getOrFetch(`rr:seed:${q.toLowerCase()}`, async () => {
-      const data = await rrFetch("/searches", {
-        method: "POST",
-        body: {
-          type: "singleSet",
-          projectId: projectId || undefined,
-          set: { userArticleIds: [], articleIds: [], authorIds: [], folderIds: [], tagIds: [] },
-          outputType: "articles",
-          showPlaceholders: true,
-          per: 1,
-          page: 1,
-          stringFilter: q,
-          stringFilterTypes: ["title", "abstract"],
-        },
-      });
-      const items = (data && data.results && data.results.items) || [];
+      const { items } = await runSearch({
+        type: "singleSet", projectId: projectId || undefined,
+        set: { userArticleIds: [], articleIds: [], authorIds: [], folderIds: [], tagIds: [] },
+        outputType: "articles", showPlaceholders: true, per: 1, page: 1,
+        stringFilter: q, stringFilterTypes: ["title", "abstract"],
+      }, { per: 1, polls: 3, delay: 700 });
       const top = items[0];
       return top ? String((top.details && top.details.id) || top.id || "") : null;
     });
@@ -266,9 +305,10 @@ function createRrAdapter(cred) {
       if (!configured) return { ok: true, backend: "rr", authOk: false, plan: "free", seedCap: SEED_CAP };
       try {
         await rrFetch("/users/me");
-        return { ok: true, backend: "rr", authOk: true, plan: "pro", seedCap: SEED_CAP, projectId: projectId || null };
+        const pid = await ensureProjectId();
+        return { ok: true, backend: "rr", authOk: true, plan: "pro", seedCap: SEED_CAP, projectId: pid || projectId || null };
       } catch (e) {
-        return { ok: true, backend: "rr", authOk: false, plan: "free", seedCap: SEED_CAP, error: e.rrAuth ? e.message : e.message };
+        return { ok: true, backend: "rr", authOk: false, plan: "free", seedCap: SEED_CAP, error: e.message };
       }
     },
 
@@ -289,23 +329,28 @@ function createRrAdapter(cred) {
       try { return await rrFetch("/users/me"); } catch { return null; }
     },
 
+    async discoverProjectId() {
+      // Used by /api/rr/connect to auto-fill projectId from GET /projects.
+      if (!configured) return null;
+      try {
+        const pid = await ensureProjectId();
+        return pid || null;
+      } catch { return null; }
+    },
+
     async searchKeyword({ q, per }) {
       return guarded(async () => {
         if (!configured) return notConfigured("keyword search");
         const pid = await ensureProjectId();
         if (!pid) return needProject("keyword search");
         const n = Math.min(Math.max(Number(per) || 10, 1), 20);
-        const data = await rrFetch("/searches", {
-          method: "POST",
-          body: {
-            type: "singleSet", projectId: pid,
-            set: { userArticleIds: [], articleIds: [], authorIds: [], folderIds: [], tagIds: [] },
-            outputType: "articles", showPlaceholders: true, per: n, page: 1,
-            stringFilter: String(q || ""), stringFilterTypes: ["title", "abstract"],
-          },
-        });
-        const items = ((data && data.results && data.results.items) || []).map((it) => rrListItem(it));
-        return listResponse({ kind: "keyword", q, per: n }, items, data && data.results && data.results.totalCount);
+        const { items, totalCount } = await runSearch({
+          type: "singleSet", projectId: pid,
+          set: { userArticleIds: [], articleIds: [], authorIds: [], folderIds: [], tagIds: [] },
+          outputType: "articles", showPlaceholders: true, per: n, page: 1,
+          stringFilter: String(q || ""), stringFilterTypes: ["title", "abstract"],
+        }, { per: n });
+        return listResponse({ kind: "keyword", q, per: n }, items.map((it) => rrListItem(it)), totalCount);
       });
     },
 
@@ -317,17 +362,14 @@ function createRrAdapter(cred) {
         const n = Math.min(Math.max(Number(per) || 10, 1), 20);
         const { resolved, missing } = await resolveSeeds(seeds);
         if (!resolved.length) return listResponse({ kind: "network", edgeMode, seeds, per: n, missing }, [], 0);
-        const data = await rrFetch("/searches", {
-          method: "POST",
-          body: {
-            type: "singleSet", projectId: pid,
-            set: { userArticleIds: [], articleIds: resolved, authorIds: [], folderIds: [], tagIds: [], edgeMode },
-            outputType: "articles", showPlaceholders: true, per: n, page: 1,
-          },
-        });
-        let items = ((data && data.results && data.results.items) || []).map((it) => rrListItem(it, { numSeeds: resolved.length }));
-        if (sinceYear) items = items.filter((it) => (it.year || 0) >= Number(sinceYear));
-        return listResponse({ kind: "network", edgeMode, seeds, per: n, missing }, items, data && data.results && data.results.totalCount);
+        const { items, totalCount } = await runSearch({
+          type: "singleSet", projectId: pid,
+          set: { userArticleIds: [], articleIds: resolved, authorIds: [], folderIds: [], tagIds: [], edgeMode },
+          outputType: "articles", showPlaceholders: true, per: n, page: 1,
+        }, { per: n });
+        let mapped = items.map((it) => rrListItem(it, { numSeeds: resolved.length }));
+        if (sinceYear) mapped = mapped.filter((it) => (it.year || 0) >= Number(sinceYear));
+        return listResponse({ kind: "network", edgeMode, seeds, per: n, missing }, mapped, totalCount);
       });
     },
 
@@ -344,16 +386,12 @@ function createRrAdapter(cred) {
         if (Array.isArray(authorIds) && authorIds.length) ids = authorIds.map(String);
         else if (!name) return { backend: "rr", authors: [], ...listResponse({ kind: "author", name, authorIds, per: n }, [], 0) };
         if (!ids.length) {
-          const data = await rrFetch("/searches", {
-            method: "POST",
-            body: {
-              type: "singleSet", projectId: pid,
-              set: { userArticleIds: [], articleIds: [], authorIds: [], folderIds: [], tagIds: [] },
-              outputType: "articles", showPlaceholders: true, per: n, page: 1,
-              stringFilter: String(name), stringFilterTypes: ["title", "abstract"],
-            },
-          });
-          const items = (data && data.results && data.results.items) || [];
+          const { items, totalCount } = await runSearch({
+            type: "singleSet", projectId: pid,
+            set: { userArticleIds: [], articleIds: [], authorIds: [], folderIds: [], tagIds: [] },
+            outputType: "articles", showPlaceholders: true, per: n, page: 1,
+            stringFilter: String(name), stringFilterTypes: ["title", "abstract"],
+          }, { per: n });
           const authorMeta = [];
           const lower = String(name).toLowerCase();
           for (const it of items) {
@@ -371,27 +409,21 @@ function createRrAdapter(cred) {
             }
             if (authorMeta.length) break;
           }
-          const out = items.map((it) => rrListItem(it));
-          return { backend: "rr", authors: authorMeta, ...listResponse({ kind: "author", name, authorIds, per: n }, out, data && data.results && data.results.totalCount) };
+          return { backend: "rr", authors: authorMeta, ...listResponse({ kind: "author", name, authorIds, per: n }, items.map((it) => rrListItem(it)), totalCount) };
         }
         // authorIds path: network search by author ids.
-        const data = await rrFetch("/searches", {
-          method: "POST",
-          body: {
-            type: "singleSet", projectId: pid,
-            set: { userArticleIds: [], articleIds: [], authorIds: ids, folderIds: [], tagIds: [] },
-            outputType: "articles", showPlaceholders: true, per: n, page: 1,
-          },
-        });
-        const items = ((data && data.results && data.results.items) || []).map((it) => rrListItem(it));
-        return { backend: "rr", authors: [], ...listResponse({ kind: "author", name, authorIds, per: n }, items, data && data.results && data.results.totalCount) };
+        const { items, totalCount } = await runSearch({
+          type: "singleSet", projectId: pid,
+          set: { userArticleIds: [], articleIds: [], authorIds: ids, folderIds: [], tagIds: [] },
+          outputType: "articles", showPlaceholders: true, per: n, page: 1,
+        }, { per: n });
+        return { backend: "rr", authors: [], ...listResponse({ kind: "author", name, authorIds, per: n }, items.map((it) => rrListItem(it)), totalCount) };
       });
     },
 
     async expand({ seeds, iterations = 2, limit }) {
-      // RR expands seeds server-side in one /searches call (finalArticleIds),
-      // so a single network "both" search is the faithful equivalent of the
-      // Grow-and-go loop. iterations is honoured conceptually.
+      // RR expands seeds server-side in one /searches call (edgeMode:both),
+      // the faithful equivalent of the Grow-and-go loop.
       return guarded(async () => {
         if (!configured) return notConfigured("expand");
         const pid = await ensureProjectId();
@@ -400,16 +432,12 @@ function createRrAdapter(cred) {
         const iters = Math.min(Math.max(Number(iterations) || 2, 1), 4);
         const { resolved, missing } = await resolveSeeds(seeds);
         if (!resolved.length) return listResponse({ kind: "expand", seeds, iterations: iters, limit: lim, missing }, [], 0);
-        const data = await rrFetch("/searches", {
-          method: "POST",
-          body: {
-            type: "singleSet", projectId: pid,
-            set: { userArticleIds: [], articleIds: resolved, authorIds: [], folderIds: [], tagIds: [], edgeMode: "both" },
-            outputType: "articles", showPlaceholders: true, per: lim, page: 1,
-          },
-        });
-        const items = ((data && data.results && data.results.items) || []).map((it) => rrListItem(it, { numSeeds: resolved.length }));
-        return listResponse({ kind: "expand", seeds, iterations: iters, limit: lim, missing }, items, data && data.results && data.results.totalCount);
+        const { items, totalCount } = await runSearch({
+          type: "singleSet", projectId: pid,
+          set: { userArticleIds: [], articleIds: resolved, authorIds: [], folderIds: [], tagIds: [], edgeMode: "both" },
+          outputType: "articles", showPlaceholders: true, per: lim, page: 1,
+        }, { per: lim });
+        return listResponse({ kind: "expand", seeds, iterations: iters, limit: lim, missing }, items.map((it) => rrListItem(it, { numSeeds: resolved.length })), totalCount);
       });
     },
 
@@ -492,7 +520,7 @@ function createRrAdapter(cred) {
           references: detail.references,
           topAuthor: topAuthor ? { name: topAuthor.name, hIndex: topAuthor.hIndex } : null,
           caveats: [
-            "Counts are ResearchRabbit's own (forwardEdgeCount/backwardEdgeCount); they can differ from Google Scholar / Scopus / OpenAlex.",
+            "Counts are ResearchRabbit's own (backwardEdgeCount/forwardEdgeCount); they can differ from Google Scholar / Scopus / OpenAlex.",
             "h-index is ResearchRabbit's value for the first listed author only.",
             "This is a metadata triage, not peer judgement — read the paper before relying on it.",
           ],
@@ -571,19 +599,14 @@ function createRrAdapter(cred) {
         });
         const sessionId = session && (session.id || (session.data && session.data.id));
         let stepId = null, searchId = null;
-        // Run a network search with the seeds and point the first step at it,
-        // so the deep link opens on the seed-driven result set.
         if (resolved.length && sessionId) {
           try {
-            const search = await rrFetch("/searches", {
-              method: "POST",
-              body: {
-                type: "singleSet", projectId: pid,
-                set: { userArticleIds: [], articleIds: resolved, authorIds: [], folderIds: [], tagIds: [], edgeMode: "both" },
-                outputType: "articles", showPlaceholders: true, per: 20, page: 1,
-              },
-            });
-            searchId = search && (search.id || (search.results && search.results.searchId));
+            const { searchId: sid } = await runSearch({
+              type: "singleSet", projectId: pid,
+              set: { userArticleIds: [], articleIds: resolved, authorIds: [], folderIds: [], tagIds: [], edgeMode: "both" },
+              outputType: "articles", showPlaceholders: true, per: 20, page: 1,
+            }, { per: 20, polls: 3 });
+            searchId = sid;
             const steps = (session.steps || (session.data && session.data.steps) || []);
             stepId = steps[0] && steps[0].id;
             if (stepId && searchId) {
@@ -661,8 +684,6 @@ function createRrAdapter(cred) {
         const pid = await ensureProjectId();
         if (!pid) return needProject("library");
         const articleIds = (Array.isArray(ids) ? ids : []).map((x) => String(x).trim()).filter(Boolean);
-        // /user-articles/batch checks/saves in batch. Body shape is best-effort
-        // against the observed endpoint; validate by saving from a connected account.
         const res = await rrFetch("/user-articles/batch", {
           method: "POST",
           query: { page: 1, per: Math.max(articleIds.length, 1) },
@@ -711,8 +732,8 @@ function createRrAdapter(cred) {
         const pid = await ensureProjectId();
         if (!pid) return needProject("search re-read");
         const data = await rrFetch(`/searches/${encodeURIComponent(id)}`, { query: { projectId: pid } });
-        const items = ((data && data.results && data.results.items) || []).map((it) => rrListItem(it));
-        return listResponse({ kind: "search", id }, items, data && data.results && data.results.totalCount);
+        const { items, totalCount } = parseResultsField(data);
+        return listResponse({ kind: "search", id }, items.map((it) => rrListItem(it)), totalCount);
       });
     },
 
@@ -726,25 +747,21 @@ function createRrAdapter(cred) {
         }
         const { resolved } = await resolveSeeds(seeds || []);
         if (!resolved.length) return listResponse({ kind: "gaps", seeds, collectionId }, [], 0);
-        const data = await rrFetch("/searches", {
-          method: "POST",
-          body: {
-            type: "singleSet", projectId: pid,
-            set: { userArticleIds: [], articleIds: resolved, authorIds: [], folderIds: [], tagIds: [], edgeMode: "both" },
-            outputType: "articles", showPlaceholders: true, per: 20, page: 1,
-          },
-        });
-        // Read the collection's article ids and subtract.
+        const { items } = await runSearch({
+          type: "singleSet", projectId: pid,
+          set: { userArticleIds: [], articleIds: resolved, authorIds: [], folderIds: [], tagIds: [], edgeMode: "both" },
+          outputType: "articles", showPlaceholders: true, per: 20, page: 1,
+        }, { per: 20 });
         let collIds = new Set();
         try {
           const coll = await rrFetch(`/folders/${encodeURIComponent(collectionId)}`, { query: { projectId: pid } });
           const arts = (coll && (coll.articles || coll.items)) || [];
           collIds = new Set(arts.map((a) => String((a.details && a.details.id) || a.id || "")));
         } catch { /* best-effort */ }
-        const items = ((data && data.results && data.results.items) || [])
+        const mapped = items
           .map((it) => rrListItem(it, { numSeeds: resolved.length }))
           .filter((it) => it.articleId && !collIds.has(it.articleId));
-        return listResponse({ kind: "gaps", seeds, collectionId }, items, items.length);
+        return listResponse({ kind: "gaps", seeds, collectionId }, mapped, mapped.length);
       });
     },
 

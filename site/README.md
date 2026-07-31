@@ -4,7 +4,7 @@ A single, self-contained `index.html` (no build step, no external CSS file) that
 
 1. **Embedded chat** — a live Flowise chat bubble (bottom-right) wired to the hosted agentflow.
 2. **How to configure the MCP on Claude** — `claude mcp add`, project `.mcp.json`, and Claude Desktop config, plus the 22-tool catalogue. The `.mcp.json` / Desktop configs include the optional `headers` block (Camino B) for per-user ResearchRabbit credentials.
-3. **Use your own ResearchRabbit account** — a "Connect account" panel (Camino C, web chat) plus a DevTools how-to for getting `SPRSESSION` + `projectId`; and a recap of Method B (per-user headers in the editor).
+3. **Use your own ResearchRabbit account** — a "Connect account" panel (Camino C, web chat) plus a DevTools how-to for getting your `sessionToken` JWT from `localStorage`; and a recap of Method B (per-user `X-RR-Token` header in the editor).
 4. **Examples** — raw MCP `tools/list` / `tools/call` (curl, with real captured output) and a real Warren chatbot reply, plus a list of sample questions.
 
 Modeled on the firstTable `site/index.html` structure (hero → what → how → FAQ → architecture → MCP & Claude → account → examples → try-it → footer), with a purple palette to match the agentflow's `chatbotConfig`.
@@ -52,8 +52,8 @@ For local use, swap the embed `apiHost` to `http://localhost:3000` and the MCP U
 
 The page documents and wires the two per-user credential paths implemented in the gateway + MCP server:
 
-- **Method B (editor, per-user):** send `X-RR-Cookie` + `X-RR-Project-Id` headers on the MCP server. The `.mcp.json` / `claude_desktop_config.json` snippets in the `#mcp` section show the `headers` block. The MCP server forwards them to the gateway, which upgrades that call to the rr backend with the caller's own session.
-- **Method C (web chat, single active account):** the `#account` Connect panel POSTs `{cookie, projectId?}` to `POST /api/rr/connect` on the gateway, which validates via `GET /users/me` and stores the credential in memory (TTL ~1d). `GET /api/rr/status` and `DELETE /api/rr/disconnect` round it out. The panel JS uses a `RR_GATEWAY` const (defaults to the hosted gateway; set to `http://localhost:8831` for local tests).
+- **Method B (editor, per-user):** send an `X-RR-Token` header (the `sessionToken` JWT from `app.researchrabbit.ai` localStorage) on the MCP server. The `.mcp.json` / `claude_desktop_config.json` snippets in the `#mcp` section show the `headers` block. The MCP server forwards it to the gateway, which upgrades that call to the rr backend with the caller's own session (Bearer). `projectId` is auto-discovered via `GET /projects`.
+- **Method C (web chat, single active account):** the `#account` Connect panel POSTs `{token}` (the `sessionToken` JWT) to `POST /api/rr/connect` on the gateway, which validates via `GET /users/me`, auto-discovers `projectId` via `GET /projects`, and stores the credential in memory (TTL ~1d). `GET /api/rr/status` and `DELETE /api/rr/disconnect` round it out. The panel JS uses a `RR_GATEWAY` const (defaults to the hosted gateway; set to `http://localhost:8831` for local tests).
 
 ### Deploy steps to make the panel live on a hosted site
 
@@ -64,4 +64,4 @@ The page documents and wires the two per-user credential paths implemented in th
 
 ### Honest caveat
 
-The RR adapter (`server/src/adapters/rr.js`) makes real upstream calls against the documented `api.researchrabbit.ai` endpoints, mapped to the canonical shape. It is implemented against the spec in `researchrabbit-howto-api-en.html` but could not be exercised end-to-end without a real session cookie — **connecting an account is the validation step**. Field access is defensive (optional chaining + fallbacks) so shape drift degrades to nulls rather than crashes. `save_articles`'s batch body and `search_by_author` (no documented author endpoint) are best-effort.
+The RR adapter (`server/src/adapters/rr.js`) makes real upstream calls against `api.researchrabbit.ai`, authenticated with `Authorization: Bearer <sessionToken>` (the JWT from the SPA's `localStorage`), and mapped to the canonical shape. The auth model, the two-step search (`POST /searches` then `GET /searches/{id}`, with a stringified `results` field), the edge-count semantics (`backwardEdgeCount`=citedBy, `forwardEdgeCount`=references), and `/projects` projectId discovery are all **verified live** against the real API (the search returns real DOIs). `save_articles`'s batch body and `search_by_author` (no documented author endpoint) remain best-effort until exercised with a connected account doing those specific writes.

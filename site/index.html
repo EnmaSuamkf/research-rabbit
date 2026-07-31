@@ -519,7 +519,7 @@ code {
       </li>
       <li class="faq">
         <h3>Will it ask for my ResearchRabbit password?</h3>
-        <p>Never. The gateway holds any session cookie in its own environment; the agent never sees your
+        <p>Never. The gateway holds any session token in its own environment; the agent never sees your
            credentials. Writes (collections, saving articles) need the RR backend and
            <code>RR_ALLOW_WRITES=true</code> on the gateway.</p>
       </li>
@@ -640,8 +640,8 @@ code {
         The 22 tools that power Warren are an <strong>MCP server</strong>. You don't need Flowise to use
         them — connect the server straight to Claude Code, Claude Desktop, Cursor, Windsurf or VS Code and
         you get the same literature-discovery tools inside your editor. With no credentials it runs on the
-        free OpenAlex backend; to use <em>your own</em> ResearchRabbit account, send two optional request
-        headers (<code>X-RR-Cookie</code> + <code>X-RR-Project-Id</code>) — see
+        free OpenAlex backend; to use <em>your own</em> ResearchRabbit account, send one optional request
+        header (<code>X-RR-Token</code>) — see
         <a href="#account">Use your own account</a> and Option B below.
       </p>
     </div>
@@ -652,10 +652,11 @@ code {
       Local (when running the repo): <code>http://localhost:8822/mcp</code>
     </p>
     <p>
-      <strong>Per-user ResearchRabbit (optional):</strong> send two headers on every
-      <code>POST /mcp</code> — <code>X-RR-Cookie</code> (your <code>SPRSESSION</code> value) and
-      <code>X-RR-Project-Id</code>. The server forwards them to the gateway, which upgrades that call to
-      the rr backend with your session. Omit them for the anonymous OpenAlex backend.
+      <strong>Per-user ResearchRabbit (optional):</strong> send one header on every
+      <code>POST /mcp</code> — <code>X-RR-Token</code> (your <code>sessionToken</code> JWT from
+      <code>app.researchrabbit.ai</code> localStorage). The server forwards it to the gateway, which
+      upgrades that call to the rr backend with your session (and auto-discovers your
+      <code>projectId</code>). Omit it for the anonymous OpenAlex backend.
     </p>
     <p class="note">
       <strong>Transport:</strong> Streamable HTTP, stateless. One JSON-RPC request per
@@ -692,7 +693,7 @@ claude mcp get researchrabbit</pre>
       way to share the server with your team — every MCP-aware client reads the same format. The
       <code>headers</code> block below wires up <strong>your own</strong> ResearchRabbit account
       (Camino B); drop it to use the free OpenAlex backend anonymously. See
-      <a href="#account">how to get your SPRSESSION + projectId</a>.
+      <a href="#account">how to get your sessionToken</a>.
     </p>
     <div class="code-block">
       <div class="cb-head"><span class="dot"></span> .mcp.json<button class="cb-copy" onclick="copyCode(this)">copy</button><span class="lang">json</span></div>
@@ -701,8 +702,7 @@ claude mcp get researchrabbit</pre>
     <span class="k">"researchrabbit"</span>: {
       <span class="k">"url"</span>: <span class="s">"https://researchrabbit-mcp-server.onrender.com/mcp"</span>,
       <span class="k">"headers"</span>: {
-        <span class="k">"X-RR-Cookie"</span>: <span class="s">"&lt;your SPRSESSION cookie value&gt;"</span>,
-        <span class="k">"X-RR-Project-Id"</span>: <span class="s">"&lt;your projectId&gt;"</span>
+        <span class="k">"X-RR-Token"</span>: <span class="s">"&lt;your sessionToken JWT&gt;"</span>
       }
     }
   }
@@ -722,8 +722,7 @@ claude mcp get researchrabbit</pre>
       <span class="k">"type"</span>: <span class="s">"http"</span>,
       <span class="k">"url"</span>: <span class="s">"https://researchrabbit-mcp-server.onrender.com/mcp"</span>,
       <span class="k">"headers"</span>: {
-        <span class="k">"X-RR-Cookie"</span>: <span class="s">"&lt;your SPRSESSION cookie value&gt;"</span>,
-        <span class="k">"X-RR-Project-Id"</span>: <span class="s">"&lt;your projectId&gt;"</span>
+        <span class="k">"X-RR-Token"</span>: <span class="s">"&lt;your sessionToken JWT&gt;"</span>
       }
     }
   }
@@ -797,10 +796,10 @@ claude mcp get researchrabbit</pre>
         </p>
         <h3 style="margin-top:18px">Method C — on this page (web chat)</h3>
         <p>
-          Use the panel on the right. Paste your <code>SPRSESSION</code> cookie (and projectId) once;
-          it is stored <strong>only on the gateway</strong>, for this chat, and every Warren turn then
-          runs against your RR account. Disconnect any time. After about a day (or if the cookie
-          expires) you reconnect.
+          Use the panel on the right. Paste your <code>sessionToken</code> once; it is stored
+          <strong>only on the gateway</strong>, for this chat, and every Warren turn then runs against
+          your RR account. Disconnect any time. After about a day (or if the token expires) you
+          reconnect. Your <code>projectId</code> is auto-discovered — you don't need to paste it.
         </p>
         <p class="note warn">
           <strong>One active web account at a time.</strong> The web chat channel keeps a single
@@ -813,12 +812,10 @@ claude mcp get researchrabbit</pre>
 
       <div class="rr-panel">
         <h3>Connect your account</h3>
-        <label class="rr-lbl">SPRSESSION cookie
-          <input id="rr-cookie" type="text" placeholder="paste the SPRSESSION cookie value" autocomplete="off" />
+        <label class="rr-lbl">sessionToken (JWT)
+          <input id="rr-token" type="text" placeholder="paste the sessionToken value from localStorage" autocomplete="off" />
         </label>
-        <label class="rr-lbl">projectId <span class="rr-opt">(optional — auto-discovered if possible)</span>
-          <input id="rr-pid" type="text" placeholder="e.g. 4e1dd100-1004-498d-…” autocomplete="off" />
-        </label>
+        <p class="rr-foot" style="margin-top:-4px;margin-bottom:10px">projectId is auto-discovered — no need to paste it.</p>
         <div class="rr-btns">
           <button class="btn btn-primary" onclick="rrConnect()">Connect</button>
           <button class="btn btn-outline-rr" onclick="rrStatus()">Check status</button>
@@ -827,32 +824,30 @@ claude mcp get researchrabbit</pre>
         <div id="rr-status" class="rr-status rr-info">Checking…</div>
         <p class="rr-foot">
           Stored only on the gateway for this chat — never in the chat transcript or the repo.
-          <a href="#how-to-cookie">How do I get these values?</a>
+          <a href="#how-to-token">How do I get my sessionToken?</a>
         </p>
       </div>
     </div>
 
-    <div class="rr-howto" id="how-to-cookie">
-      <h3>How to get your SPRSESSION cookie &amp; projectId</h3>
-      <p>ResearchRabbit has no public login API, so the cookie only exists once you've signed in on
-         their site. It takes about a minute:</p>
+    <div class="rr-howto" id="how-to-token">
+      <h3>How to get your sessionToken</h3>
+      <p>ResearchRabbit keeps your signed-in session as a JWT in the app's <code>localStorage</code>.
+         Copying it takes about a minute:</p>
       <ol class="rr-steps">
         <li>Open <a href="https://app.researchrabbit.ai/" target="_blank" rel="noopener">app.researchrabbit.ai</a> and sign in (email/password or Google).</li>
-        <li>Open DevTools (F12) → <strong>Application</strong> → <strong>Cookies</strong> →
-            <code>app.researchrabbit.ai</code>. Copy the <strong>value</strong> of the
-            <code>SPRSESSION</code> cookie (just the value, not the name).</li>
-        <li>For the <strong>projectId</strong>: in DevTools → <strong>Network</strong> →
-            <strong>Fetch/XHR</strong>, filter by <code>api.researchrabbit.ai</code>, open any request,
-            and copy the <code>projectId</code> query parameter. Or leave it blank — the gateway tries
-            to auto-discover it from your folders.</li>
-        <li>Paste them into the panel above (Method C) or into the <code>headers</code> of your
-            <code>.mcp.json</code> (Method B), and you're connected.</li>
+        <li>Open DevTools (F12) → <strong>Application</strong> → <strong>Local Storage</strong> →
+            <code>https://app.researchrabbit.ai</code>. Click the <code>tokens</code> key. The value is
+            JSON like <code>{"sessionToken":"eyJ…"}</code> — copy just the <code>sessionToken</code>
+            string (the long <code>eyJ…</code> JWT, not the whole JSON).</li>
+        <li>Paste it into the panel above (Method C) or into the <code>X-RR-Token</code> header of your
+            <code>.mcp.json</code> (Method B), and you're connected. Your <code>projectId</code> is
+            auto-discovered — you don't need it.</li>
       </ol>
       <p class="note">
-        <strong>What is a session cookie?</strong> It's a bearer credential — anyone who has it can act
+        <strong>What is a session token?</strong> It's a bearer credential — anyone who has it can act
         as you on ResearchRabbit. That's why it's stored only on the gateway (not in the chat
         transcript, not in the repo) and why you should disconnect when you're done. It expires on its
-        own; if Warren says “session expired”, just repeat the steps with a fresh cookie.
+        own; if Warren says “session expired”, just repeat the steps with a fresh token.
       </p>
       <p class="note warn">
         <strong>Deploy note:</strong> the Connect panel talks to the gateway's
@@ -1100,15 +1095,14 @@ data: {"result":{"tools":[
   }
 
   async function rrConnect() {
-    const cookie = document.getElementById("rr-cookie").value.trim();
-    const pid = document.getElementById("rr-pid").value.trim();
-    if (!cookie) { rrSetStatus("Paste your SPRSESSION cookie value first.", "rr-err"); return; }
+    const token = document.getElementById("rr-token").value.trim();
+    if (!token) { rrSetStatus("Paste your sessionToken (the eyJ… JWT from localStorage) first.", "rr-err"); return; }
     rrSetStatus("Validating with ResearchRabbit…", "rr-info");
     try {
       const r = await fetch(RR_GATEWAY + "/api/rr/connect", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ cookie, projectId: pid || undefined }),
+        body: JSON.stringify({ token }),
       });
       if (r.status === 404) { rrSetStatus("Connect endpoint not available on this gateway yet — it needs the multi-tenant gateway deploy (push the new server/ code to Render).", "rr-err"); return; }
       const j = await r.json();

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResearchRabbit — How to Use & Search the Web App (EN)</title>
+<style>
+  :root{
+    --brand:#ff5a3c; --brand2:#7c3aed; --ink:#1f2430; --muted:#5b6472;
+    --bg:#f7f8fa; --card:#ffffff; --line:#e6e8ee; --accent:#0ea5e9;
+    --code-bg:#1e1e2e; --code-ink:#e4e7ef;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.65}
+  header{background:linear-gradient(135deg,#ff5a3c 0%,#ff8a5b 60%,#ffb37a 100%);color:#fff;padding:44px 24px 36px}
+  header .wrap{max-width:1000px;margin:0 auto}
+  header h1{margin:0 0 6px;font-size:2.2rem;letter-spacing:-.5px}
+  header p{margin:2px 0;opacity:.96;font-size:1.05rem}
+  header .tag{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);
+    padding:4px 12px;border-radius:999px;font-size:.8rem;margin-top:10px}
+  nav.toc{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+  nav.toc ul{max-width:1000px;margin:0 auto;padding:10px 24px;display:flex;flex-wrap:wrap;gap:6px 4px;list-style:none}
+  nav.toc a{text-decoration:none;color:var(--muted);font-size:.82rem;padding:6px 10px;border-radius:8px}
+  nav.toc a:hover{background:#f1f3f8;color:var(--brand)}
+  main{max-width:1000px;margin:0 auto;padding:28px 24px 60px}
+  section{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:24px 26px;margin:0 0 22px;scroll-margin-top:64px}
+  h2{margin:0 0 12px;font-size:1.45rem;display:flex;align-items:center;gap:10px}
+  h2 .dot{width:10px;height:10px;border-radius:50%;background:var(--brand);flex:0 0 auto}
+  h3{margin:22px 0 8px;font-size:1.08rem;color:#2a3142}
+  p,li{color:#37404f}
+  ul,ol{padding-left:22px}
+  li{margin:5px 0}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+  .card{background:#fbfcfe;border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .card h4{margin:0 0 6px;font-size:1rem;color:var(--brand2)}
+  .note{background:#fff7ed;border-left:4px solid var(--brand);padding:12px 16px;border-radius:8px;margin:14px 0}
+  .tip{background:#ecfdf5;border-left:4px solid #10b981;padding:12px 16px;border-radius:8px;margin:14px 0}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.9rem}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+  th{background:#f3f5fa;color:#2a3142}
+  code{background:#f1f3f8;padding:2px 6px;border-radius:5px;font-size:.84rem;color:#b91c1c}
+  pre{background:var(--code-bg);color:var(--code-ink);padding:16px 18px;border-radius:10px;
+    overflow-x:auto;font-size:.83rem;line-height:1.1;margin:12px 0}
+  pre code{background:transparent;color:inherit;padding:0}
+  .method{display:inline-block;padding:2px 8px;border-radius:5px;font-size:.74rem;font-weight:700;color:#fff}
+  .m-get{background:#0ea5e9}.m-post{background:#16a34a}.m-patch{background:#f59e0b}.m-del{background:#ef4444}
+  .pill{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:999px;padding:2px 10px;font-size:.75rem;margin:2px 4px 2px 0}
+  footer{max-width:1000px;margin:0 auto;padding:10px 24px 40px;color:var(--muted);font-size:.82rem}
+  a.lk{color:var(--accent);text-decoration:none}
+  a.lk:hover{text-decoration:underline}
+  .step{display:flex;gap:12px;align-items:flex-start;margin:10px 0}
+  .step .n{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;
+    font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.85rem}
+  .badge{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0;border-radius:8px;padding:6px 10px;font-size:.8rem;display:inline-block}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>ResearchRabbit — How to Use &amp; Search</h1>
+    <p>Practical guide to the logged-in web app, with the real API endpoints behind it (observed live via the browser network).</p>
+    <span class="tag">app.researchrabbit.ai</span>
+    <span class="tag">api.researchrabbit.ai</span>
+    <span class="tag">English (EN)</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <ul>
+    <li><a href="#intro">Intro</a></li>
+    <li><a href="#concepts">Concepts</a></li>
+    <li><a href="#ui">App layout</a></li>
+    <li><a href="#how-search">How to search</a></li>
+    <li><a href="#keyword">Keyword search</a></li>
+    <li><a href="#network">Network search</a></li>
+    <li><a href="#iterate">Iterating</a></li>
+    <li><a href="#library">Library &amp; collections</a></li>
+    <li><a href="#import">Import / export</a></li>
+    <li><a href="#endpoints">API endpoints</a></li>
+    <li><a href="#examples">Request examples</a></li>
+    <li><a href="#datamodel">Data model</a></li>
+    <li><a href="#observe">How we observed</a></li>
+    <li><a href="#tips">Tips</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<section id="intro">
+  <h2><span class="dot"></span>Introduction</h2>
+  <p>This document explains, from first-hand use of the logged-in app, <strong>how to use ResearchRabbit and how to search for information</strong>. It also documents the <strong>real HTTP endpoints</strong> the single-page app calls (host <code>api.researchrabbit.ai</code>), with the actual request/response shapes observed while performing searches, opening articles, and creating collections.</p>
+  <div class="note">All endpoint details below were captured live from the running app's network requests (fetch/XHR), not from any official public API doc. ResearchRabbit does not publish a public API; these are the private endpoints the SPA uses. Treat them as reference for understanding/automation, not as a stable contract.</div>
+  <p><strong>Base hosts</strong></p>
+  <ul>
+    <li>Web app (SPA): <code>https://app.researchrabbit.ai</code></li>
+    <li>Backend API: <code>https://api.researchrabbit.ai</code></li>
+    <li>Auth: cookie/session based (requests use <code>credentials: include</code>). Google OAuth is supported on the login page.</li>
+  </ul>
+</section>
+
+<section id="concepts">
+  <h2><span class="dot"></span>Core concepts</h2>
+  <div class="grid">
+    <div class="card"><h4>Seed articles</h4>The starting point(s) for a search — a paper you know or pick. The algorithm uses seeds to find connected work.</div>
+    <div class="card"><h4>Search session</h4>A container for one research thread; holds ordered <em>steps</em>. URL: <code>/search/{sessionId}/{stepIndex}</code>.</div>
+    <div class="card"><h4>Search (a step)</h4>A single query run within a session — either a keyword search or a citation-network search.</div>
+    <div class="card"><h4>Edges</h4>Citations (forward) and references (backward). <code>edgeMode: "both" | "forward" | "backward"</code>.</div>
+    <div class="card"><h4>Collections</h4>Called <strong>folders</strong> in the API. Group saved articles with colors; support subcollections.</div>
+    <div class="card"><h4>Project</h4>A workspace scoped by <code>projectId</code>; almost every endpoint requires it.</div>
+  </div>
+</section>
+
+<section id="ui">
+  <h2><span class="dot"></span>App layout (after login)</h2>
+  <ul>
+    <li><strong>Top nav:</strong> Search · Library · Upgrade · Test · account menu.</li>
+    <li><strong>Search home:</strong> a single box "Title, DOI, or keywords…" + a <em>Search</em> button and <em>Browse Library</em>. Side panels show Recently saved, Library (collections), and What's New.</li>
+    <li><strong>Search results page:</strong> left = list of candidate/seed articles; right = article detail panel (Abstract, Author, DOI, "Dive deeper" with <em>Similar</em> / <em>Refs</em> / <em>Cited By</em> counts, plus <em>Collection</em> and <em>Reading List</em> actions).</li>
+    <li><strong>Library page:</strong> Collections sidebar (Create Collection), All Articles, import (BibTeX, Zotero), Export, in-library Search, Label.</li>
+    <li><strong>Rabbit Diagnostics:</strong> a command palette (Ctrl/Cmd-style) with "Enter command…" — a power-user/dev helper.</li>
+  </ul>
+</section>
+
+<section id="how-search">
+  <h2><span class="dot"></span>How to search — the big picture</h2>
+  <p>ResearchRabbit has <strong>two search modes</strong> that chain together:</p>
+  <ol>
+    <li><strong>Keyword search</strong> (find seeds): type a title, DOI, or keywords → get a flat list of matching articles (e.g. "1–10 of 4,700,000").</li>
+    <li><strong>Network search</strong> (discover via citations): pick one or more seed articles → run a <em>Similar / Refs / Cited By</em> search → get ranked, connected articles (e.g. "1–20 of 376").</li>
+  </ol>
+  <p>Then you <strong>iterate</strong>: select useful results as new seeds and run another step — "Grow and go!"</p>
+</section>
+
+<section id="keyword">
+  <h2><span class="dot"></span>1) Keyword search (finding seed articles)</h2>
+  <div class="step"><div class="n">1</div><div>On the Search home, type into <em>"Title, DOI, or keywords…"</em> (e.g. <code>climate change adaptation</code>).</div></div>
+  <div class="step"><div class="n">2</div><div>Click <strong>Search</em>. The app navigates to <code>/search/{sessionId}/0</code> and shows a "Pick where to start" list of candidate articles.</div></div>
+  <div class="step"><div class="n">3</div><div>Each result shows author/year, title, journal, and abstract. Incomplete-data items are flagged. Footer shows total matches (e.g. "1–10 of 4,700,000").</div></div>
+  <div class="tip"><strong>Tip:</strong> Keyword search matches in <code>title</code> and <code>abstract</code>. RR+ adds boolean operators (AND, OR, NOT) and quoted exact phrases, powered by Google Scholar.</div>
+  <p><strong>Behind the scenes:</strong> a <code>POST /searches</code> is sent with a <code>stringFilter</code> and <code>stringFilterTypes: ["title","abstract"]</code> (see <a class="lk" href="#examples">Request examples</a>).</p>
+</section>
+
+<section id="network">
+  <h2><span class="dot"></span>2) Network search (discovery via citations)</h2>
+  <div class="step"><div class="n">1</div><div>From the keyword list, click an article to select it as a <strong>seed</strong>. The detail panel opens; the <em>Search</em> button becomes enabled.</div></div>
+  <div class="step"><div class="n">2</div><div>Click <strong>Search</strong> (or one of <em>Similar</em> / <em>Refs</em> / <em>Cited By</em> in "Dive deeper").</div></div>
+  <div class="step"><div class="n">3</div><div>A new step is created (URL <code>/search/{sessionId}/1</code>) showing ranked connected articles, e.g. "Citations of Owen, 2020 — 1–20 of 376".</div></div>
+  <div class="step"><div class="n">4</div><div>Use the controls <em>More citations</em> / <em>More recently published</em> to re-rank, and <em>References</em> / <em>Search inputs</em> / <em>Results</em> / <em>Next Search</em> to move between steps.</div></div>
+  <p><strong>Behind the scenes:</strong> <code>POST /searches</code> with <code>type:"singleSet"</code>, <code>set.articleIds:[21400232]</code>, <code>edgeMode:"both"</code>, <code>outputType:"articles"</code>, <code>per:20</code>. The response includes <code>results.totalCount</code> (e.g. 1893) and a scored <code>items</code> array.</p>
+  <h3>The three "Dive deeper" directions</h3>
+  <ul>
+    <li><strong>Similar</strong> — all connection types (citations + references + co-citation + co-authorship + semantic). Largest set.</li>
+    <li><strong>Refs (Earlier Work)</strong> — the references of the seed (<code>edgeMode: backward</code>).</li>
+    <li><strong>Cited By (Later Work)</strong> — articles citing the seed (<code>edgeMode: forward</code>).</li>
+  </ul>
+</section>
+
+<section id="iterate">
+  <h2><span class="dot"></span>Iterating ("Grow and go!")</h2>
+  <p>The prompt "Select articles to help your next search find more accurate results" is the heart of ResearchRabbit. Select one or more results → click <strong>Next Search</strong> → the app runs a new network search using your selections as seeds, refining results toward your interest. Each iteration is a new <em>step</em> in the session. The page hint literally reads: <em>"Improve your results by selecting articles to add to your search."</em></p>
+  <div class="note">There is a cap on seed articles per search: <strong>50 on Free</strong>, <strong>300 on RR+</strong>. That is why iterating in chunks matters for large reviews.</div>
+</section>
+
+<section id="library">
+  <h2><span class="dot"></span>Library &amp; collections</h2>
+  <ul>
+    <li><strong>Create Collection:</strong> Library → Create Collection → enter a name → Create. (API: <code>POST /folders</code> with <code>name</code>, <code>color</code>, <code>projectId</code>.)</li>
+    <li><strong>Save an article:</strong> from any article panel, click <em>Collection</em> (add to a folder) or <em>Reading List</em> (park to read later).</li>
+    <li><strong>Subcollections &amp; multi-collection:</strong> a collection can have parent collections (sub-subcollections), and one article can live in multiple collections; notes/edits travel with it.</li>
+    <li><strong>Autosave:</strong> optionally auto-file every article used as a seed into a chosen collection.</li>
+    <li><strong>Recently Found:</strong> every article touched in a search, grouped by time (API: <code>GET /recent-articles?isSaved=false</code>).</li>
+    <li><strong>All Articles:</strong> your saved library (API: <code>GET /user-articles?sortBy=nickname&sortDirection=asc</code>).</li>
+  </ul>
+</section>
+
+<section id="import">
+  <h2><span class="dot"></span>Import &amp; export</h2>
+  <ul>
+    <li><strong>BibTeX:</strong> import a <code>.bib</code> file (file input on Library) or export selections as BibTeX.</li>
+    <li><strong>Zotero:</strong> connect via OAuth (API: <code>GET /oauth-tokens</code> lists linked tokens) and import your Zotero library; collections map 1:1 to ResearchRabbit folders.</li>
+    <li><strong>Export:</strong> export a collection or selection (BibTeX / citation formats) from the Export button.</li>
+  </ul>
+</section>
+
+<section id="endpoints">
+  <h2><span class="dot"></span>API endpoints observed</h2>
+  <p>All under <code>https://api.researchrabbit.ai</code>. Auth via session cookies; most calls require <code>projectId</code> as a query param.</p>
+  <table>
+    <tr><th>Method</th><th>Endpoint</th><th>Purpose</th></tr>
+    <tr><td><span class="method m-get">GET</span></td><td><code>/users/me</code></td><td>Current user profile (id, email, name, OAuth/password flags, marketing, ToS acceptance, emailVerifiedAt).</td></tr>
+    <tr><td><span class="method m-post">POST</span></td><td><code>/searches</code></td><td>Run a search — keyword (<code>stringFilter</code>) or network (<code>set.articleIds</code>/<code>authorIds</code> + <code>edgeMode</code>). Returns <code>results.items</code> + <code>totalCount</code>.</td></tr>
+    <tr><td><span class="method m-get">GET</span></td><td><code>/searches/{id}?projectId=…</code></td><td>Fetch a previously created search's results.</td></tr>
+    <tr><td><span class="method m-post">POST</span></td><td><code>/search-sessions</code></td><td>Create a new search session (a research thread).</td></tr>
+    <tr><td><span class="method m-get">GET</span></td><td><code>/search-sessions/{id}?projectId=…</code></td><td>Get a session, including its ordered <code>steps[]</code>.</td></tr>
+    <tr><td><span class="method m-patch">PATCH</span></td><td><code>/search-sessions/{id}/steps/{stepId}</code></td><td>Update a step: set <code>inspectedType</code>/<code>inspectedId</code> (which article is open), <code>searchId</code> (which search the step shows), or <code>selected[]</code>.</td></tr>
+    <tr><td><span class="method m-get">GET</span></td><td><code>/articles/{id}</code></td><td>Full article metadata: title, abstract, authors (with h-index &amp; citation count), DOIs, OpenAlex/Semantic Scholar/arXiv/PubMed IDs, <code>forwardEdgeCount</code> (citations), <code>backwardEdgeCount</code> (references), <code>retracted</code>, <code>doctype</code>, publication date/title.</td></tr>
+    <tr><td><span class="method m-post">POST</span></td><td><code>/user-articles/batch?page=1&per=9</code></td><td>Check/save articles into the user's library in batch.</td></tr>
+    <tr><td><span class="method m-get">GET</span></td><td><code>/user-articles?projectId=…&sortBy=nickname&sortDirection=asc&page=1&per=50</code></td><td>List saved articles (library).</td></tr>
+    <tr><td><span class="method m-get">GET</span></td><td><code>/recent-articles?projectId=…&isSaved=false&page=1&per=20</code></td><td>"Recently Found" — articles touched in searches.</td></tr>
+    <tr><td><span class="method m-get">GET</span></td><td><code>/readings?projectId=…&page=0&per=2000</code></td><td>Reading List items.</td></tr>
+    <tr><td><span class="method m-post">POST</span></td><td><code>/folders?projectId=…&includeItemCounts=true&sortBy=createdAt&sortDirection=asc</code></td><td>Create a collection. Body: <code>{name, color, projectId}</code>.</td></tr>
+    <tr><td><span class="method m-get">GET</span></td><td><code>/folders?projectId=…&includeItemCounts=true&…</code></td><td>List collections with <code>itemCount</code>, <code>position</code>, <code>color</code>.</td></tr>
+    <tr><td><span class="method m-get">GET</span></td><td><code>/oauth-tokens</code></td><td>List linked OAuth integrations (e.g. Zotero).</td></tr>
+  </table>
+  <div class="note">Analytics calls also fire (Mixpanel <code>api-js.mixpanel.com/track</code>, Google Analytics <code>region1.analytics.google.com/g/collect</code> with tid <code>G-XP3TQTP6W7</code>) and event names like <code>new-search-session</code> — these are telemetry, not data endpoints.</div>
+</section>
+
+<section id="examples">
+  <h2><span class="dot"></span>Request examples (real bodies captured)</h2>
+
+  <h3>A) Keyword search — <span class="method m-post">POST</span> /searches</h3>
+<pre><code>{
+  "type": "singleSet",
+  "projectId": "4e1dd100-1004-498d-88c0-8cb60e48277d",
+  "set": {
+    "userArticleIds": [], "articleIds": [],
+    "authorIds": [], "folderIds": [], "tagIds": []
+  },
+  "outputType": "articles",
+  "showPlaceholders": true,
+  "per": 10, "page": 1,
+  "stringFilter": "climate change adaptation",
+  "stringFilterTypes": ["title", "abstract"]
+}</code></pre>
+  <p>Response (excerpt): <code>results.items[]</code> with <code>score:0</code>, each <code>details</code> having <code>id, title, firstAuthor, authorString, publicationDate, publicationTitle, dois, openAlexIds, forwardEdgeCount, backwardEdgeCount, retracted, doctype, url</code>.</p>
+
+  <h3>B) Network search (Similar) — <span class="method m-post">POST</span> /searches</h3>
+<pre><code>{
+  "type": "singleSet",
+  "projectId": "4e1dd100-1004-498d-88c0-8cb60e48277d",
+  "set": {
+    "userArticleIds": [],
+    "articleIds": [21400232],
+    "authorIds": [], "folderIds": [], "tagIds": [],
+    "edgeMode": "both"
+  },
+  "outputType": "articles",
+  "showPlaceholders": true,
+  "per": 20, "page": 1
+}</code></pre>
+  <p>Server expands seeds (it adds <code>finalArticleIds</code>/<code>finalAuthorIds</code>) and returns <code>results.totalCount</code> (e.g. <code>1893</code>) and ranked <code>items[]</code> with <code>score</code> (e.g. <code>5</code>).</p>
+  <p>For <strong>Cited By</strong> use <code>edgeMode:"forward"</code>; for <strong>Refs</strong> use <code>edgeMode:"backward"</code>.</p>
+
+  <h3>C) Inspect an article in a step — <span class="method m-patch">PATCH</span> /search-sessions/{id}/steps/{stepId}</h3>
+<pre><code>{ "inspectedType": "article", "inspectedId": "21400232" }</code></pre>
+<pre><code>// or, to point the step at a new search result set:
+{ "searchId": "b64ccb7a-229a-4468-a572-c2bccb1a9baa" }</code></pre>
+
+  <h3>D) Get article detail — <span class="method m-get">GET</span> /articles/21400232</h3>
+<pre><code>{
+  "id": 21400232,
+  "title": "What makes climate change adaptation effective? A systematic review ...",
+  "firstAuthor": "Gigi Owen", "authorString": "Gigi Owen",
+  "publicationTitle": "Global Environmental Change-human and Policy Dimensions",
+  "publicationDate": "2020-05-01T00:00:00Z",
+  "doctype": "review", "retracted": false,
+  "volume": "62",
+  "dois": ["10.1016/J.GLOENVCHA.2020.102071"],
+  "openAlexIds": ["W3021184060"],
+  "semanticScholarIds": ["af72b236661f17e7e11aae577b5ea0ba4906f9a0"],
+  "forwardEdgeCount": 376,   // = "Cited By" count
+  "backwardEdgeCount": 114,  // = "Refs" count
+  "url": "https://doi.org/10.1016/j.gloenvcha.2020.102071",
+  "authors": [
+    { "authorId": 5252678, "authorDisplayName": "Gigi Owen",
+      "authorHIndex": 13, "authorCitationCount": 957,
+      "authorArticleCount": 30, "authorPosition": "first" }
+  ]
+}</code></pre>
+
+  <h3>E) Create a collection — <span class="method m-post">POST</span> /folders?projectId=…&includeItemCounts=true</h3>
+<pre><code>{
+  "color": "#f07d59",
+  "name": "Climate Adaptation",
+  "projectId": "4e1dd100-1004-498d-88c0-8cb60e48277d"
+}</code></pre>
+  <p>Response: the created folder with <code>id, name, color, position, projectId, createdAt, createdBy</code>.</p>
+</section>
+
+<section id="datamodel">
+  <h2><span class="dot"></span>Data model (key fields)</h2>
+  <table>
+    <tr><th>Entity</th><th>Key fields</th></tr>
+    <tr><td>Article</td><td><code>id</code>, <code>title</code>, <code>abstract</code>, <code>authorString/firstAuthor/lastAuthor</code>, <code>authors[]</code> (each with <code>authorHIndex</code>, <code>authorCitationCount</code>, <code>authorArticleCount</code>), <code>publicationDate</code>, <code>publicationTitle</code>, <code>volume</code>, <code>doctype</code>, <code>retracted</code>, <code>dois[]</code>, <code>openAlexIds[]</code>, <code>semanticScholarIds[]</code>, <code>arxivIds[]</code>, <code>pubmedIds[]</code>, <code>forwardEdgeCount</code> (citations), <code>backwardEdgeCount</code> (references), <code>url</code>, <code>familyId</code>, <code>vendorName</code> ("ss"=Semantic Scholar, "oa"=OpenAlex).</td></tr>
+    <tr><td>Search result item</td><td><code>score</code> (relevance to seeds), <code>id</code>, <code>details</code> (article object).</td></tr>
+    <tr><td>Search session</td><td><code>id</code>, <code>projectId</code>, <code>createdById</code>, <code>steps[]</code>.</td></tr>
+    <tr><td>Step</td><td><code>id</code>, <code>stepIndex</code>, <code>searchId</code>, <code>view</code> ("list"), <code>inspectedType</code>/<code>inspectedId</code>, <code>selected[]</code>.</td></tr>
+    <tr><td>Folder (collection)</td><td><code>id</code>, <code>name</code>, <code>color</code>, <code>position</code>, <code>projectId</code>, <code>itemCount</code>.</td></tr>
+    <tr><td>User</td><td><code>id</code>, <code>email</code>, <code>name</code>, <code>hasOAuthSignIn</code>, <code>hasPassword</code>, <code>emailVerifiedAt</code>, <code>acceptsTermsOfService</code>, <code>receivesMarketing</code>.</td></tr>
+  </table>
+</section>
+
+<section id="observe">
+  <h2><span class="dot"></span>How these endpoints were observed</h2>
+  <p>While logged in, I injected a small <code>fetch</code>/<code>XMLHttpRequest</code> interceptor into the SPA page that recorded method, URL, request body, status, and a snippet of each response to <code>window.__net</code>. I then performed real actions — a keyword search, selecting a seed, running a Similar search and a Cited-By search, opening an article, navigating to the Library, and creating a collection — and read back the recorded calls. The endpoints, bodies, and response shapes in this document come directly from those captured requests.</p>
+  <div class="tip">You can reproduce this in Chrome DevTools: open <strong>Network → Fetch/XHR</strong>, then click around the app. Filter by <code>api.researchrabbit.ai</code> to see exactly these calls.</div>
+</section>
+
+<section id="tips">
+  <h2><span class="dot"></span>Practical usage tips</h2>
+  <ul>
+    <li><strong>Start broad, then narrow:</strong> keyword search → pick 1–3 strong seeds → Similar → select the best → Next Search. Repeat.</li>
+    <li><strong>Use directions:</strong> <em>Refs</em> for foundations (what a paper built on), <em>Cited By</em> for follow-ons (what built on it), <em>Similar</em> for the widest net.</li>
+    <li><strong>Mind the seed cap:</strong> Free = 50 seeds/search, RR+ = 300. For big reviews, chain steps instead of one giant search.</li>
+    <li><strong>Organize as you go:</strong> create collections per topic; use Reading List for "read later"; Autosave to auto-file seeds.</li>
+    <li><strong>Incomplete data</strong> on an article means missing metadata — you can still save it and fill in details manually.</li>
+    <li><strong>Signals (RR+):</strong> watch for high-risk-article indicators when evaluating credibility.</li>
+    <li><strong>Export early:</strong> BibTeX/Zotero export works on collections and selections; pair with Zotero for writing.</li>
+    <li><strong>Don't rely on citation counts alone:</strong> Google Scholar counts differ from ResearchRabbit's (different sources/metadata).</li>
+  </ul>
+  <p class="badge">Documented live from the logged-in app · 2026-07-31</p>
+</section>
+
+</main>
+<footer>
+  ResearchRabbit how-to &amp; endpoint documentation (English). Observed live via the app's network requests while logged in. Owner: Litmap Limited (Litmaps), New Zealand. For reference/automation understanding; endpoints are private and may change.
+</footer>
+</body>
+</html>

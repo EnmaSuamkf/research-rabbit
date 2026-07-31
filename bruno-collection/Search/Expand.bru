@@ -1,0 +1,22 @@
+meta {
+  name: Expand frontier
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base}}/api/expand
+  body: json
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "seeds": ["{{seed}}"],
+    "iterations": 2,
+    "limit": 10
+  }
+}

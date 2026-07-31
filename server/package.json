@@ -1,0 +1,18 @@
+{
+  "name": "researchrabbit-copilot-server",
+  "version": "1.0.0",
+  "description": "ResearchRabbit Copilot REST gateway (OpenAlex/RR adapter, MCP tools backend).",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^4.22.2"
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "_meta": {
+    "purpose": "15 fixed research questions for regression testing the Warren copilot (§18). Run against the local stack (gateway :8821 + MCP :8822) and check the four correctness gates: zero fabricated DOIs, every recommended paper carries a DOI returned by a tool, no retraction unflagged, and a working hand-off link (RR session link on the rr backend; DOI/OpenAlex URL on the openalex backend).",
+    "backend": "openalex",
+    "gates": [
+      "G1 — no fabricated DOIs (every DOI came from a tool result in the same turn)",
+      "G2 — every recommended paper carries a DOI or article id",
+      "G3 — no retracted paper recommended without an explicit retraction flag",
+      "G4 — a working hand-off: app.researchrabbit.ai/search/… link (rr) or DOI/OpenAlex URL (openalex)"
+    ]
+  },
+  "questions": [
+    {
+      "id": 1,
+      "question": "I'm starting a review on whether urban tree canopy reduces heat-related mortality in low-income neighbourhoods. Find me 5 seed papers, each with its DOI.",
+      "intent": "topic_seed",
+      "expected_tools": ["search_keyword", "resolve_article", "rank_candidates"],
+      "accept": "5 real papers, each with a DOI from a tool; reasons reference seedHits/citationsPerYear."
+    },
+    {
+      "id": 2,
+      "question": "What are the foundational papers behind 'Redlining and intra-urban heat'?",
+      "intent": "earlier_work",
+      "expected_tools": ["resolve_article", "search_earlier_work"],
+      "accept": "Earlier work (references) of the seed; each with DOI; framed as foundations."
+    },
+    {
+      "id": 3,
+      "question": "What has been published since 2022 that cites 'Scale-dependent interactions between tree canopy cover and impervious surfaces reduce daytime urban heat'?",
+      "intent": "later_work",
+      "expected_tools": ["resolve_article", "search_later_work"],
+      "accept": "Later work (cited-by) from sinceYear=2022; each with DOI and year >= 2022."
+    },
+    {
+      "id": 4,
+      "question": "Find papers similar to 'What makes climate change adaptation effective? A systematic review' and 'Disproportionate exposure to urban heat island intensity across major US cities'.",
+      "intent": "similar_multi_seed",
+      "expected_tools": ["resolve_article", "search_similar"],
+      "accept": "Similar (both-direction) network across 2 seeds; seedHits present per item."
+    },
+    {
+      "id": 5,
+      "question": "Grow me a broad shortlist around urban greening and heat-vulnerability equity — 10 papers, ranked by consensus.",
+      "intent": "expand",
+      "expected_tools": ["search_keyword", "expand_frontier", "rank_candidates"],
+      "accept": "expand_frontier returns >=10 items with seedHits + citationsPerYear; ranked."
+    },
+    {
+      "id": 6,
+      "question": "I only have a title: 'Trees Grow on Money: Urban Tree Canopy Cover and Environmental Justice'. What is its DOI and is it retracted?",
+      "intent": "resolve_and_credibility",
+      "expected_tools": ["resolve_article", "credibility_check"],
+      "accept": "DOI resolved from title; retraction flag stated; doctype/venue/counts given."
+    },
+    {
+      "id": 7,
+      "question": "List Carly Ziter's most-cited papers with their h-index.",
+      "intent": "author_search",
+      "expected_tools": ["search_by_author"],
+      "accept": "Author resolved; works listed with DOIs; h-index reported with a caveat."
+    },
+    {
+      "id": 8,
+      "question": "From these candidates, keep only reviews from 2018 onward with 50+ citations, and drop any retracted ones.",
+      "intent": "screen",
+      "expected_tools": ["search_keyword", "screen_articles"],
+      "accept": "screen_articles applied (doctype=review, yearMin=2018, minCitations=50, excludeRetracted=true); subset only."
+    },
+    {
+      "id": 9,
+      "question": "Give me the BibTeX for the 5 seed papers you found for the urban tree canopy review.",
+      "intent": "export_bibtex",
+      "expected_tools": ["search_keyword", "export_bibtex"],
+      "accept": "bibtex text with one @article entry per paper; DOIs present in entries."
+    },
+    {
+      "id": 10,
+      "question": "Should I trust 'More Intense, More Frequent, and Longer Lasting Heat Waves in the 21st Century'? Give me a credibility triage.",
+      "intent": "credibility",
+      "expected_tools": ["resolve_article", "credibility_check"],
+      "accept": "retraction/doctype/venue/counts/first-author h-index + explicit caveats."
+    },
+    {
+      "id": 11,
+      "question": "I'm studying nature-based solutions for urban climate adaptation. Find seeds, then show me what came BEFORE and AFTER the strongest one.",
+      "intent": "earlier_then_later",
+      "expected_tools": ["search_keyword", "rank_candidates", "search_earlier_work", "search_later_work"],
+      "accept": "Two directions shown around the top seed; each paper with DOI."
+    },
+    {
+      "id": 12,
+      "question": "Are there well-connected papers on urban heat and equity that I might be missing? Explore the frontier.",
+      "intent": "gaps_via_expand",
+      "expected_tools": ["search_keyword", "expand_frontier"],
+      "accept": "On openalex, find_gaps returns not-available and the agent pivots to expand_frontier; real papers with DOIs."
+    },
+    {
+      "id": 13,
+      "question": "I want to save these 5 papers into a collection called 'Urban heat equity'.",
+      "intent": "write_save",
+      "expected_tools": ["resolve_article", "create_collection", "save_articles"],
+      "accept": "On openalex, writes return not-available (403 / structured message); agent explains writes need the rr backend + RR_ALLOW_WRITES=true. Never asks for credentials."
+    },
+    {
+      "id": 14,
+      "question": "What is the state of the art on urban green space cooling effects? Only papers from 2020 on.",
+      "intent": "later_recency",
+      "expected_tools": ["search_keyword", "search_later_work"],
+      "accept": "sinceYear=2020 applied; recent papers with DOIs and years >= 2020."
+    },
+    {
+      "id": 15,
+      "question": "I have no idea where to start on 'climate change adaptation effectiveness'. Walk me through it and finish with a link I can open.",
+      "intent": "flow_a_flagship",
+      "expected_tools": ["search_keyword", "resolve_article", "expand_frontier", "rank_candidates", "build_session_link"],
+      "accept": "Frames → seeds → expand → rank → hand-off link (DOI/OpenAlex URL on openalex); every paper has a DOI."
+    }
+  ]
+}

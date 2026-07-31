@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResearchRabbit — Site Investigation Report (EN)</title>
+<style>
+  :root{
+    --brand:#ff5a3c; --brand2:#7c3aed; --ink:#1f2430; --muted:#5b6472;
+    --bg:#f7f8fa; --card:#ffffff; --line:#e6e8ee; --accent:#0ea5e9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.6}
+  header{background:linear-gradient(135deg,#ff5a3c 0%,#ff8a5b 60%,#ffb37a 100%);color:#fff;
+    padding:46px 24px 40px}
+  header .wrap{max-width:980px;margin:0 auto}
+  header h1{margin:0 0 6px;font-size:2.3rem;letter-spacing:-.5px}
+  header p{margin:2px 0;opacity:.96;font-size:1.05rem}
+  header .tag{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);
+    padding:4px 12px;border-radius:999px;font-size:.8rem;margin-top:10px}
+  nav.toc{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+  nav.toc ul{max-width:980px;margin:0 auto;padding:10px 24px;display:flex;flex-wrap:wrap;gap:6px 4px;list-style:none}
+  nav.toc a{text-decoration:none;color:var(--muted);font-size:.82rem;padding:6px 10px;border-radius:8px}
+  nav.toc a:hover{background:#f1f3f8;color:var(--brand)}
+  main{max-width:980px;margin:0 auto;padding:28px 24px 60px}
+  section{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:24px 26px;margin:0 0 22px;scroll-margin-top:64px}
+  h2{margin:0 0 12px;font-size:1.45rem;display:flex;align-items:center;gap:10px}
+  h2 .dot{width:10px;height:10px;border-radius:50%;background:var(--brand);flex:0 0 auto}
+  h3{margin:22px 0 8px;font-size:1.08rem;color:#2a3142}
+  p,li{color:#37404f}
+  ul,ol{padding-left:22px}
+  li{margin:5px 0}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+  .card{background:#fbfcfe;border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .card h4{margin:0 0 6px;font-size:1rem;color:var(--brand2)}
+  .card .price{font-size:1.25rem;font-weight:700;color:var(--brand);margin:2px 0 8px}
+  .pill{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:999px;
+    padding:2px 10px;font-size:.75rem;margin:2px 4px 2px 0}
+  .note{background:#fff7ed;border-left:4px solid var(--brand);padding:12px 16px;border-radius:8px;margin:14px 0}
+  .quote{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:10px 0}
+  .quote .who{font-weight:600;color:#2a3142}
+  .quote .role{color:var(--muted);font-size:.85rem}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.92rem}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+  th{background:#f3f5fa;color:#2a3142}
+  code{background:#f1f3f8;padding:2px 6px;border-radius:5px;font-size:.86rem}
+  .tagline{font-style:italic;color:var(--muted);border-top:1px dashed var(--line);padding-top:14px;margin-top:18px}
+  footer{max-width:980px;margin:0 auto;padding:10px 24px 40px;color:var(--muted);font-size:.82rem}
+  a.lk{color:var(--accent);text-decoration:none}
+  a.lk:hover{text-decoration:underline}
+  .badge{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0;border-radius:8px;padding:6px 10px;font-size:.8rem;display:inline-block}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>ResearchRabbit</h1>
+    <p>AI tool for smarter, faster literature reviews — full public-site investigation report</p>
+    <p>Investigated without logging in across every public section of the website.</p>
+    <span class="tag">www.researchrabbit.ai</span>
+    <span class="tag">app.researchrabbit.ai (login)</span>
+    <span class="tag">learn.researchrabbit.ai (help center)</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <ul>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#database">Database</a></li>
+    <li><a href="#algorithm">Algorithm</a></li>
+    <li><a href="#ai">AI approach</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#organize">Organization</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#solutions">Solutions</a></li>
+    <li><a href="#releases">Releases</a></li>
+    <li><a href="#events">Events</a></li>
+    <li><a href="#blog">Blog</a></li>
+    <li><a href="#reviews">Reviews</a></li>
+    <li><a href="#about">About / Team</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#legal">Legal</a></li>
+    <li><a href="#sitemap">Site map</a></li>
+    <li><a href="#login">Login</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<section id="overview">
+  <h2><span class="dot"></span>Overview</h2>
+  <p>ResearchRabbit is an online tool that helps researchers and students <strong>discover research faster, stay organized, and build a deeper understanding of their field</strong>. It turns the literature-review process into an iterative, visual, "follow-your-curiosity" experience rather than a flood of flat search-result lists.</p>
+  <div class="grid">
+    <div class="card"><h4>Reach</h4><span class="badge">Trusted by 1,000,000+ researchers worldwide</span></div>
+    <div class="card"><h4>Content</h4><span class="badge">310+ million academic papers</span></div>
+    <div class="card"><h4>Institutions</h4><span class="badge">Thousands of institutions & research groups</span></div>
+    <div class="card"><h4>Owner</h4>Litmap Limited (doing business as Litmaps), New Zealand</div>
+  </div>
+  <p class="tagline">"Keep your literature search quick, easy, and organized — and dive down the rabbit hole of discovery."</p>
+</section>
+
+<section id="how">
+  <h2><span class="dot"></span>How it works</h2>
+  <p>ResearchRabbit's core engine is <strong>citation-network-based discovery</strong>. The flow is:</p>
+  <ol>
+    <li><strong>Start with a seed</strong> — choose a paper, a set of keywords, a topic, or an author. (You can also import papers from an existing library, e.g. Zotero.)</li>
+    <li><strong>Explore connections</strong> — ResearchRabbit searches the <em>local network of citations</em> around your seeds (all citations and references of the initial articles) and brings back the highest-quality, most-connected research.</li>
+    <li><strong>Iterate</strong> — add the papers you find most relevant; ResearchRabbit learns from your choices and surfaces even better results, uncovering new directions as you go.</li>
+    <li><strong>Organize</strong> — save articles into collections with labels and colors; everything stays structured as the project grows.</li>
+  </ol>
+  <div class="note">Recommendations are calculated from the articles that are the <strong>most influential in the citation network</strong>, where influence comes from both the number and quality of citations. This is why a result is highly related to your topic: it connects not just to one paper you know, but is deeply interconnected to the whole local network.</div>
+  <h3>Search perspectives / modes</h3>
+  <ul>
+    <li><strong>Similar Work</strong> — candidates chosen from all types of connection to your seeds.</li>
+    <li><strong>Earlier Work</strong> — explore the <em>references</em> of specific papers (what they built on).</li>
+    <li><strong>Later Work</strong> — explore research published <em>after</em> your seeds (what built on them).</li>
+    <li><strong>Citations &amp; references</strong> — view and visualize the references and citations of any paper.</li>
+    <li><strong>Explore authors</strong> — find key contributors and their work (These Authors / Other Related Authors).</li>
+  </ul>
+  <p><strong>Seed search</strong> (when you start from a keyword, a DOI, or a paper title) retrieves relevant papers from the 310M+ database using industry-standard search infrastructure with precomputed lookup indexes and graph-based methods.</p>
+</section>
+
+<section id="database">
+  <h2><span class="dot"></span>The ResearchRabbit Database</h2>
+  <p>The database holds <strong>310+ million research articles</strong>, sourced from three data providers for best coverage:</p>
+  <div class="grid">
+    <div class="card"><h4>Crossref</h4>Open metadata provider.</div>
+    <div class="card"><h4>Semantic Scholar</h4>Second-best subject coverage across 56 databases (Gusenbauer, 2022).</div>
+    <div class="card"><h4>OpenAlex</h4>Open scholarly graph.</div>
+  </div>
+  <p>Included publishers/sources commonly include: <span class="pill">PubMed</span><span class="pill">arXiv</span><span class="pill">bioRxiv</span><span class="pill">medRxiv</span><span class="pill">Web of Science</span><span class="pill">Scopus</span><span class="pill">Microsoft Academic Graph</span></p>
+  <h3>Quality &amp; maintenance</h3>
+  <ul>
+    <li>Updated <strong>weekly</strong> for accuracy.</li>
+    <li>Prioritizes the most recent, highest-cited versions of articles.</li>
+    <li>Only indexes articles with <strong>Open Access metadata</strong> (title, authors, date, abstract, references &amp; citations made publicly accessible by the publisher) — this is a legal requirement. Note: "Open Access metadata" is different from the article itself being Open Access; the DB contains both OA and closed-access articles.</li>
+    <li>Low/incomplete-metadata articles are now shown (with a caution) so you can save and manually update them, even though they can't be used by the search algorithm.</li>
+  </ul>
+  <div class="note">Why a paper might be missing: no Open Access metadata; not indexed by Semantic Scholar / OpenAlex / Crossref; or too new and not yet updated. Why citations/references can look lower: different counting vs. Google Scholar, missing OA metadata, indexing delays for very new/very old-to-recent links, or a different version/DOI.</div>
+</section>
+
+<section id="algorithm">
+  <h2><span class="dot"></span>Search algorithm</h2>
+  <p>Every ResearchRabbit search starts from <strong>seed articles</strong>, which drive two things: <em>which articles are candidates</em> and <em>how candidates are ranked</em>.</p>
+  <h3>1) Choosing candidates</h3>
+  <p>Candidates are articles "connected" to your seeds. A connection can mean:</p>
+  <ul>
+    <li>One cites the other (most common).</li>
+    <li>They share a reference or citation (co-citation).</li>
+    <li>Shared authors / co-authorships.</li>
+    <li>Semantic similarity inferred from titles and/or abstracts.</li>
+  </ul>
+  <p>From the seeds ResearchRabbit compiles a candidate list that can grow to <strong>hundreds of thousands</strong> of articles — far too many to browse, hence the next step.</p>
+  <h3>2) Ranking candidates</h3>
+  <p>A scoring algorithm weighs each candidate's relevance to the seed set. Relevance = <strong>connectedness</strong> (a mix of shared citations/references, authorships, and semantic similarity), with additional math to prevent unfair promotion/demotion. The same logic applies when searching for <em>authors</em>.</p>
+  <h3>Basic search settings</h3>
+  <ul>
+    <li><strong>Articles:</strong> Similar (all connection types) · References only · Citations only.</li>
+    <li><strong>Authors:</strong> These Authors (from seed authors) · Other Related Authors (from related articles' author lists).</li>
+  </ul>
+  <h3>Advanced Search filters (RR+)</h3>
+  <ul>
+    <li><strong>Keywords</strong> — loose phrase match in title/abstract; <em>now supports boolean operators AND, OR, NOT and quoted exact matches</em>. Keyword search uses the <strong>Google Scholar</strong> search engine.</li>
+    <li><strong>Publication Date</strong> — within a date range.</li>
+    <li><strong>SJR Quartiles</strong> — journal must be in selected quartiles.</li>
+    <li><strong>Journal H-Index</strong> — journal (not author) H-Index range.</li>
+    <li><strong>Open Access</strong> — must have an OA PDF.</li>
+    <li><strong>Retractions</strong> — include/exclude retracted articles.</li>
+  </ul>
+  <div class="note">The result-ranking process is currently <strong>fixed and not fine-tunable</strong> (lots of "magic numbers"); the team is open to adding controls in future.</div>
+</section>
+
+<section id="ai">
+  <h2><span class="dot"></span>How ResearchRabbit uses AI</h2>
+  <ul>
+    <li>Uses <strong>network-based algorithms</strong> to support search and discovery — recommendations are based on <strong>citation and authorship relationships</strong> within the scholarly literature.</li>
+    <li><strong>ResearchRabbit does NOT use large language models to power its core recommendation algorithms.</strong> It relies on first- and second-degree connections across the research network, grounded in the structure of the literature rather than content generation.</li>
+    <li>Prioritizes <strong>transparent, explainable methods</strong>, and is designed to be efficient (avoids unnecessary compute-heavy features).</li>
+    <li>Responsible-AI considerations: privacy &amp; data protection, explainability, accuracy &amp; reliability, environmental impact, and whether a feature genuinely improves the research experience. They aim to adopt technology deliberately — "usefulness over hype."</li>
+  </ul>
+</section>
+
+<section id="features">
+  <h2><span class="dot"></span>Features</h2>
+  <div class="grid">
+    <div class="card"><h4>Search with direction</h4>See how papers connect, identify what matters, skip endless result lists.</div>
+    <div class="card"><h4>Algorithms that learn with you</h4>Adapt to your reading patterns and interests; recommendations get more relevant the more you explore.</div>
+    <div class="card"><h4>Stays organized as you go</h4>Research "organizes itself" — track topics, access any paper you read, make real progress.</div>
+    <div class="card"><h4>Discover connections that matter</h4>Interactive maps visualize how papers, authors and concepts interconnect; trace the evolution of ideas, uncover hidden patterns, follow emerging trends.</div>
+    <div class="card"><h4>Timeline &amp; big picture</h4>Visualize papers on a timeline, trace the rise of ideas, identify key authors.</div>
+    <div class="card"><h4>Zotero integration</h4>Import papers saved in Zotero into ResearchRabbit; collections match Zotero's model.</div>
+    <div class="card"><h4>Signals (RR+)</h4>Partnership with Signals flags high-risk papers based on citation behavior/network.</div>
+    <div class="card"><h4>Reading list &amp; Recently Found</h4>Park articles to read later; every searched article grouped by time.</div>
+  </div>
+</section>
+
+<section id="organize">
+  <h2><span class="dot"></span>Organization &amp; collaboration</h2>
+  <ul>
+    <li><strong>Collections</strong> with labels and colors; <strong>subcollections and sub-subcollections</strong> (multiple layers).</li>
+    <li>An article can live in <strong>multiple collections</strong>; your notes and edits stay attached.</li>
+    <li><strong>Autosave</strong> — every article used as a seed can be auto-organized into a chosen collection/subcollection.</li>
+    <li><strong>Recently Found</strong> folder captures every article used in a search, grouped by when you used it.</li>
+    <li><strong>Reading List</strong> — a "parking lot" for articles to read later; safely stored in the Library even before saving to a collection.</li>
+    <li><strong>Shared collections</strong> — invite collaborators as <em>viewers</em> or <em>editors</em>, or share a <strong>Public Link</strong> anyone can view (part of the Free Forever tier).</li>
+    <li><strong>Zotero Importer</strong> to bring an existing reference library in.</li>
+  </ul>
+</section>
+
+<section id="pricing">
+  <h2><span class="dot"></span>Pricing</h2>
+  <div class="grid">
+    <div class="card">
+      <h4>Free</h4>
+      <div class="price">$0, Forever</div>
+      <ul>
+        <li>Unlimited searches across 310+ million articles</li>
+        <li>Unlimited library &amp; collections</li>
+        <li>Collaborate by sharing your collection</li>
+        <li>Up to 50 seed articles</li>
+        <li>Core search settings</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>ResearchRabbit+</h4>
+      <div class="price">$10* / month</div>
+      <p style="margin:-4px 0 8px;color:var(--muted);font-size:.85rem">Annual or monthly · *special country discount codes available</p>
+      <ul>
+        <li>Everything in Free Forever</li>
+        <li>Up to 300 seed articles for large-scale reviews</li>
+        <li>Advanced search controls for faster discovery</li>
+        <li>Multiple projects for focused discovery per topic</li>
+        <li>Signals alerts to protect research integrity</li>
+        <li>Faster support responses</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Institution</h4>
+      <div class="price">Contact Us</div>
+      <ul>
+        <li>Everything in RR+</li>
+        <li>Greater volume discounts</li>
+        <li>Integrate with your research library (LibKey)</li>
+        <li>Manage thousands of users</li>
+        <li>Review usage statistics &amp; learn about your researchers</li>
+        <li>Dedicated support</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note"><strong>Parity (PPP) pricing:</strong> access to research should never depend on income. Default price is USD $10/month (US, UK, Canada and similar). For 100+ countries, RR+ is discounted based on the country's parity group — e.g. a detected-Spain banner offered code <code>pdcxxtiv20</code> for 20% off. The subscription is monthly and can be cancelled anytime; access continues until the plan's end date.</div>
+  <h3>Pricing FAQ</h3>
+  <ul>
+    <li><strong>Is ResearchRabbit free?</strong> It has, and always will have, a free offering. Since 2025 there is also a premium tier for large-scale research.</li>
+    <li><strong>Can I complete my literature review for free?</strong> Yes — Free Forever includes unlimited search, unlimited collections, collaboration, library uploads, and up to 50 seed articles.</li>
+    <li><strong>What is RR+?</strong> The premium version with unlimited advanced search &amp; organizational features — a powerful lit-review assistant throughout a project.</li>
+    <li><strong>How much does RR+ cost?</strong> Depends on country. Default USD $10/month; 100+ countries get a parity-group discount.</li>
+    <li><strong>How does a subscription work?</strong> Monthly payments, unsubscribe anytime, access until the plan ends.</li>
+  </ul>
+</section>
+
+<section id="solutions">
+  <h2><span class="dot"></span>Solutions (uses)</h2>
+  <div class="grid">
+    <div class="card">
+      <h4>For Students</h4>
+      <ul>
+        <li><strong>Search made easy</strong> — cut through endless PDFs/tabs/reference lists and find key studies on your topic; stop chasing dead ends.</li>
+        <li><strong>See the big picture</strong> — visualize how research connects, spot gaps worth exploring, and understand the bigger picture that spreadsheets/tabs never reveal.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>For Researchers</h4>
+      <ul>
+        <li><strong>Find what matters</strong> — visuals + citation trails cut through noise, surface the most relevant papers, follow ideas as they evolve.</li>
+        <li><strong>Gain new insights</strong> — visualize papers on a timeline, trace the rise of ideas, identify key authors.</li>
+        <li><strong>See how research connects</strong> — explore relationships between topics, authors and citations in real time to find unexpected connections.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="releases">
+  <h2><span class="dot"></span>Recent releases</h2>
+  <p>"We regularly release updates: bug fixes, improvements based on your feedback, and some exciting new features."</p>
+  <table>
+    <tr><th>Date</th><th>Release</th><th>Highlights</th></tr>
+    <tr><td>2026-07-09</td><td>Major</td><td><strong>Reading List</strong> (parking lot for articles to read later, stored in Library); <strong>customize result count on the map</strong> (10 / 20 / 40); <strong>Signals alerts for high-risk articles</strong> (RR+, via partnership with Signals).</td></tr>
+    <tr><td>2026-04-17</td><td>Minor</td><td><strong>Boolean operators in keyword search</strong> (AND, OR, NOT, and quoted exact match); keyword search uses the Google Scholar search engine.</td></tr>
+    <tr><td>2026-02-05</td><td>Major</td><td><strong>Shared collections</strong> (viewers/editors + public link, free tier); <strong>Recently Found</strong> folder; library organization (sub-subcollections, an article in multiple collections, Autosave); low-metadata articles now visible.</td></tr>
+    <tr><td>2025-11-18</td><td>Minor</td><td>Improved legibility (thicker map lines, darker labels/fonts, no more "fading" of other collections); map layout persistence via localStorage + "Reset to defaults"; text highlighting when searching within Library; bug fixes.</td></tr>
+    <tr><td>2025-10-20</td><td>Launch</td><td><strong>"Welcome to the new ResearchRabbit"</strong> — biggest update yet, built in partnership with Litmaps; faster, more flexible, more powerful.</td></tr>
+  </table>
+</section>
+
+<section id="events">
+  <h2><span class="dot"></span>Events</h2>
+  <p>"Research thrives on connection — join ResearchRabbit's free events to work and learn alongside others."</p>
+  <p>Categories: <span class="pill">Conference</span><span class="pill">Research skills</span><span class="pill">Product &amp; learning</span><span class="pill">Community</span><span class="pill">Partner</span></p>
+  <h3>Upcoming</h3>
+  <ul>
+    <li><strong>Smarter writing habits for researchers</strong> — with Dr Jamie Pei (writing, wellbeing, sustainable productivity). Thu 13 Aug 2026, 15:00 UTC · Google Meet.</li>
+    <li><strong>How to start your literature review in 30 minutes</strong> — with Nathan Harrison-Clarke (find relevant papers fast, follow connections, stay organized). Mon 24 Aug 2026, 15:00 UTC.</li>
+  </ul>
+  <h3>Past (examples)</h3>
+  <ul>
+    <li>How to start your literature review in 30 minutes</li>
+    <li>How to find the right research gap for your PhD — with Sanya Jain</li>
+    <li>CAUL exhibition</li>
+    <li>AI tools for scientists</li>
+  </ul>
+</section>
+
+<section id="blog">
+  <h2><span class="dot"></span>Blog / Articles</h2>
+  <p>"Insights for smarter research — explore stories, tips and insights from the world of research discovery." Sample article topics:</p>
+  <div class="grid">
+    <div class="card">How to read research papers faster (strategies for lit reviews, AI, note-taking)</div>
+    <div class="card">Why literature reviews miss important papers — find them with citation-network search</div>
+    <div class="card">When to use backward &amp; forward citation search</div>
+    <div class="card">How citation networks help find foundational papers keyword search misses</div>
+    <div class="card">What is a good citation count? (field, age, impact)</div>
+    <div class="card">How to evaluate research papers quickly &amp; identify credible sources</div>
+    <div class="card">Impact factor, SJR, h-index — what they mean &amp; how to check them free</div>
+    <div class="card">Going beyond Google Scholar via citation networks</div>
+    <div class="card">Citation mapping for systematic reviews (coverage, reducing bias)</div>
+    <div class="card">Find a research topic faster by mapping citation networks &amp; gaps</div>
+    <div class="card">Combine keyword search, AI tools &amp; citation discovery for reliable lit reviews</div>
+    <div class="card">What is a literature review / research gap — types &amp; examples</div>
+    <div class="card">Types of research papers &amp; how to work with them</div>
+    <div class="card">Find &amp; visualize connected literature, automate tasks, streamline workflow</div>
+    <div class="card">Step-by-step ResearchRabbit tutorial for your literature review</div>
+    <div class="card">Best AI tools for literature reviews (2025)</div>
+    <div class="card">Write a research proposal / paper / conclusion / methodology</div>
+  </div>
+</section>
+
+<section id="reviews">
+  <h2><span class="dot"></span>What users say</h2>
+  <div class="quote"><div class="who">Karthik Balachandran</div><div class="role">Endocrinologist</div>"ResearchRabbit is a cool web app, especially useful for medical postgraduates. It allows you to see the citations of the paper you are reading as a map with author names and year, see the connections between citations and visually sort by year of publication."</div>
+  <div class="quote"><div class="who">Taylor Thompson</div><div class="role">Longevity Researcher</div>"My favorite so far. I've already found many helpful articles and synced it up with my Zotero… I've been able to explore this option the most and integrate it into my Zotero workflow."</div>
+  <div class="quote"><div class="who">Mu Yang, Ph.D.</div><div class="role">Behavioral neuroscientist</div>"A hard stop to my hunt in Environmental Research. It is so interesting to see that the 80+ random papers I picked to flag actually cluster neatly into several pockets. Highly recommend @RsrchRabbit!"</div>
+  <div class="quote"><div class="who">Anas Babai</div><div class="role">Researcher</div>"Struggling with your literature review? Let ResearchRabbit do the heavy lifting… you know how time-consuming and overwhelming it can be to track down relevant literature, identify research gaps, and stay up-to-date with emerging trends."</div>
+  <div class="quote"><div class="who">Dillip Rout (Ph.D.)</div><div class="role">Researcher</div>"ResearchRabbit is an amazing aid for research. It is much better than the suggestions of traditional research paper search websites like ScienceDirect. It also shows you post and pre publications of the targeted article."</div>
+  <div class="quote"><div class="who">Lucas Firmino Batista</div><div class="role">Researcher</div>"I had to deal with dozens of different articles, references, and authors. To organize everything and still find new relevant sources, I got to know ResearchRabbit — and this tool made a lot of difference in my process."</div>
+</section>
+
+<section id="about">
+  <h2><span class="dot"></span>About &amp; team</h2>
+  <p><strong>Mission:</strong> make research joyful again, empowering curious minds worldwide to explore, connect and create without limits. They believe great research shouldn't depend on where you live or what you can afford — hence the only free AI research tool available worldwide, with paid pricing based on local economies (global equity).</p>
+  <p><strong>Story:</strong> ResearchRabbit started from the idea that exploring research should feel like discovery, not soul-crushing drudgery. The founders are researchers who lived the long nights and messy desktops. "We're not just a search tool. We're your research sidekick."</p>
+  <h3>Meet the rabbits (~9 people)</h3>
+  <div class="grid">
+    <div class="card">Axton Pitt — CEO</div>
+    <div class="card">Digl Dixon — Head of Product</div>
+    <div class="card">Gayani Tennakoon — Data Scientist</div>
+    <div class="card">Elliott Nichols — Backend Developer</div>
+    <div class="card">Dan Erik Meliá Petersen — Principal Backend Engineer</div>
+    <div class="card">Racheal Reeves — Design Lead</div>
+    <div class="card">Alsu Sworder — People &amp; Culture Operations</div>
+    <div class="card">Nathan Clarke — Community &amp; Customer Manager</div>
+    <div class="card">Mina Zarei — Marketing</div>
+    <div class="card">Kelly Rummins — Marketing</div>
+  </div>
+</section>
+
+<section id="contact">
+  <h2><span class="dot"></span>Contact</h2>
+  <ul>
+    <li><strong>Institutions</strong> — learn more about ResearchRabbit for your institution/organization.</li>
+    <li><strong>Educators</strong> — host a ResearchRabbit event; get training materials and merch for you and your students.</li>
+    <li><strong>Collaborators</strong> — share an event or chat about collaborating on content.</li>
+    <li><strong>Support</strong> — request support / ask for help using ResearchRabbit.</li>
+  </ul>
+  <p>Email: <a class="lk" href="mailto:support@researchrabbit.ai">support@researchrabbit.ai</a> · Change notifications: team@researchrabbit.ai</p>
+  <p>Find us at: <a class="lk" href="https://www.instagram.com/researchrabbit">Instagram</a> · <a class="lk" href="https://www.linkedin.com/company/researchrabbit/">LinkedIn</a> · <a class="lk" href="https://x.com/rsrchrabbit">X / Twitter (@RsrchRabbit)</a> · <a class="lk" href="https://www.youtube.com/@researchrabbitapp">YouTube</a></p>
+</section>
+
+<section id="legal">
+  <h2><span class="dot"></span>Legal</h2>
+  <ul>
+    <li><strong>Company:</strong> Litmap Limited (doing business as Litmaps), registered in New Zealand. Address: Level 5, Rutherford House, 23 Lambton Quay, Pipitea, Wellington, Wellington Region 6011, New Zealand. VAT number: 119971977.</li>
+    <li><strong>Privacy Policy</strong> (last updated 7 Nov 2025, via Termly): describes how Litmap Ltd collects, stores, uses and shares personal data. Does <strong>not</strong> process sensitive personal data; does <strong>not</strong> collect information from third parties. Processes data to provide/improve/administer services, communicate, for security &amp; fraud prevention, and to comply with the law.</li>
+    <li><strong>Terms of Service</strong> (last updated 7 Nov 2025): a legally binding agreement between you and Litmap Limited regarding access to and use of the Services. Describes ResearchRabbit as a bibliographic search platform enabling fast, comprehensive searches of research articles so researchers can explore, organize, visualize and stay up to date. Changes notified via team@researchrabbit.ai.</li>
+    <li>Footer copyright: © 2026 Litmap Ltd. All rights reserved.</li>
+  </ul>
+</section>
+
+<section id="sitemap">
+  <h2><span class="dot"></span>Site map explored</h2>
+  <table>
+    <tr><th>Section</th><th>URL</th></tr>
+    <tr><td>Home</td><td>https://www.researchrabbit.ai/</td></tr>
+    <tr><td>About</td><td>/about-us</td></tr>
+    <tr><td>Features</td><td>/features</td></tr>
+    <tr><td>Pricing</td><td>/pricing</td></tr>
+    <tr><td>Solutions — Students (Uses)</td><td>/solutions/for-students</td></tr>
+    <tr><td>Solutions — Researchers</td><td>/solutions/for-researchers</td></tr>
+    <tr><td>Help / Guides</td><td>/help/guide (→ learn.researchrabbit.ai)</td></tr>
+    <tr><td>Tutorials</td><td>/help/tutorials</td></tr>
+    <tr><td>Contact Us</td><td>/help/contact-us</td></tr>
+    <tr><td>Releases</td><td>/releases (+ per-release pages)</td></tr>
+    <tr><td>Events</td><td>/events</td></tr>
+    <tr><td>Blog</td><td>/articles</td></tr>
+    <tr><td>Reviews / Testimonials</td><td>/reviews</td></tr>
+    <tr><td>Privacy Policy</td><td>/privacy-policy (Termly iframe)</td></tr>
+    <tr><td>Terms of Service</td><td>/terms-of-service (Termly iframe)</td></tr>
+    <tr><td>Login / Sign Up / App</td><td>https://app.researchrabbit.ai/</td></tr>
+  </table>
+  <p>Help Center articles explored in depth: Introduction, How does ResearchRabbit work?, The ResearchRabbit Database, What's behind ResearchRabbit's search algorithm?, How ResearchRabbit uses AI — plus the full guide index (Getting Started, Searching &amp; discovery, Collections &amp; Library management, Using ResearchRabbit in your workflow, About ResearchRabbit, Using ResearchRabbit+).</p>
+</section>
+
+<section id="login">
+  <h2><span class="dot"></span>Login / sign-up (left open)</h2>
+  <p>The product lives at <strong>app.researchrabbit.ai</strong>. Visiting the root redirects to <code>/log-in</code>. The login page (left open for you to sign in) offers:</p>
+  <ul>
+    <li><strong>Log in</strong> — Email + Password, "Forgot Password", and a Sign-up link.</li>
+    <li><strong>Sign up</strong> — Email + Password + Confirm Password, an optional marketing-emails checkbox, and agreement to the Terms of Service.</li>
+  </ul>
+  <div class="note">No login was performed during this investigation. The login page is open in the browser, ready for you to sign in.</div>
+</section>
+
+</main>
+<footer>
+  Report generated from a first-hand, no-login navigation of researchrabbit.ai · app.researchrabbit.ai · learn.researchrabbit.ai.
+  Owner: Litmap Limited (Litmaps), New Zealand. · Generated 2026-07-31.
+</footer>
+</body>
+</html>

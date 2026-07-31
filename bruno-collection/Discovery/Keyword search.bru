@@ -1,0 +1,21 @@
+meta {
+  name: Keyword search
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base}}/api/search/keyword
+  body: json
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "q": "{{q}}",
+    "per": {{per}}
+  }
+}

@@ -1,0 +1,57 @@
+# Render Blueprint for the ResearchRabbit Copilot Stage 2 deployment.
+# Two Node web services on the free plan. No Flowise here (that is Stage 3).
+#
+# Secrets (RR_SESSION_COOKIE, RR_PROJECT_ID) are `sync: false` — they are set
+# in the Render dashboard only, never committed. The openalex backend does not
+# need them, so they are left UNSET for Stage 2 (RR_BACKEND=openalex).
+#
+# In this stage the services are deployed manually via the dashboard
+# "Public Git Repository" source tab; this file is the reproducible spec for a
+# future Blueprint sync (once the Render GitHub App is granted access to the
+# repo). The manual deploy uses the exact same values below.
+services:
+  - type: web
+    name: researchrabbit-server
+    runtime: node
+    region: oregon
+    plan: free
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node src/index.js
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: RR_BACKEND
+        value: openalex
+      - key: RR_API_BASE
+        value: https://api.researchrabbit.ai
+      - key: RR_APP_BASE
+        value: https://app.researchrabbit.ai
+      - key: RR_ALLOW_WRITES
+        value: "false"
+      - key: OPENALEX_MAILTO
+        value: warren-copilot@example.com
+      - key: CACHE_TTL_SECONDS
+        value: "86400"
+      - key: MAX_TOOL_CALLS_PER_CONV
+        value: "40"
+      - key: ALLOWED_ORIGINS
+        value: https://researchrabbit-mcp-server.onrender.com
+      - key: RR_SESSION_COOKIE
+        sync: false
+      - key: RR_PROJECT_ID
+        sync: false
+
+  - type: web
+    name: researchrabbit-mcp-server
+    runtime: node
+    region: oregon
+    plan: free
+    rootDir: mcp-server
+    buildCommand: npm install
+    startCommand: node index.js
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: GATEWAY_URL
+        value: https://researchrabbit-server.onrender.com

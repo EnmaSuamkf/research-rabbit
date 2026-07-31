@@ -1,0 +1,1917 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResearchRabbit Copilot — Propuesta de chatbot (ES)</title>
+<style>
+  :root{
+    --brand:#ff5a3c; --brand2:#7c3aed; --ink:#1f2430; --muted:#5b6472;
+    --bg:#f7f8fa; --card:#ffffff; --line:#e6e8ee; --accent:#0ea5e9;
+    --code-bg:#1e1e2e; --code-ink:#e4e7ef;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.65}
+  header{background:linear-gradient(135deg,#7c3aed 0%,#ff5a3c 55%,#ffb37a 100%);color:#fff;padding:44px 24px 36px}
+  header .wrap{max-width:1040px;margin:0 auto}
+  header h1{margin:0 0 6px;font-size:2.2rem;letter-spacing:-.5px}
+  header p{margin:2px 0;opacity:.96;font-size:1.05rem}
+  header .tag{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);
+    padding:4px 12px;border-radius:999px;font-size:.8rem;margin-top:10px}
+  nav.toc{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+  nav.toc ul{max-width:1040px;margin:0 auto;padding:10px 24px;display:flex;flex-wrap:wrap;gap:6px 4px;list-style:none}
+  nav.toc a{text-decoration:none;color:var(--muted);font-size:.82rem;padding:6px 10px;border-radius:8px}
+  nav.toc a:hover{background:#f1f3f8;color:var(--brand)}
+  main{max-width:1040px;margin:0 auto;padding:28px 24px 60px}
+  section{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:24px 26px;margin:0 0 22px;scroll-margin-top:64px}
+  h2{margin:0 0 12px;font-size:1.45rem;display:flex;align-items:center;gap:10px}
+  h2 .dot{width:10px;height:10px;border-radius:50%;background:var(--brand);flex:0 0 auto}
+  h3{margin:22px 0 8px;font-size:1.08rem;color:#2a3142}
+  h4{margin:16px 0 6px;font-size:.98rem;color:var(--brand2)}
+  p,li{color:#37404f}
+  ul,ol{padding-left:22px}
+  li{margin:5px 0}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+  .card{background:#fbfcfe;border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .card h4{margin:0 0 6px;font-size:1rem;color:var(--brand2)}
+  .note{background:#fff7ed;border-left:4px solid var(--brand);padding:12px 16px;border-radius:8px;margin:14px 0}
+  .tip{background:#ecfdf5;border-left:4px solid #10b981;padding:12px 16px;border-radius:8px;margin:14px 0}
+  .warn{background:#fef2f2;border-left:4px solid #ef4444;padding:12px 16px;border-radius:8px;margin:14px 0}
+  .verdict{background:linear-gradient(135deg,#faf5ff,#fff7ed);border:1px solid #e9d5ff;border-radius:12px;padding:18px 20px;margin:14px 0}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.9rem}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+  th{background:#f3f5fa;color:#2a3142}
+  code{background:#f1f3f8;padding:2px 6px;border-radius:5px;font-size:.84rem;color:#b91c1c}
+  pre{background:var(--code-bg);color:var(--code-ink);padding:16px 18px;border-radius:10px;
+    overflow-x:auto;font-size:.83rem;line-height:1.35;margin:12px 0}
+  pre code{background:transparent;color:inherit;padding:0}
+  pre.ascii{line-height:1.15}
+  .method{display:inline-block;padding:2px 8px;border-radius:5px;font-size:.74rem;font-weight:700;color:#fff}
+  .m-get{background:#0ea5e9}.m-post{background:#16a34a}.m-patch{background:#f59e0b}.m-del{background:#ef4444}
+  .pill{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:999px;padding:2px 10px;font-size:.75rem;margin:2px 4px 2px 0}
+  .pill.on{background:#dcfce7;color:#166534}
+  .pill.off{background:#f1f5f9;color:#475569}
+  .pill.flag{background:#fef3c7;color:#92400e}
+  footer{max-width:1040px;margin:0 auto;padding:10px 24px 40px;color:var(--muted);font-size:.82rem}
+  a.lk{color:var(--accent);text-decoration:none}
+  a.lk:hover{text-decoration:underline}
+  .step{display:flex;gap:12px;align-items:flex-start;margin:10px 0}
+  .step .n{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;
+    font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.85rem}
+  .badge{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0;border-radius:8px;padding:6px 10px;font-size:.8rem;display:inline-block}
+  .score{display:flex;align-items:center;gap:10px;margin:6px 0}
+  .score .bar{flex:1;height:9px;background:#eef0f6;border-radius:999px;overflow:hidden}
+  .score .bar i{display:block;height:100%;background:linear-gradient(90deg,#7c3aed,#ff5a3c)}
+  .score .lbl{width:240px;font-size:.86rem;color:#37404f}
+  .score .val{width:52px;text-align:right;font-size:.82rem;color:var(--muted)}
+  .chat{background:#fbfcfe;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0}
+  .chat .u,.chat .b{margin:8px 0;padding:9px 13px;border-radius:12px;font-size:.9rem;max-width:88%}
+  .chat .u{background:#eef2f7;color:#1f2937}
+  .chat .b{background:linear-gradient(135deg,#7c3aed,#9f5cf0);color:#fff;margin-left:auto}
+  .chat .t{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.76rem;color:#7c3aed;
+    background:#faf5ff;border:1px dashed #d8b4fe;border-radius:8px;padding:5px 9px;margin:6px 0}
+  .rank{font-size:1.5rem;font-weight:700;color:var(--brand);line-height:1}
+  ol.big{counter-reset:i;list-style:none;padding-left:0}
+  ol.big>li{counter-increment:i;position:relative;padding-left:38px;margin:14px 0}
+  ol.big>li:before{content:counter(i);position:absolute;left:0;top:0;width:26px;height:26px;border-radius:50%;
+    background:var(--brand2);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.85rem}
+  .stage{display:inline-block;background:linear-gradient(135deg,#7c3aed,#ff5a3c);color:#fff;border-radius:999px;
+    padding:3px 12px;font-size:.7rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;vertical-align:middle}
+  .stage.s2{background:linear-gradient(135deg,#0ea5e9,#7c3aed)}
+  .stage.s3{background:linear-gradient(135deg,#10b981,#0ea5e9)}
+  .est{display:inline-block;background:#f1f5f9;color:#475569;border-radius:999px;padding:1px 9px;
+    font-size:.72rem;font-weight:600;margin-left:6px;white-space:nowrap}
+  .exit{background:#f5f3ff;border:1px solid #ddd6fe;border-left:4px solid var(--brand2);
+    border-radius:8px;padding:14px 18px;margin:16px 0}
+  .exit h4{margin:0 0 6px;color:var(--brand2)}
+  .exit ul{margin:6px 0 0}
+  section.stg{border-top:4px solid var(--brand)}
+  section.stg2{border-top:4px solid var(--accent)}
+  section.stg3{border-top:4px solid #10b981}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>ResearchRabbit Copilot — Propuesta de app</h1>
+    <p>¿Es buena idea un chatbot para ResearchRabbit? Qué construir, cómo, cuánto cuesta y qué puede salir mal.</p>
+    <p style="opacity:.85;font-size:.95rem">Reutilizando el stack de First Table: <strong>gateway&nbsp;server → servidor&nbsp;MCP → agentflow&nbsp;de&nbsp;Flowise</strong>.</p>
+    <span class="tag">Propuesta v2</span>
+    <span class="tag">Español (ES)</span>
+    <span class="tag">Plan en 3 etapas: Local → Render (API) → Flowise</span>
+    <span class="tag">2026-07-31</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <ul>
+    <li><a href="#verdict">Veredicto</a></li>
+    <li><a href="#inputs">Insumos</a></li>
+    <li><a href="#fit">¿Es buena idea?</a></li>
+    <li><a href="#product">El producto</a></li>
+    <li><a href="#arch">Arquitectura</a></li>
+    <li><a href="#data">Datos y auth</a></li>
+    <li><a href="#gateway">API del gateway</a></li>
+    <li><a href="#tools">Tools MCP</a></li>
+    <li><a href="#flowise">Config Flowise</a></li>
+    <li><a href="#prompt">System prompt</a></li>
+    <li><a href="#flows">Flujos de conversación</a></li>
+    <li><a href="#alts">Otras apps</a></li>
+    <li><a href="#plan">Plan — 3 etapas</a></li>
+    <li><a href="#stage1">Etapa 1 · Local</a></li>
+    <li><a href="#stage2">Etapa 2 · Render</a></li>
+    <li><a href="#stage3">Etapa 3 · Flowise</a></li>
+    <li><a href="#risks">Riesgos</a></li>
+    <li><a href="#kpi">Evaluación</a></li>
+    <li><a href="#checklist">Checklist</a></li>
+    <li><a href="#decisions">Decisiones</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ─────────────────────────────────────────── VEREDICTO ───────────────── -->
+<section id="verdict">
+  <h2><span class="dot"></span>1. Veredicto — respuesta corta</h2>
+
+  <div class="verdict">
+    <p style="margin-top:0"><strong>Sí, es buena idea — pero no como reemplazo de la app de ResearchRabbit.</strong></p>
+    <p>La forma ganadora es una <strong>puerta de entrada conversacional que produce una sesión real de ResearchRabbit</strong>.
+    El usuario describe su pregunta de investigación en lenguaje natural; el agente hace la parte aburrida (convertir la pregunta
+    en keywords, elegir artículos semilla, correr las iteraciones Similar / Earlier / Later, deduplicar y rankear la frontera,
+    marcar retractaciones) y devuelve dos cosas: una lista corta y razonada <em>y un enlace profundo</em> a
+    <code>app.researchrabbit.ai/search/{sessionId}/{step}</code> donde el usuario sigue explorando visualmente.</p>
+    <p style="margin-bottom:0">Es exactamente lo que funcionó en First Table: el bot nunca <em>completa</em> la transacción,
+    produce <strong>el enlace que sí la completa</strong>. Allí era el <code>bookingUrl</code>. Aquí es el
+    <strong>enlace profundo de la sesión</strong>. Misma arquitectura, misma disciplina, los mismos tres servicios.</p>
+  </div>
+
+  <div class="tip"><strong>Cómo lo vamos a construir — tres etapas, en este orden.</strong>
+  <span class="stage">Etapa&nbsp;1 · Local</span> poner todo (gateway, servidor MCP y Flowise) andando y verificado en tu propia
+  máquina (§14). <span class="stage s2">Etapa&nbsp;2 · Render</span> desplegar <em>solo</em> los dos servicios Node — gateway +
+  servidor MCP — para tener un <strong>endpoint MCP hosteado que enchufás en Claude Desktop, Claude Code o cualquier agente de
+  código compatible con MCP</strong> y que te haga investigación real, todavía sin chatbot (§15).
+  <span class="stage s3">Etapa&nbsp;3 · Flowise</span> agregar arriba la instancia de Flowise y el agente, apuntados a esa misma
+  URL MCP, para obtener una UI de chat pública (§16). <strong>Entre etapas no se reescribe código — solo cambian URLs, secretos y
+  hosting.</strong> El plan completo, con esfuerzo por paso y criterios de salida explícitos para cada etapa, está en §13.</div>
+
+  <h3>Tarjeta de puntuación</h3>
+  <div class="score"><span class="lbl">Valor de la conversación como UI</span><span class="bar"><i style="width:85%"></i></span><span class="val">8.5</span></div>
+  <div class="score"><span class="lbl">Calidad de los datos disponibles</span><span class="bar"><i style="width:90%"></i></span><span class="val">9.0</span></div>
+  <div class="score"><span class="lbl">Reutilización del stack de First Table</span><span class="bar"><i style="width:95%"></i></span><span class="val">9.5</span></div>
+  <div class="score"><span class="lbl">Estabilidad de la API / seguridad legal</span><span class="bar"><i style="width:35%"></i></span><span class="val">3.5</span></div>
+  <div class="score"><span class="lbl">Viabilidad multiusuario (tal cual)</span><span class="bar"><i style="width:25%"></i></span><span class="val">2.5</span></div>
+  <div class="score"><span class="lbl">Riesgo de alucinación si se hace ingenuamente</span><span class="bar"><i style="width:80%"></i></span><span class="val">alto</span></div>
+
+  <div class="warn"><strong>Las dos cosas que definen el proyecto.</strong>
+  (1) ResearchRabbit <strong>no publica una API pública</strong>; los endpoints de
+  <code>researchrabbit-howto-api-en.html</code> son llamadas privadas de la SPA detrás de una <strong>cookie de sesión</strong>.
+  Eso hace fácil una herramienta personal o de laboratorio con una sola cuenta, y hace imprudente —legal y técnicamente— un
+  producto público multiusuario sin un acuerdo con Litmap Ltd. (2) En el dominio de investigación,
+  <strong>una cita inventada es un bug que mata el producto</strong>, mucho peor que un restaurante equivocado. Ambas cosas
+  tienen solución (§6 y §10), pero hay que diseñarlas desde el día uno, no agregarlas después.</div>
+
+  <h3>Qué recomendamos construir, en orden</h3>
+  <ol class="big">
+    <li><strong>El servidor MCP (con el gateway REST debajo).</strong> Este es el activo real. Sirve en Flowise, en Claude
+    Desktop/Code y en cualquier cliente MCP. ~$14/mes. Construilo aunque no se haga nada más.</li>
+    <li><strong>El chatbot “Copilot” en Flowise</strong> encima — la UI conversacional pública, con la misma receta de deploy
+    que First Table. +$25/mes.</li>
+    <li><strong>El generador de Informes de Literatura</strong> (asíncrono: pregunta entra → un informe HTML sale). El mayor
+    valor por token; es el artefacto que un investigador realmente quiere guardar.</li>
+    <li><strong>El digest semanal de “Later Work”</strong> (agente cron → email/Slack). La feature de retención más barata de
+    todo el conjunto.</li>
+  </ol>
+</section>
+
+<!-- ─────────────────────────────────────────── INSUMOS ─────────────────── -->
+<section id="inputs">
+  <h2><span class="dot"></span>2. Sobre qué se construye esta propuesta</h2>
+  <table>
+    <tr><th>Fuente</th><th>Qué tomamos de ahí</th></tr>
+    <tr><td><code>~/Documentos/firstTable</code> (<code>CLAUDE.md</code>, <code>README.md</code>,
+      <code>server/</code>, <code>mcp-server/</code>, <code>agent-system-prompt.md</code>)</td>
+      <td>La topología de 3 servicios ya probada, la receta de deploy en Render con todos sus gotchas (fijar Flowise&nbsp;3.1.2,
+      plan Standard de 2&nbsp;GB, disco persistente, <code>x-request-from: internal</code>, config inline
+      <code>customMCP</code>, <code>chatbotConfig</code>), el contrato gateway↔MCP y la estructura anti-alucinación del system
+      prompt.</td></tr>
+    <tr><td><code>researchrabbit-howto-api-en.html</code></td>
+      <td>La API privada observada en vivo: <code>POST /searches</code> (keyword y de red), <code>GET /articles/{id}</code>,
+      <code>/search-sessions</code> y sus steps, <code>/folders</code>, <code>/user-articles</code>,
+      <code>/recent-articles</code>, <code>/readings</code>, <code>/users/me</code>; el modelo de datos; la semántica de
+      <code>edgeMode</code>; el tope de semillas (50 Free / 300 RR+); auth por cookie y <code>projectId</code> obligatorio.</td></tr>
+    <tr><td><code>researchrabbit-report-en.html</code></td>
+      <td>La verdad del producto: 310M+ artículos de Crossref / Semantic Scholar / OpenAlex, refresco semanal, ranking por red
+      de citas, modos Similar / Earlier / Later, colecciones y Reading List, Zotero, Signals, precios (Free / RR+ $10 /
+      Institution), propietario Litmap&nbsp;Limited (NZ) y las páginas legales.</td></tr>
+    <tr><td>Instancia Flowise en vivo<br><code>firsttable-flowise.onrender.com</code></td>
+      <td>El agentcanvas en producción (<code>8aebb104-…</code>) es la plantilla: Start → Agent, <code>chatFireworks</code>
+      <code>glm-5p2</code>, memoria <code>allMessages</code>, una tool <code>customMCP</code> con lista de acciones
+      seleccionadas. El nuevo agentflow es el mismo grafo con otra URL MCP, otra lista de acciones y otro prompt.</td></tr>
+  </table>
+  <div class="tip"><strong>Consecuencia:</strong> ~70% del proyecto ya está escrito. Lo genuinamente nuevo es la lógica de
+  dominio del gateway (§7), el catálogo de tools (§8) y el system prompt (§10).</div>
+</section>
+
+<!-- ─────────────────────────────────────────── FIT ─────────────────────── -->
+<section id="fit">
+  <h2><span class="dot"></span>3. ¿Un chatbot es realmente buena idea acá?</h2>
+
+  <h3>Dónde la conversación gana de verdad</h3>
+  <div class="grid">
+    <div class="card"><h4>El problema de la caja en blanco</h4>La home de ResearchRabbit es un solo input:
+    “Title, DOI, or keywords…”. Un investigador que puede describir su problema en un párrafo muchas veces no sabe comprimirlo
+    en buenas keywords. Convertir <em>“estudio si la cobertura arbórea urbana reduce la mortalidad por calor en barrios de
+    bajos ingresos”</em> en 3 queries candidatas más 3 papers semilla es justo lo que un LLM hace bien.</div>
+    <div class="card"><h4>El bucle de iteración es mecánico</h4>“Seleccionar artículos → Next Search → repetir” es el corazón de
+    la herramienta y es puro procedimiento. Un agente puede correr 3 iteraciones, deduplicar y puntuar candidatos según a
+    cuántas semillas se conectan — trabajo que hoy el humano hace clickeando.</div>
+    <div class="card"><h4>La dirección es una decisión, no un click</h4>La mayoría no sabe cuándo usar <em>Refs</em>
+    (fundamentos) vs <em>Cited By</em> (estado del arte) vs <em>Similar</em> (red más amplia). Un chatbot puede elegir la
+    dirección según la intención y, sobre todo, <strong>explicar por qué</strong>.</div>
+    <div class="card"><h4>Explicar el ranking</h4>La app muestra un <code>score</code> numérico. Un copiloto puede decir
+    “aparece porque lo citan 4 de tus 5 semillas y es el paper más citado de 2024 en ese clúster” — convertir un número opaco
+    en una razón.</div>
+    <div class="card"><h4>Triage rápido</h4><code>retracted</code>, <code>doctype</code>, <code>forwardEdgeCount</code>,
+    el <code>h-index</code> del autor y <code>authorCitationCount</code> vienen todos en <code>GET /articles/{id}</code>.
+    Un “¿me conviene leer esto?” estructurado es una feature de una sola llamada.</div>
+    <div class="card"><h4>Funciona donde la app no</h4>Móvil, Slack, WhatsApp, Claude Desktop, la casilla de un director de
+    tesis. El mapa visual necesita pantalla grande; una lista corta no.</div>
+  </div>
+
+  <h3>Dónde el chatbot es la herramienta equivocada — hay que decirlo</h3>
+  <table>
+    <tr><th>Límite</th><th>Por qué</th><th>Respuesta de diseño</th></tr>
+    <tr><td>El mapa <em>es</em> el producto</td><td>El diferencial de ResearchRabbit es la visualización interactiva de red y
+      línea de tiempo. El texto no puede reproducirla, e intentarlo es una batalla perdida.</td>
+      <td><strong>No competir — entregar el pase.</strong> Toda respuesta termina con el enlace profundo a la sesión real
+      (<code>/search/{sessionId}/{stepIndex}</code>). El chat es la rampa de entrada; la app es el destino.</td></tr>
+    <tr><td>No hay texto completo</td><td>La API expone solo metadatos y abstract. El agente no puede resumir “qué encontró el
+      paper” más allá del abstract.</td><td>Regla del prompt: el agente puede resumir <em>el abstract</em> y debe decirlo
+      explícitamente. Nunca “este estudio demuestra…” a partir de un título.</td></tr>
+    <tr><td>La memoria del chat guarda texto, no objetos</td><td>Confirmado en First Table: la memoria de Flowise guarda la
+      transcripción, no los resultados de las tools. En el turno 5 el agente ya no tiene <code>articleId: 21400232</code>.</td>
+      <td>La misma solución que funcionó allá: el gateway <strong>resuelve título → id</strong>, así el agente pasa el
+      <em>título</em> del paper y nunca un id numérico recordado. (Allá era nombre→restaurantId; acá título→articleId.)</td></tr>
+    <tr><td>Las tareas largas no entran en un turno</td><td>Un screening real sobre 300 candidatos son minutos de trabajo y
+      miles de tokens — una burbuja de chat es el contenedor equivocado.</td><td>Por eso el
+      <strong>generador de informes</strong> (§12) es un job asíncrono aparte que devuelve un documento, no un mensaje.</td></tr>
+    <tr><td>Riesgo de fabricación</td><td>Un LLM que inventa un DOI plausible destruye la confianza para siempre en este
+      dominio.</td><td>Contrato duro en §10 + un gateway que devuelve ids y DOIs en cada ítem, para que toda afirmación sea
+      verificable.</td></tr>
+  </table>
+
+  <div class="note"><strong>Juicio neto:</strong> hacer el chatbot, pero acotarlo como <em>copiloto de descubrimiento y
+  constructor de sesiones</em>, no como “ResearchRabbit pero en texto”. En el momento en que sus respuestas intentan reemplazar
+  al mapa, se vuelve peor que el producto que envuelve.</div>
+</section>
+
+<!-- ─────────────────────────────────────────── PRODUCTO ────────────────── -->
+<section id="product">
+  <h2><span class="dot"></span>4. El producto — “Warren”, un copiloto de ResearchRabbit</h2>
+  <p><em>Warren</em> (la madriguera del conejo — una red de túneles conectados, que es también lo que es un grafo de citas) es
+  un asistente de chat que toma una pregunta de investigación y devuelve una lista de lectura defendible más una sesión viva de
+  ResearchRabbit.</p>
+
+  <h3>La promesa en una frase</h3>
+  <div class="badge">“Contame qué estás investigando. Busco los papers que importan, te digo por qué importan y te abro una
+  sesión de ResearchRabbit para que sigas explorando.”</div>
+
+  <h3>Seis cosas que hace</h3>
+  <div class="grid">
+    <div class="card"><h4>1 · Enmarcar</h4>Convertir un párrafo en 2–3 queries (con operadores booleanos si hay RR+) y proponer
+    semillas candidatas con <code>POST /searches</code> + <code>stringFilter</code>.</div>
+    <div class="card"><h4>2 · Sembrar</h4>Confirmar 1–5 semillas con el usuario. Mostrar año, revista, citas, flag de
+    retractación. Nunca más de 5 por mensaje.</div>
+    <div class="card"><h4>3 · Expandir</h4>Correr iteraciones Similar / Earlier / Later del lado del servidor, deduplicar y
+    rankear por <em>consenso de semillas</em> (a cuántas de tus semillas se conecta) × recencia × peso de citas.</div>
+    <div class="card"><h4>4 · Explicar</h4>Por cada recomendación: una línea de por qué apareció, su DOI, sus
+    <code>forwardEdgeCount</code>/<code>backwardEdgeCount</code> y cualquier señal de alerta.</div>
+    <div class="card"><h4>5 · Organizar</h4>Opcionalmente crear una colección (<code>POST /folders</code>) y guardar la lista
+    (<code>POST /user-articles/batch</code>) — detrás de un flag de escritura explícito.</div>
+    <div class="card"><h4>6 · Entregar</h4>Devolver el enlace profundo de la sesión y un bloque BibTeX.
+    <strong>Ese es el entregable.</strong></div>
+  </div>
+
+  <h3>Para quién es</h3>
+  <table>
+    <tr><th>Perfil</th><th>Trabajo por hacer</th><th>Momento clave</th></tr>
+    <tr><td>Estudiante de maestría/doctorado empezando una revisión</td><td>“No sé por dónde empezar.”</td>
+      <td>De un párrafo vago a 10 papers rankeados y una sesión abierta en menos de 2 minutos.</td></tr>
+    <tr><td>Investigador que vuelve a un tema</td><td>“¿Qué pasó desde 2024?”</td>
+      <td>Barrido de Later Work sobre su colección existente, ordenado por citas por año.</td></tr>
+    <tr><td>Director de tesis / jefe de laboratorio</td><td>“¿Está completa la bibliografía de este estudiante?”</td>
+      <td>Informe de brechas: papers muy conectados en la red que la colección no tiene.</td></tr>
+    <tr><td>Revisor sistemático</td><td>“Filtrá 300 candidatos contra mis criterios.”</td>
+      <td>El generador de informes, no el chat.</td></tr>
+  </table>
+</section>
+
+<!-- ─────────────────────────────────────────── ARQUITECTURA ───────────── -->
+<section id="arch">
+  <h2><span class="dot"></span>5. Arquitectura — los mismos tres servicios de First Table</h2>
+
+<pre class="ascii">                          ┌───────────────────────────────┐
+                          │  researchrabbit-server        │  Gateway REST
+                          │  (Node, Express)              │  frente a la API privada de RR
+                          │  Starter $7/mes               │  + adaptador OpenAlex de respaldo
+                          └───────────────▲───────────────┘
+                                          │ GATEWAY_URL (env)
+                          ┌───────────────┴───────────────┐
+                          │  researchrabbit-mcp-server    │  MCP (Streamable HTTP)
+                          │  (Node, Express)              │  expone 22 tools
+                          │  Starter $7/mes               │  POST /mcp
+                          └───────────────▲───────────────┘
+                                          │ mcpServerConfig.url
+                          ┌───────────────┴───────────────┐
+                          │  researchrabbit-flowise       │  Flowise 3.1.2 (Docker)
+                          │  Agentflow + chat público     │  + disco persistente de 1 GB
+                          │  Standard $25/mes (2 GB)      │
+                          └───────────────────────────────┘
+                                          │
+                                          ▼
+                     app.researchrabbit.ai/search/{sessionId}/{step}
+                            ← el enlace profundo que abre el usuario</pre>
+
+  <h3>Por qué mantener tres servicios y no fusionarlos</h3>
+  <ul>
+    <li><strong>El gateway es donde vive la lógica de dominio</strong> — manejo de cookie/sesión, resolución título→id, ranking,
+    deduplicación, BibTeX. Se testea con <code>curl</code> y una colección Bruno, sin ningún LLM en el medio.</li>
+    <li><strong>El servidor MCP es una cáscara fina y reutilizable.</strong> Como es MCP puro sobre Streamable HTTP, el mismo
+    servicio se enchufa también en Claude Desktop/Code — es la app alternativa #4 de §12, gratis.</li>
+    <li><strong>Flowise es descartable.</strong> Si se borra el agentflow o Flowise rompe en un upgrade, el valor (gateway +
+    MCP) sobrevive. Ya quedó demostrado: el Flowise de First Table hubo que rehacerlo contra un tipo de nodo más viejo
+    (<code>customMCP</code> vs <code>customMcpServerTool</code>) sin tocar nada de lo que había debajo.</li>
+  </ul>
+
+  <h3>Costo</h3>
+  <table>
+    <tr><th>Servicio</th><th>Plan</th><th>Costo</th><th>Notas</th></tr>
+    <tr><td><code>researchrabbit-server</code></td><td>Starter</td><td>$7/mes</td><td>Root dir <code>server</code>, health <code>/api/health</code></td></tr>
+    <tr><td><code>researchrabbit-mcp-server</code></td><td>Starter</td><td>$7/mes</td><td>Root dir <code>mcp-server</code>, health <code>/</code>, env <code>GATEWAY_URL</code></td></tr>
+    <tr><td><code>researchrabbit-flowise</code></td><td>Standard</td><td>$25/mes</td><td>Docker <code>flowiseai/flowise:3.1.2</code>, 2 GB, disco de 1 GB</td></tr>
+    <tr><td colspan="2"><strong>Total infraestructura</strong></td><td><strong>$39/mes</strong></td><td>Idéntico al deploy de First Table</td></tr>
+    <tr><td>Tokens del LLM (Fireworks <code>glm-5p2</code>)</td><td>por uso</td><td>~$5–30/mes</td><td>Los turnos de descubrimiento usan muchas tools; presupuestar más si sale el generador de informes</td></tr>
+    <tr><td><em>Variante solo-MCP (sin Flowise)</em></td><td>2× Starter</td><td><em>$14/mes</em></td><td>Publicar las tools para Claude Desktop/Code y saltarse por completo la UI de chat</td></tr>
+  </table>
+
+  <div class="note"><strong>Región:</strong> First Table usó Singapur porque los usuarios están en Nueva Zelanda. Para
+  ResearchRabbit la audiencia es global y el camino caliente es <code>api.researchrabbit.ai</code> — elegir la región de Render
+  más cercana a esa API (medir con una sonda de latencia antes de crear los servicios), probablemente
+  <strong>Oregon</strong> o <strong>Frankfurt</strong>. No copiar Singapur por reflejo.</div>
+
+  <h3>Estructura del repositorio</h3>
+<pre><code>researchrabbit-copilot/
+├── server/                       # Gateway REST (Web Service #1)
+│   ├── src/index.js              # App Express, PORT por defecto 8821
+│   ├── src/rrClient.js           # cookie de sesión + wrapper fetch para api.researchrabbit.ai
+│   ├── src/adapters/rr.js        # backend A — API privada de ResearchRabbit
+│   ├── src/adapters/openalex.js  # backend B — OpenAlex/Crossref públicos (sin auth)
+│   ├── src/resolve.js            # resolución título/DOI → articleId + caché
+│   ├── src/rank.js               # score por consenso de semillas, dedupe, filtros de screening
+│   ├── src/bibtex.js             # export BibTeX / RIS
+│   └── package.json
+├── mcp-server/                   # Servidor MCP (Web Service #2)
+│   ├── index.js                  # Express + @modelcontextprotocol/sdk, POST /mcp
+│   └── package.json
+├── site/                         # one-pager estático + widget de chat embebido
+│   └── index.html                # embed &lt;flowise-fullchatbot&gt;, apunta a la URL de Flowise
+├── bruno-collection/             # colección de requests del gateway (como en firstTable)
+├── agent-system-prompt.md        # el system prompt de Warren (§10)
+├── evals/golden-questions.json   # 15 preguntas fijas para tests de regresión (§18)
+├── render.yaml                   # blueprint Etapa 2, 2 servicios (§15.4) + bloque Flowise (§16.2)
+└── README.md</code></pre>
+  <p>Exactamente el layout de <code>firstTable</code>: un monorepo con <strong>dos apps Node independientes</strong> (cada una con
+  su propio <code>package.json</code>, sin npm workspaces) y los assets compartidos en la raíz. Este es el árbol que se crea en la
+  <strong>Etapa&nbsp;1</strong> (§14.2) y que se despliega —sin tocarlo— en la <strong>Etapa&nbsp;2</strong> (§15); lo único que
+  se vuelve a tocar es <code>site/index.html</code>, en la <strong>Etapa&nbsp;3</strong> (§16.6).</p>
+</section>
+
+<!-- ─────────────────────────────────────────── DATOS ──────────────────── -->
+<section id="data">
+  <h2><span class="dot"></span>6. Plano de datos, autenticación y legalidad — la sección decisiva</h2>
+
+  <div class="warn"><strong>Leer esto antes de escribir una línea de código.</strong> ResearchRabbit no tiene API pública. Todos
+  los endpoints que documentamos son llamadas privadas de la SPA autenticadas con una <strong>cookie de sesión</strong>
+  (<code>credentials: include</code>), propiedad de Litmap Limited (NZ) y regidas por sus Términos de Servicio. Pueden cambiar
+  sin aviso y no hay contrato. Esto no bloquea el proyecto, pero define la arquitectura.</div>
+
+  <h3>Dos backends, una interfaz</h3>
+  <p>El gateway define una interfaz interna y dos implementaciones, elegidas por <code>RR_BACKEND</code>:</p>
+  <table>
+    <tr><th></th><th>Backend A — <code>rr</code></th><th>Backend B — <code>openalex</code></th></tr>
+    <tr><td>Fuente</td><td><code>api.researchrabbit.ai</code> (privada)</td><td>OpenAlex + Crossref + Semantic Scholar (públicas, documentadas, gratis)</td></tr>
+    <tr><td>Auth</td><td>Cookie de sesión de <strong>una</strong> cuenta, guardada en el servidor vía env</td><td>Ninguna (un parámetro de contacto <code>mailto=</code>)</td></tr>
+    <tr><td>Te da</td><td>El ranking propio de RR, la biblioteca/colecciones reales del usuario y <strong>el enlace profundo de sesión</strong></td><td>Grafo de citas, referencias y citaciones, abstracts, métricas de autor — pero sin sesión de RR</td></tr>
+    <tr><td>Postura legal</td><td>Uso personal / de laboratorio con tu propia cuenta. Un producto público necesita acuerdo con Litmap.</td><td>APIs explícitamente públicas, seguras para construir encima y comercializar</td></tr>
+    <tr><td>Estabilidad</td><td>Puede romperse cualquier semana</td><td>Versionadas y estables</td></tr>
+    <tr><td>Usarlo para</td><td>La experiencia completa, incluido el enlace profundo de entrega</td><td>Default para todo lo público; respaldo cuando la cookie expira o RR cambia</td></tr>
+  </table>
+
+  <div class="tip"><strong>Recomendación.</strong> Construir <em>primero</em> el adaptador OpenAlex (es el default seguro y no
+  necesita credenciales) y después el adaptador RR detrás de <code>RR_BACKEND=rr</code>. Mismos nombres de tools, mismas formas
+  de respuesta. Se obtiene un producto que es legal mostrarle a cualquiera, y una versión estrictamente mejor cuando hay
+  autenticación. Si los endpoints de ResearchRabbit se mueven, el bot se degrada en vez de morir — y los 310M de artículos de RR
+  vienen igual de estas mismas fuentes, así que la cobertura se solapa mucho.</div>
+
+  <h3>Cómo se maneja la cookie (backend A)</h3>
+  <ul>
+    <li>Una variable de entorno, <code>RR_SESSION_COOKIE</code>, más <code>RR_PROJECT_ID</code>. Nunca en el repo, nunca en
+    Flowise, nunca en un prompt. Se rota editando la env var en Render y reiniciando.</li>
+    <li><strong>Nunca pedirle credenciales de ResearchRabbit al usuario en el chat.</strong> La misma regla absoluta que la de
+    contraseñas en First Table, y por la misma razón. Si el usuario las ofrece, rechazarlas y explicar por qué.</li>
+    <li><code>GET /api/health</code> hace ping a <code>/users/me</code> y devuelve
+    <code>{"ok":true,"backend":"rr","authOk":true,"plan":"free","seedCap":50}</code>. Cuando <code>authOk</code> pasa a false,
+    el gateway cae automáticamente a OpenAlex y el agente lo dice claramente en vez de inventar resultados.</li>
+    <li>Rate limiting y presupuesto de requests por conversación, para que el agente no martille la API privada. Cachear
+    <code>GET /articles/{id}</code> agresivamente (los metadatos son casi estáticos; RR refresca semanalmente).</li>
+    <li>El query param <code>projectId</code> es obligatorio en casi todas las llamadas a RR — lo inyecta el gateway; el agente
+    nunca debe verlo ni pasarlo.</li>
+  </ul>
+
+  <h3>Un inquilino vs multiusuario</h3>
+  <p>Tal como está diseñado, el bot es <strong>single-tenant</strong>: actúa como una única cuenta de ResearchRabbit (la tuya).
+  Eso es correcto para una herramienta personal, de laboratorio o una demo. Convertirlo en un SaaS multiusuario sobre cookies
+  significaría que cada usuario pegue su cookie de sesión en tu servidor — mala UX, mala seguridad y casi con certeza fuera de
+  los ToS. Si el producto se prueba a sí mismo, el camino es una conversación con
+  <a class="lk" href="mailto:support@researchrabbit.ai">support@researchrabbit.ai</a> o su canal de Instituciones sobre una
+  integración oficial — un documento como este es una buena carta de presentación para esa reunión.</p>
+
+  <h3>Límites de plan que conviene codificar</h3>
+  <ul>
+    <li><strong>Tope de semillas:</strong> 50 (Free) / 300 (RR+). El gateway debe recortar y avisarle al agente, para que
+    encadene pasos en vez de mandar un request por encima del tope.</li>
+    <li><strong>Operadores booleanos</strong> (AND / OR / NOT, frases entre comillas) en la búsqueda por keywords son
+    <strong>solo RR+</strong> (release 2026-04-17). El gateway debería degradar la query en Free en vez de fallar.</li>
+    <li><strong>Múltiples proyectos</strong> son solo RR+ — en Free hay un único <code>projectId</code>.</li>
+    <li><strong>Signals</strong> (alertas de artículos de alto riesgo) es RR+; en Free usar <code>retracted</code> más
+    heurísticas y decirlo.</li>
+  </ul>
+</section>
+
+<!-- ─────────────────────────────────────────── GATEWAY ─────────────────── -->
+<section id="gateway">
+  <h2><span class="dot"></span>7. API REST del gateway (<code>researchrabbit-server</code>)</h2>
+  <p>Misma filosofía que <code>firsttable-server</code>: el LLM nunca habla con la API de arriba, y cada endpoint devuelve
+  objetos chicos, planos y ya decididos. El gateway absorbe la paginación, el <code>projectId</code>, el scoring y la
+  resolución de ids.</p>
+
+  <table>
+    <tr><th>Método</th><th>Endpoint</th><th>Propósito / upstream</th></tr>
+    <tr><td><span class="method m-get">GET</span></td><td><code>/api/health</code></td><td>Liveness + <code>authOk</code>, backend activo, plan, tope de semillas. Health check de Render.</td></tr>
+    <tr><td><span class="method m-get">GET</span></td><td><code>/api/context</code></td><td>Usuario, plan, tope de semillas, project id (<code>GET /users/me</code>).</td></tr>
+    <tr><td><span class="method m-post">POST</span></td><td><code>/api/search/keyword</code></td><td><code>POST /searches</code> con <code>stringFilter</code> + <code>stringFilterTypes:["title","abstract"]</code>. Devuelve una lista recortada.</td></tr>
+    <tr><td><span class="method m-post">POST</span></td><td><code>/api/search/network</code></td><td><code>POST /searches</code> con <code>set.articleIds</code> + <code>edgeMode: both|backward|forward</code>.</td></tr>
+    <tr><td><span class="method m-post">POST</span></td><td><code>/api/search/author</code></td><td><code>POST /searches</code> con <code>set.authorIds</code> — “estos autores / autores relacionados”.</td></tr>
+    <tr><td><span class="method m-post">POST</span></td><td><code>/api/expand</code></td><td><strong>Derivado.</strong> N iteraciones de búsqueda de red sobre un conjunto de semillas, deduplicadas y puntuadas por consenso. Una llamada reemplaza toda una sesión de clicks.</td></tr>
+    <tr><td><span class="method m-get">GET</span></td><td><code>/api/articles/:idOrDoi</code></td><td><code>GET /articles/{id}</code>, acepta también DOI o título (resolución + caché).</td></tr>
+    <tr><td><span class="method m-post">POST</span></td><td><code>/api/resolve</code></td><td><strong>Derivado.</strong> título/DOI → <code>articleId</code>. El endpoint de robustez más importante (ver §10).</td></tr>
+    <tr><td><span class="method m-post">POST</span></td><td><code>/api/screen</code></td><td><strong>Derivado.</strong> Filtrar candidatos por rango de años, doctype, mínimo de citas, excluir retractados.</td></tr>
+    <tr><td><span class="method m-post">POST</span></td><td><code>/api/credibility</code></td><td><strong>Derivado.</strong> Arma flag de retractación, doctype, revista, conteos de citas, h-index del autor — con salvedades explícitas.</td></tr>
+    <tr><td><span class="method m-post">POST</span></td><td><code>/api/sessions</code></td><td><code>POST /search-sessions</code> y luego <code>PATCH .../steps/{stepId}</code>. <strong>Devuelve el enlace profundo.</strong></td></tr>
+    <tr><td><span class="method m-get">GET</span></td><td><code>/api/sessions/:id</code></td><td><code>GET /search-sessions/{id}</code> con sus <code>steps[]</code> ordenados.</td></tr>
+    <tr><td><span class="method m-get">GET</span></td><td><code>/api/collections</code></td><td><code>GET /folders?includeItemCounts=true</code>.</td></tr>
+    <tr><td><span class="method m-post">POST</span></td><td><code>/api/collections</code></td><td><code>POST /folders</code> — <code>{name, color, projectId}</code>. <span class="pill flag">escritura</span></td></tr>
+    <tr><td><span class="method m-post">POST</span></td><td><code>/api/library/save</code></td><td><code>POST /user-articles/batch</code>. <span class="pill flag">escritura</span></td></tr>
+    <tr><td><span class="method m-get">GET</span></td><td><code>/api/library</code></td><td><code>GET /user-articles</code> — la biblioteca guardada.</td></tr>
+    <tr><td><span class="method m-get">GET</span></td><td><code>/api/recent</code></td><td><code>GET /recent-articles?isSaved=false</code> — “Recently Found”.</td></tr>
+    <tr><td><span class="method m-get">GET</span></td><td><code>/api/readings</code></td><td><code>GET /readings</code> — la Reading List.</td></tr>
+    <tr><td><span class="method m-post">POST</span></td><td><code>/api/export/bibtex</code></td><td><strong>Derivado.</strong> ids/DOIs → texto BibTeX (o RIS), listo para pegar en Zotero.</td></tr>
+    <tr><td><span class="method m-post">POST</span></td><td><code>/api/gaps</code></td><td><strong>Derivado.</strong> Papers muy conectados en la red local que una colección <em>no</em> contiene.</td></tr>
+  </table>
+
+  <h3>La forma que devuelve todo endpoint de lista</h3>
+  <p>Recortada a lo que un LLM necesita — los payloads completos de RR son grandes y en su mayoría ruido para un turno de chat:</p>
+<pre><code>{
+  "query": { "kind": "network", "edgeMode": "both", "seeds": [21400232], "per": 20 },
+  "totalCount": 1893,
+  "seedCap": 50,
+  "backend": "rr",
+  "items": [
+    {
+      "articleId": 21400232,
+      "title": "What makes climate change adaptation effective? A systematic review",
+      "authors": "Gigi Owen",
+      "year": 2020,
+      "venue": "Global Environmental Change",
+      "doi": "10.1016/J.GLOENVCHA.2020.102071",
+      "url": "https://doi.org/10.1016/j.gloenvcha.2020.102071",
+      "citedBy": 376,          // forwardEdgeCount
+      "references": 114,       // backwardEdgeCount
+      "doctype": "review",
+      "retracted": false,
+      "score": 5,              // relevancia de RR respecto al set de semillas
+      "seedHits": 4,           // derivado: a cuántas de tus semillas se conecta
+      "citationsPerYear": 62.7 // derivado
+    }
+  ]
+}</code></pre>
+
+  <div class="note"><strong>Dos campos derivados hacen casi toda la explicación.</strong> <code>seedHits</code> permite que el
+  agente diga <em>“lo citan 4 de tus 5 semillas”</em> — una razón que un humano acepta — y <code>citationsPerYear</code> evita
+  que un paper de 1998 le gane siempre a uno fuerte de 2025. Ninguno existe arriba; los dos son baratos de calcular en el
+  gateway e imposibles de calcular de forma confiable por el LLM.</div>
+</section>
+
+<!-- ─────────────────────────────────────────── TOOLS ───────────────────── -->
+<section id="tools">
+  <h2><span class="dot"></span>8. Catálogo de tools MCP (22 tools)</h2>
+  <p>Mismo patrón que <code>firsttable-mcp-server</code>: una tool por endpoint del gateway, un array <code>TOOLS</code> con
+  <code>name</code>, una descripción escrita <em>para el modelo</em>, un <code>inputSchema</code> y un <code>call</code>.
+  Streamable HTTP en <code>POST /mcp</code>, sin estado.</p>
+
+  <p><span class="pill on">on</span> habilitada por defecto en el agente de Flowise (12) ·
+     <span class="pill off">off</span> expuesta por MCP pero no seleccionada (8) ·
+     <span class="pill flag">escritura</span> requiere <code>RR_ALLOW_WRITES=true</code> (2)</p>
+
+  <table>
+    <tr><th>Tool</th><th>Estado</th><th>Qué hace</th></tr>
+    <tr><td><code>search_keyword</code></td><td><span class="pill on">on</span></td><td>Encontrar papers semilla candidatos a partir de un tema, título o DOI. Match en título y abstract.</td></tr>
+    <tr><td><code>search_similar</code></td><td><span class="pill on">on</span></td><td>Similar Work — todo tipo de conexión alrededor de las semillas (<code>edgeMode: both</code>). La red más amplia.</td></tr>
+    <tr><td><code>search_earlier_work</code></td><td><span class="pill on">on</span></td><td>Referencias de las semillas (<code>backward</code>) — fundamentos, sobre qué se construyó un paper.</td></tr>
+    <tr><td><code>search_later_work</code></td><td><span class="pill on">on</span></td><td>Papers que citan a las semillas (<code>forward</code>) — estado del arte, qué pasó desde entonces.</td></tr>
+    <tr><td><code>expand_frontier</code></td><td><span class="pill on">on</span></td><td>Corre N iteraciones de búsqueda de red en el servidor; devuelve candidatos deduplicados y rankeados por consenso. El bucle “Grow and go!” en una sola llamada.</td></tr>
+    <tr><td><code>get_article</code></td><td><span class="pill on">on</span></td><td>Metadatos completos de un paper por <strong>id, DOI o título</strong>: abstract, autores con h-index, conteos, retractación, doctype.</td></tr>
+    <tr><td><code>rank_candidates</code></td><td><span class="pill on">on</span></td><td>Re-rankear un conjunto por consenso de semillas / recencia / citas por año y devolver la razón de cada ítem.</td></tr>
+    <tr><td><code>credibility_check</code></td><td><span class="pill on">on</span></td><td>“¿Puedo confiar en esto?” estructurado — retractación, doctype, revista, conteos, métricas de autor, con salvedades.</td></tr>
+    <tr><td><code>resolve_article</code></td><td><span class="pill on">on</span></td><td>Título/DOI → <code>articleId</code>. Se llama cada vez que el agente solo tiene un título de un turno anterior.</td></tr>
+    <tr><td><code>create_research_session</code></td><td><span class="pill on">on</span></td><td>Crear la sesión de búsqueda de RR y su primer step a partir de un set de semillas.</td></tr>
+    <tr><td><code>update_session_step</code></td><td><span class="pill on">on</span></td><td>Apuntar un step a una búsqueda / artículo inspeccionado, para que la app abra exactamente donde quedó el chat.</td></tr>
+    <tr><td><code>build_session_link</code></td><td><span class="pill on">on</span></td><td>Devuelve <code>app.researchrabbit.ai/search/{sessionId}/{stepIndex}</code>. <strong>La entrega — el <code>bookingUrl</code> de este producto.</strong></td></tr>
+    <tr><td><code>get_search_results</code></td><td><span class="pill off">off</span></td><td>Releer una búsqueda anterior por id (<code>GET /searches/{id}</code>).</td></tr>
+    <tr><td><code>get_research_session</code></td><td><span class="pill off">off</span></td><td>Leer una sesión y sus steps ordenados.</td></tr>
+    <tr><td><code>search_by_author</code></td><td><span class="pill off">off</span></td><td>Búsqueda de red sembrada con <code>authorIds</code> — “estos autores / autores relacionados”.</td></tr>
+    <tr><td><code>screen_articles</code></td><td><span class="pill off">off</span></td><td>Filtrar candidatos por año, doctype, mínimo de citas, excluir retractados.</td></tr>
+    <tr><td><code>export_bibtex</code></td><td><span class="pill off">off</span></td><td>ids/DOIs → texto BibTeX o RIS para Zotero.</td></tr>
+    <tr><td><code>find_gaps</code></td><td><span class="pill off">off</span></td><td>Papers bien conectados que faltan en la colección del usuario.</td></tr>
+    <tr><td><code>list_collections</code></td><td><span class="pill off">off</span></td><td>Listar carpetas con conteo de ítems y colores.</td></tr>
+    <tr><td><code>list_library</code></td><td><span class="pill off">off</span></td><td>Artículos guardados (más las variantes <code>list_recently_found</code> / <code>list_reading_list</code> sobre el mismo handler).</td></tr>
+    <tr><td><code>create_collection</code></td><td><span class="pill flag">escritura</span></td><td><code>POST /folders</code> — <code>{name, color}</code>.</td></tr>
+    <tr><td><code>save_articles</code></td><td><span class="pill flag">escritura</span></td><td><code>POST /user-articles/batch</code> — guardar la lista corta en una colección.</td></tr>
+  </table>
+
+  <div class="tip"><strong>Por qué solo 12 habilitadas.</strong> First Table expuso 14 tools y seleccionó 7 — más tools degradan
+  de forma medible la elección de tool. Empezar con 12, mirar las trazas, y promover una tool de
+  <span class="pill off">off</span> a <span class="pill on">on</span> solo cuando una conversación real la haya necesitado.</div>
+
+  <h3>Boceto de definición de tool (con el estilo del <code>mcp-server/index.js</code> existente)</h3>
+<pre><code>{
+  name: "search_later_work",
+  description:
+    "Encuentra papers publicados DESPUÉS de las semillas que las citan (Later Work / Cited By). " +
+    "Usar cuando el usuario pregunta qué hay nuevo, cuál es el estado del arte, o qué pasó " +
+    "desde que salió un paper. Pasar las semillas por TÍTULO (el gateway resuelve títulos a ids) — " +
+    "nunca inventar un id numérico. Devuelve papers rankeados con doi, año, citedBy y una razón.",
+  inputSchema: {
+    type: "object",
+    properties: {
+      seeds:    { type: "array", items: { type: "string" },
+                  description: "Títulos o DOIs de papers, entre 1 y 5" },
+      sinceYear:{ type: "number", description: "Opcional: solo papers desde este año" },
+      limit:    { type: "number", description: "Máximo de resultados, default 10, máx 20" }
+    },
+    required: ["seeds"]
+  },
+  call: (a) =&gt; gw("POST", "/api/search/network",
+                  { seeds: a.seeds, edgeMode: "forward",
+                    sinceYear: a.sinceYear, per: a.limit || 10 })
+}</code></pre>
+  <p>Notar que <code>seeds</code> recibe <strong>títulos</strong>, no ids. Esa única decisión elimina el modo de falla más común
+  observado en el build de First Table (el modelo re-escribiendo con seguridad un id que recordaba a medias de tres turnos
+  atrás).</p>
+</section>
+
+<!-- ─────────────────────────────────────────── FLOWISE ─────────────────── -->
+<section id="flowise">
+  <h2><span class="dot"></span>9. Configuración de Flowise</h2>
+  <p>El agentflow es el mismo grafo de dos nodos que
+  <code>firsttable-flowise.onrender.com/v2/agentcanvas/8aebb104-6ab4-417f-bb31-eb08901ded56</code>:
+  <code>startAgentflow_0</code> → <code>agentAgentflow_0</code>, memoria <code>allMessages</code>, una tool MCP.
+  Cambian solo tres cosas: la URL del MCP, la lista de acciones y el prompt.</p>
+
+  <h3>9.1 El nodo de tool MCP (Flowise 3.1.2 → <code>customMCP</code>, config inline)</h3>
+  <div class="warn"><strong>No</strong> usar <code>customMcpServerTool</code>. El Flowise 3.1.2 de Render no tiene la ruta
+  <code>/api/v1/custom-mcp-servers</code>; necesita el nodo viejo con config inline. <code>mcpServerConfig</code> debe ser un
+  <strong>string con JSON codificado</strong>, no un objeto. Este mismo desajuste ya costó un ciclo de debugging en First
+  Table.</div>
+<pre><code>"agentTools": [{
+  "agentSelectedTool": "customMCP",
+  "agentSelectedToolRequiresHumanInput": "",
+  "agentSelectedToolConfig": {
+    "mcpServerConfig": "{\"url\":\"https://researchrabbit-mcp-server.onrender.com/mcp\"}",
+    "mcpActions": [
+      "search_keyword","search_similar","search_earlier_work","search_later_work",
+      "expand_frontier","get_article","rank_candidates","credibility_check",
+      "resolve_article","create_research_session","update_session_step","build_session_link"
+    ],
+    "agentSelectedTool": "customMCP"
+  }
+}]</code></pre>
+
+  <h3>9.2 Modelo</h3>
+  <table>
+    <tr><th>Ajuste</th><th>Valor</th><th>Por qué</th></tr>
+    <tr><td>Proveedor / modelo</td><td><code>chatFireworks</code> · <code>accounts/fireworks/models/glm-5p2</code></td><td>Ya desplegado y pago; el patrón de credencial está probado.</td></tr>
+    <tr><td>Temperatura</td><td><code>0.1</code></td><td>Más baja que el 0.2 de First Table. Las citas son hechos; no hay ninguna ventaja en la creatividad acá.</td></tr>
+    <tr><td>Streaming</td><td><code>true</code></td><td>Los turnos de descubrimiento son lentos (varias llamadas a tools) — el streaming mantiene al usuario presente.</td></tr>
+    <tr><td>Memoria</td><td><code>allMessages</code>, habilitada</td><td>El refinamiento multi-turno es todo el modelo de interacción.</td></tr>
+  </table>
+
+  <h3>9.3 <code>chatbotConfig</code> (columna de tipo <em>string</em> JSON, se guarda con <code>PUT /api/v1/chatflows/{id}</code>)</h3>
+<pre><code>{
+  "title": "ResearchRabbit Copilot",
+  "titleAvatarSrc": "https://www.researchrabbit.ai/favicon.ico",
+  "titleBackgroundColor": "#7c3aed",
+  "titleTextColor": "#ffffff",
+  "welcomeMessage": "¡Hola! Contame qué estás investigando — un tema, una pregunta, un paper o un DOI — y busco los papers que importan y te abro una sesión de ResearchRabbit.",
+  "errorMessage": "Algo falló de mi lado. Probá de nuevo, por favor.",
+  "backgroundColor": "#ffffff",
+  "fontSize": 17,
+  "poweredByTextColor": "#ffffff",
+  "renderHTML": false,
+  "showAgentMessages": false,
+  "botMessage":  { "avatarSrc": "https://www.researchrabbit.ai/favicon.ico",
+                   "backgroundColor": "#7c3aed", "textColor": "#ffffff", "showAvatar": true },
+  "userMessage": { "backgroundColor": "#eef2f7", "textColor": "#1f2937", "showAvatar": true },
+  "textInput":   { "backgroundColor": "#ffffff", "textColor": "#1f2937",
+                   "placeholder": "¿Qué estás investigando?", "sendButtonColor": "#7c3aed" }
+}</code></pre>
+  <div class="note">Arrastrar los gotchas conocidos tal cual: <strong>sin barras finales en las URLs de avatar</strong> (GitHub
+  raw da 404 en <code>usericon.png/</code>); toda llamada a <code>/api/v1/…</code> necesita
+  <code>credentials:'include'</code> <em>y</em> <code>x-request-from: internal</code> o devuelve 401; el chat público se
+  renderiza dentro de un <strong>Shadow DOM</strong> <code>&lt;flowise-fullchatbot&gt;</code>, así que hay que verificar a
+  través de <code>.shadowRoot</code>.</div>
+
+  <p>URL pública: <code>https://researchrabbit-flowise.onrender.com/chatbot/&lt;agentflow-id&gt;</code> con
+  <code>isPublic: true</code>.</p>
+</section>
+
+<!-- ─────────────────────────────────────────── PROMPT ──────────────────── -->
+<section id="prompt">
+  <h2><span class="dot"></span>10. Diseño del system prompt — el contrato anti-fabricación</h2>
+  <p>El prompt de First Table (~7,3 KB) se ganó su extensión codificando modos de falla reales. El prompt de ResearchRabbit
+  hereda su estructura, con las reglas de verdad más apretadas porque el costo de una respuesta errónea es mayor.</p>
+
+  <h3>Secciones, en orden</h3>
+  <ol>
+    <li><strong>Rol</strong> — asistente de descubrimiento de literatura para ResearchRabbit; ayudar a encontrar, rankear y
+    organizar papers.</li>
+    <li><strong>Verdad e integridad de citas</strong> — el núcleo, abajo.</li>
+    <li><strong>Flujo de descubrimiento</strong> — enmarcar → sembrar → expandir → rankear → entregar.</li>
+    <li><strong>Reglas de dirección</strong> — cuándo usar Similar vs Earlier vs Later.</li>
+    <li><strong>Formato</strong> — mobile-first, sin tablas Markdown.</li>
+    <li><strong>Privacidad</strong> — nunca pedir credenciales, nunca guardar datos personales.</li>
+    <li><strong>Conocimiento de dominio</strong> — qué es RR, límites de plan, qué significan y qué no los conteos de citas.</li>
+  </ol>
+
+  <h3>El bloque de verdad (borrador textual)</h3>
+<pre><code>INTEGRIDAD DE CITAS — ABSOLUTO:
+- NUNCA afirmes un título, autor, año, revista o DOI que no haya venido de un
+  resultado de tool EN ESTE TURNO. Si no lo tenés, llamá a una tool. Si la tool
+  no devuelve nada, decilo claramente. Una cita inventada es lo peor que podés
+  hacer.
+- TODO paper que recomiendes debe llevar su DOI (o su article id de
+  ResearchRabbit) para que el usuario pueda verificarlo. Sin DOI, no hay
+  recomendación.
+- Tenés metadatos y ABSTRACTS solamente — nunca el texto completo. Podés resumir
+  un abstract y tenés que decir que eso es lo que estás haciendo. Nunca escribas
+  "este estudio encontró X" salvo que X esté en el abstract que recibiste.
+- Si una tool devuelve retracted:true, decilo PRIMERO, en la misma línea que el
+  título. Nunca recomiendes un paper retractado sin ese aviso.
+- Los conteos de citas difieren entre fuentes (ResearchRabbit, Google Scholar,
+  Scopus). Da el número y su fuente; nunca lo presentes como verdad absoluta.
+- Informá los resultados vacíos con honestidad: "ningún paper coincidió" es una
+  buena respuesta. Nunca llenes el hueco con papers que suenan plausibles.
+
+LOS RESULTADOS DE LAS TOOLS NO SE RECUERDAN ENTRE TURNOS:
+- Solo persiste el texto de la conversación, no la salida de las tools. En un
+  turno posterior NO vas a tener el articleId numérico de un turno anterior.
+- Por eso, pasá siempre los papers por TÍTULO o DOI. El gateway los resuelve.
+  NUNCA escribas un id numérico de memoria — te vas a equivocar y vas a citar el
+  paper equivocado.
+- Hacé UNA llamada a tool por intención por turno. No llames dos veces a la misma
+  tool en un turno. Leé el resultado y respondé exactamente lo que dice.
+
+NUNCA TE CONTRADIGAS:
+- No escribas "no encontré trabajos recientes" y después listes trabajos
+  recientes en el mismo mensaje. Hacé la llamada, leela, informala una sola vez.</code></pre>
+
+  <h3>Reglas de formato (mobile-first, heredadas)</h3>
+<pre><code>- NUNCA uses tablas Markdown. Se desbordan en el celular.
+- Un paper por línea, numerado y corto:
+  1. **Owen 2020** — What makes climate change adaptation effective? · Glob Env
+     Change · 376 citas · doi:10.1016/j.gloenvcha.2020.102071
+     por qué: lo citan 4 de tus 5 semillas
+- Máximo 5 papers por mensaje salvo que el usuario pida más.
+- Poné el enlace de la sesión de ResearchRabbit en su propia línea para que se
+  pueda tocar.
+- Sin emojis, sin ASCII art, sin layouts de varias columnas.</code></pre>
+
+  <h3>La regla de entrega (el análogo del <code>bookingUrl</code>)</h3>
+<pre><code>SIEMPRE TERMINÁ CON EL ENLACE DE LA SESIÓN:
+- Una vez que mostraste la lista corta, llamá a create_research_session con esas
+  semillas y dale al usuario el enlace de build_session_link, en su propia línea.
+- Ese enlace es el entregable: abre la app real de ResearchRabbit en el step
+  exacto, donde el usuario ve el mapa y sigue explorando visualmente.
+- Nunca inventes una URL de sesión. Solo dá un enlace que haya devuelto una tool.</code></pre>
+</section>
+
+<!-- ─────────────────────────────────────────── FLUJOS ──────────────────── -->
+<section id="flows">
+  <h2><span class="dot"></span>11. Flujos de conversación</h2>
+
+  <h3>Flujo A — “No sé por dónde empezar” (el emblemático)</h3>
+  <div class="chat">
+    <div class="u">Estoy empezando una revisión sobre si la cobertura arbórea urbana reduce la mortalidad por calor en barrios de bajos ingresos.</div>
+    <div class="t">→ search_keyword("urban tree canopy heat mortality") · search_keyword("urban greening heat vulnerability equity")</div>
+    <div class="b">Encontré buenos puntos de partida. ¿Cuáles se acercan más a tu enfoque? (elegí 1–3)<br>
+      1. <strong>Owen 2020</strong> — What makes climate change adaptation effective? · 376 citas<br>
+      2. <strong>Wang 2023</strong> — Urban canopy cover and heat-related ED visits · 91 citas<br>
+      3. <strong>Hoffman 2020</strong> — Redlining and intra-urban heat · 640 citas</div>
+    <div class="u">El 2 y el 3.</div>
+    <div class="t">→ expand_frontier(seeds:["Urban canopy cover…","Redlining and intra-urban heat"], iterations:2) → rank_candidates</div>
+    <div class="b">Corrí dos iteraciones sobre ambas semillas — 412 papers conectados, estos son los 5 que más importan:<br>
+      1. … · por qué: lo citan las dos semillas, 2024, 48 citas/año<br>
+      …<br>
+      Dos son artículos de revisión — buenos puntos de entrada.<br><br>
+      Tu sesión está lista:<br>
+      <code>app.researchrabbit.ai/search/8f2c…/1</code></div>
+    <div class="u">Guardá esos cinco en algún lado.</div>
+    <div class="t">→ create_collection("Calor urbano y equidad") → save_articles(...)  [flag de escritura]</div>
+    <div class="b">Guardados en la colección <strong>Calor urbano y equidad</strong> (5 artículos). ¿Querés el BibTeX?</div>
+  </div>
+
+  <h3>Flujo B — “¿Qué hay nuevo desde la última vez?”</h3>
+  <p><code>list_library</code> o una semilla explícita → <code>search_later_work(sinceYear: 2025)</code> →
+  <code>rank_candidates</code> por citas por año → 5 papers + enlace de sesión. Este es también exactamente el payload del
+  agente de digest semanal (§12.4) — la misma cadena de tools, corriendo en un cron en vez de en un mensaje.</p>
+
+  <h3>Flujo C — “Dame los fundamentos”</h3>
+  <p><code>resolve_article</code> → <code>search_earlier_work</code> (<code>edgeMode: backward</code>) → rankear por
+  <code>citedBy</code> → “estos son los papers sobre los que se construyó tu campo”. La mejor demo de por qué la búsqueda por
+  red de citas le gana a la búsqueda por keywords — y un caso donde el agente debería <em>explicar la dirección que
+  eligió</em>.</p>
+
+  <h3>Flujo D — “¿Vale la pena leer esto / puedo confiar?”</h3>
+  <p><code>credibility_check</code> en una llamada: flag de retractación primero, después doctype (revisión vs primario),
+  revista, conteo de citas <em>con su fuente</em>, citas por año y h-index del primer autor — seguido de una salvedad explícita
+  de que ninguna de esas métricas mide calidad por sí sola. Negarse a dar un único “score de credibilidad”; sería falsa
+  precisión.</p>
+
+  <h3>Flujo E — “¿A mi bibliografía le falta algo?”</h3>
+  <p><code>list_library</code> (o un BibTeX pegado) → <code>find_gaps</code> → papers muy conectados a la red local de la
+  colección pero ausentes de ella. Esta es la feature a la que los directores de tesis realmente van a prestar atención.</p>
+
+  <div class="note"><strong>Presupuesto de turno.</strong> Limitar las llamadas a tools por turno (≈6) y por conversación (≈40)
+  en el gateway. <code>expand_frontier</code> existe justamente para que una exploración de 3 iteraciones sea <em>una</em>
+  llamada y no nueve, manteniendo acotados la latencia y el costo en tokens.</div>
+</section>
+
+<!-- ─────────────────────────────────────────── ALTS ────────────────────── -->
+<section id="alts">
+  <h2><span class="dot"></span>12. Otras formas de app que vale la pena construir (rankeadas)</h2>
+  <p>Preguntaste si el chatbot es la forma correcta o si otra cosa ayudaría más. Este es el ranking honesto —
+  <strong>las cinco comparten el mismo gateway y el mismo servidor MCP</strong>, así que son variaciones de entrega, no de
+  ingeniería.</p>
+
+  <h3><span class="rank">1</span> &nbsp;El servidor MCP solo <span class="pill on">construir esto primero</span></h3>
+  <p>Publicar <code>researchrabbit-mcp-server</code> como un endpoint MCP simple. El usuario agrega una línea de config en
+  Claude Desktop, Claude Code o cualquier cliente MCP y tiene las 22 tools dentro del asistente que ya usa.
+  <strong>$14/mes, sin UI de chat que mantener, sin factura de LLM, sin prompt que ajustar</strong>, y se compone con todo lo
+  demás que hagan. Es el ítem con mayor relación palanca/esfuerzo de la lista, y de todos modos es requisito del chatbot.</p>
+
+  <h3><span class="rank">2</span> &nbsp;El generador de Informes de Literatura <span class="pill on">mayor valor de usuario</span></h3>
+  <p>No es un chat: un formulario (o un solo mensaje) que dispara un job asíncrono. Entra una pregunta, sale un único documento
+  HTML/PDF — 20–40 papers rankeados agrupados en clústeres temáticos, fundacionales vs recientes, autores clave, una nota de
+  cobertura, el bloque BibTeX y el enlace de sesión. Entregable, no conversación. Es el artefacto que un estudiante le reenvía
+  a su director, y encaja con los datos mucho mejor que las burbujas de chat. Corre sobre las mismas tools con un presupuesto
+  más largo.</p>
+
+  <h3><span class="rank">3</span> &nbsp;El chatbot (Warren) <span class="pill on">la propuesta de arriba</span></h3>
+  <p>La mejor <em>puerta de entrada</em>: barrera mínima, demuestra genial y resuelve el caso de la pregunta vaga que nada más
+  resuelve. Queda tercero solo porque es lo más caro de operar y de ajustar, no porque sea menos útil. Construirlo una vez que
+  exista el #1.</p>
+
+  <h3><span class="rank">4</span> &nbsp;El agente de digest semanal de “Later Work”</h3>
+  <p>Un agente cron: por cada colección, correr <code>search_later_work</code> sobre sus artículos, filtrar lo nuevo desde la
+  última corrida, rankear y enviar por email/Slack 5 papers con una línea cada uno. Sin UI. La feature de retención más barata
+  que existe — es la razón por la que la gente vuelve cada semana — y reutiliza el flujo B tal cual.</p>
+
+  <h3><span class="rank">5</span> &nbsp;El asistente de screening para revisiones sistemáticas</h3>
+  <p>Se suben criterios de inclusión/exclusión más un conjunto de candidatos (de <code>expand_frontier</code> o de un import
+  BibTeX); el agente etiqueta cada candidato incluir/excluir/dudoso con una línea de justificación contra el abstract, y exporta
+  un conteo estilo PRISMA. Máximo valor por usuario, audiencia más chica y lo más sensible en cumplimiento (una exclusión
+  errónea es un error de investigación real) — así que necesita confirmación humana en el bucle y debería ir último.</p>
+
+  <h3>Recomendación — orden de construcción</h3>
+  <div class="verdict" style="margin-bottom:0">
+    <p style="margin:0 0 8px"><strong>Primero:</strong> gateway + servidor MCP (#1) — usable desde el día uno en Claude Desktop.<br>
+    <strong>Después:</strong> el chatbot en Flowise (#3) — la cara pública y compartible, reutilizando la receta de First Table de punta a punta.<br>
+    <strong>Luego:</strong> el generador de informes (#2) y el digest semanal (#4) — las dos features que lo vuelven <em>pegajoso</em>.<br>
+    <strong>Último:</strong> screening (#5), solo con un usuario real de revisiones sistemáticas guiando los requisitos.</p>
+    <p style="margin:0"><strong>Este orden de construcción es exactamente lo que codifica el plan de entrega.</strong> La entrega
+    tiene tres etapas —<span class="stage">Etapa&nbsp;1 · Local</span>, después <span class="stage s2">Etapa&nbsp;2 · Render</span>
+    (solo gateway + MCP, que <em>es</em> el ítem #1 entregado) y después <span class="stage s3">Etapa&nbsp;3 · Flowise</span>
+    (el ítem #3). Por eso el chatbot no es prerrequisito de nada: después de la Etapa&nbsp;2 el servidor MCP ya funciona dentro de
+    Claude Desktop/Code. Los ítems #2, #4 y #5 son trabajo posterior que vuelve a recorrer el mismo ciclo de tres etapas.</p>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────── PLAN ────────────────────── -->
+<section id="plan">
+  <h2><span class="dot"></span>13. Plan de implementación — tres etapas</h2>
+
+  <p>La construcción se divide en <strong>exactamente tres etapas</strong>. La Etapa&nbsp;1 deja todo andando en tu propia
+  máquina: gateway, servidor MCP y Flowise. La Etapa&nbsp;2 despliega en Render <em>solo los dos servicios Node</em> — gateway +
+  servidor MCP. La Etapa&nbsp;3 agrega encima la instancia de Flowise y el agente. La división es deliberada: todo lo que puede
+  fallar en la lógica de dominio (auth, ranking, descripciones de tools, el prompt) es más barato de encontrar en local; todo lo
+  que puede fallar en el hosting (regiones, discos, arranques en frío, CORS) se aísla mucho mejor cuando el código ya se sabe
+  bueno; y el chatbot —la pieza más cara y más frágil— queda directamente fuera del camino crítico.</p>
+
+  <div class="grid2">
+    <div class="card" style="border-top:3px solid var(--brand)">
+      <h4><span class="stage">Etapa&nbsp;1 · Local</span></h4>
+      <p style="margin:8px 0 0">Todo en <code>localhost</code>: gateway en <code>:8821</code>, servidor MCP en <code>:8822</code>,
+      Flowise en <code>:3000</code>. El servidor MCP queda registrado en Claude Desktop/Code y contesta preguntas reales; Flowise
+      se prueba con un smoke-check (arranca y puede llamar una tool). Termina con un checklist de verificación por terminal.</p>
+      <p style="margin:8px 0 0"><strong>Entregable:</strong> un asistente de investigación que funciona y al que todavía nadie
+      más puede llegar. <span class="est">≈7–10 días</span></p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--accent)">
+      <h4><span class="stage s2">Etapa&nbsp;2 · Render (API)</span></h4>
+      <p style="margin:8px 0 0"><strong>Dos</strong> Web Services de Render — <code>researchrabbit-server</code> y
+      <code>researchrabbit-mcp-server</code> — con las URLs locales cambiadas por URLs públicas HTTPS y los secretos movidos al
+      dashboard de Render. Sin Flowise, sin factura de LLM, sin prompt que ajustar.</p>
+      <p style="margin:8px 0 0"><strong>Entregable:</strong> un <strong>endpoint MCP hosteado</strong> que registrás en Claude
+      Desktop / Claude Code / cualquier agente de código — y que te hace investigación real. <span class="est">≈0,5 día</span></p>
+    </div>
+    <div class="card" style="border-top:3px solid #10b981">
+      <h4><span class="stage s3">Etapa&nbsp;3 · Flowise</span></h4>
+      <p style="margin:8px 0 0">El servicio de Flowise en Render (Docker + disco persistente), el nuevo agentflow, su nodo Custom
+      MCP apuntado a la URL de la Etapa&nbsp;2, el system prompt de Warren y la página pública de chat.</p>
+      <p style="margin:8px 0 0"><strong>Entregable:</strong> una URL pública de chatbot que le podés mandar a alguien que nunca
+      va a instalar un cliente MCP. <span class="est">≈0,5–1 día</span></p>
+    </div>
+  </div>
+
+  <div class="tip"><strong>Por qué el servidor MCP se entrega antes que el chatbot — la decisión clave de este plan.</strong>
+  El gateway + el servidor MCP son el <em>activo</em>; Flowise es <em>empaquetado</em>. En el momento en que la Etapa&nbsp;2 queda
+  en verde tenés un endpoint MCP hosteado en <code>https://researchrabbit-mcp-server.onrender.com/mcp</code> que registrás en
+  <strong>Claude Desktop, Claude Code o cualquier agente de código compatible con MCP</strong> con un solo bloque de
+  configuración (§15.9). Desde ese momento el asistente que ya usás todos los días puede correr una <strong>investigación
+  bibliográfica real</strong> para vos a través de las 22 tools de §8 — búsqueda por keywords, expansión Similar / Earlier /
+  Later, chequeos de credibilidad, export BibTeX, el enlace profundo de sesión — <strong>con el chatbot de Flowise todavía sin
+  existir</strong>. Eso ya es un producto terminado y útil al final de la Etapa&nbsp;2, por $14/mes y sin factura de LLM propia.
+  La Etapa&nbsp;3 es <strong>aditiva</strong>: no hace que la investigación funcione mejor, la envuelve en una UI de chat para
+  usuarios no técnicos que nunca van a editar un archivo JSON de configuración.</div>
+
+  <h3>Qué cambia (y qué no) entre las tres etapas</h3>
+  <table>
+    <tr><th>Aspecto</th><th>Etapa 1 — Local</th><th>Etapa 2 — Render (API)</th><th>Etapa 3 — Flowise</th></tr>
+    <tr><td>Código de la aplicación</td><td>Se escribe acá</td><td><strong>Sin cambios.</strong> Cero reescrituras — para eso existe la división.</td><td><strong>Sin cambios.</strong> Solo se edita la línea <code>apiHost</code> de <code>site/index.html</code>.</td></tr>
+    <tr><td>URL del gateway</td><td><code>http://localhost:8821</code></td><td><code>https://researchrabbit-server.onrender.com</code></td><td>igual que en la Etapa 2</td></tr>
+    <tr><td>URL del MCP</td><td><code>http://localhost:8822/mcp</code></td><td><code>https://researchrabbit-mcp-server.onrender.com/mcp</code></td><td>igual que en la Etapa 2 — el agentflow simplemente apunta ahí</td></tr>
+    <tr><td>Flowise</td><td><code>npx flowise start</code> o Docker en <code>:3000</code> — solo smoke-check</td><td><strong>No se despliega.</strong> Queda deliberadamente fuera de alcance.</td><td>Web Service Docker, <code>flowiseai/flowise:3.1.2</code>, Standard 2 GB + disco de 1 GB</td></tr>
+    <tr><td>Secretos</td><td><code>server/.env</code> (ignorado por git)</td><td>Env vars / environment group de Render — <em>nunca</em> commiteados</td><td>La key de Fireworks como <em>credencial</em> de Flowise, no como env var de Render</td></tr>
+    <tr><td>Nodo de tool MCP</td><td>Un Flowise local más nuevo puede ofrecer <code>customMcpServerTool</code></td><td>n/a — en esta etapa no hay Flowise</td><td>3.1.2 exige el nodo inline <code>customMCP</code> (§9.1) — ver la nota de pineado en §14.6</td></tr>
+    <tr><td>Costo</td><td>$0 de infra (solo tokens del LLM)</td><td><strong>$14/mes</strong> de infra (2× Starter, §5) — sin factura de LLM</td><td>+$25/mes (Standard 2 GB) + tokens = <strong>$39/mes</strong> en total</td></tr>
+    <tr><td>Cómo lo usás</td><td>Claude Desktop/Code contra <code>localhost</code></td><td>Claude Desktop / Claude Code / cualquier agente de código, por HTTPS, desde donde sea</td><td>Una página de chat en el navegador, en el teléfono, mandada como enlace</td></tr>
+    <tr><td>Quién lo puede usar</td><td>Vos</td><td>Vos, y cualquiera a quien le des la URL MCP y tenga un cliente MCP</td><td>Cualquiera con el enlace</td></tr>
+  </table>
+
+  <h3>Esfuerzo de un vistazo</h3>
+  <table>
+    <tr><th>Etapa</th><th>Paso</th><th>Esfuerzo</th></tr>
+    <tr><td rowspan="9"><span class="stage">Etapa&nbsp;1</span></td><td>14.0 · Decidir (backend, audiencia, escrituras)</td><td>0,5 día</td></tr>
+    <tr><td>14.1 · Prerrequisitos y toolchain</td><td>0,5 h</td></tr>
+    <tr><td>14.2 · Scaffolding del repo</td><td>1 h</td></tr>
+    <tr><td>14.3 · Variables de entorno</td><td>0,5 h</td></tr>
+    <tr><td>14.4 · Gateway corriendo en local</td><td>3–4 días</td></tr>
+    <tr><td>14.5 · Servidor MCP corriendo y registrado</td><td>1–1,5 días</td></tr>
+    <tr><td>14.6 · Flowise local — smoke-check</td><td>0,5 día</td></tr>
+    <tr><td>14.7 · UI del chat contra los endpoints locales (vista previa opcional)</td><td>0,5 h</td></tr>
+    <tr><td>14.8–14.9 · Prompt, evals y verificación local</td><td>2–3 días</td></tr>
+    <tr><td rowspan="7"><span class="stage s2">Etapa&nbsp;2</span></td><td>15.1 · Pre-vuelo (repo, región, GitHub App)</td><td>0,5–1 h</td></tr>
+    <tr><td>15.2–15.3 · Los dos servicios Node en Render</td><td>1–1,5 h</td></tr>
+    <tr><td>15.4 · Blueprint <code>render.yaml</code> (opcional)</td><td>45 min</td></tr>
+    <tr><td>15.5 · Env vars y secretos en el dashboard</td><td>15 min</td></tr>
+    <tr><td>15.6–15.7 · Arranques en frío, keep-alive y CORS</td><td>0,5 h</td></tr>
+    <tr><td>15.8 · Smoke tests por HTTPS</td><td>0,5 h</td></tr>
+    <tr><td><strong>15.9 · Usar el MCP hosteado desde Claude Desktop/Code</strong></td><td>0,5 h</td></tr>
+    <tr><td rowspan="7"><span class="stage s3">Etapa&nbsp;3</span></td><td>16.1 · Servicio Docker de Flowise + disco persistente</td><td>20 min + primer arranque</td></tr>
+    <tr><td>16.2 · <code>render.yaml</code> — el bloque de Flowise (opcional)</td><td>15 min</td></tr>
+    <tr><td>16.3 · Usuario admin + credencial de Fireworks</td><td>15 min</td></tr>
+    <tr><td>16.4 · Agentflow + nodo de tool MCP contra la URL desplegada</td><td>0,5–1 h</td></tr>
+    <tr><td>16.5 · System prompt y <code>chatbotConfig</code></td><td>15 min</td></tr>
+    <tr><td>16.6–16.7 · URL pública de chat, embed y CORS</td><td>0,5 h</td></tr>
+    <tr><td>16.8 · Smoke test post-deploy + set dorado</td><td>1–2 h</td></tr>
+    <tr><td colspan="2"><strong>Total, Etapas 1 + 2 + 3</strong></td><td><strong>~8–11 días</strong> (≈2 semanas a tiempo parcial)</td></tr>
+    <tr><td colspan="2"><em>Salida útil con solo la Etapa 2</em></td><td><em>~7,5–10,5 días</em> — el asistente de investigación funciona antes de que empiece la Etapa 3</td></tr>
+    <tr><td colspan="2"><em>Opcional después: generador de informes + digest semanal (§12)</em></td><td><em>3–5 días</em>, que a su vez vuelven a pasar por las mismas tres etapas</td></tr>
+  </table>
+
+  <div class="note"><strong>Regla para todo el plan:</strong> nada se despliega en una etapa posterior si no pasó antes su
+  checklist en la anterior. Si aparece un bug en Render, reproducilo primero en local — si en local no se reproduce, es un
+  problema de hosting/configuración, y §15 (servicios, URLs, secretos) o §16 (Flowise, disco, tipos de nodo) te dice dónde mirar.
+  <strong>Podés parar después de la Etapa&nbsp;2</strong> y aun así haber entregado algo que vale la pena usar; la Etapa&nbsp;3 es
+  una decisión de producto, no una necesidad técnica.</div>
+</section>
+
+<!-- ─────────────────────────────────────────── ETAPA 1 ─────────────────── -->
+<section id="stage1" class="stg">
+  <h2><span class="dot"></span>14. <span class="stage">Etapa&nbsp;1 · Local</span> &nbsp;Todo en tu máquina: gateway + servidor MCP + Flowise</h2>
+  <p><strong>Objetivo:</strong> de una carpeta vacía a un asistente de investigación que corre enteramente en
+  <code>localhost</code> — el gateway en <code>:8821</code>, el servidor MCP en <code>:8822</code> registrado en Claude
+  Desktop/Code y contestando preguntas reales con DOIs reales y un enlace real de sesión de ResearchRabbit, y Flowise en
+  <code>:3000</code> probado como que arranca y llega a ese servidor MCP. <em>Nada</em> desplegado en ningún lado.</p>
+  <div class="note"><strong>Sobre Flowise en esta etapa.</strong> Según el plan, las tres piezas corren en local acá — pero el
+  trabajo con Flowise es un <strong>smoke-check</strong> (arranca, ve tu servidor MCP, puede llamar una de las 22 tools), no la
+  construcción del producto. El agentflow de verdad —prompt, <code>chatbotConfig</code>, URL pública— se arma una sola vez, sobre
+  la instancia desplegada, en la <strong>Etapa&nbsp;3</strong> (§16). Construirlo dos veces es el único esfuerzo duplicado que este
+  plan evita deliberadamente.</div>
+
+  <h3>14.0 Decidir primero <span class="est">0,5 día</span></h3>
+  <p>Contestar las tres preguntas que cambian el código antes de escribirlo (lista completa en §20): qué
+  <strong>backend</strong> (§6 — recomendación: construir <code>openalex</code> primero y <code>rr</code> detrás del flag), si esto
+  es una herramienta <strong>personal/de laboratorio</strong> o un producto público, y si las <strong>escrituras</strong> están
+  habilitadas. Antes de construir contra ellos, re-verificá a mano que los endpoints privados de
+  <code>researchrabbit-howto-api-en.html</code> siguen comportándose como está documentado (abrí la app, corré una búsqueda, mirá
+  la pestaña de red).</p>
+
+  <h3>14.1 Prerrequisitos <span class="est">0,5 h</span></h3>
+  <table>
+    <tr><th>Herramienta</th><th>Versión</th><th>Para qué</th></tr>
+    <tr><td>Node.js</td><td><strong>20 LTS o superior</strong> (22 LTS está bien)</td><td><code>fetch</code> nativo, <code>node --watch</code> y la versión que espera el <code>@modelcontextprotocol/sdk</code>. El mismo runtime que usa Render.</td></tr>
+    <tr><td>npm</td><td>10+ (viene con Node 20)</td><td><code>firstTable</code> usa <code>npm</code> pelado <strong>sin workspaces</strong> — dos apps independientes. <code>pnpm</code> también sirve, pero entonces usalo en las dos carpetas y mantené los lockfiles consistentes con lo que va a instalar Render.</td></tr>
+    <tr><td>git</td><td>cualquiera</td><td>Un solo monorepo; las Etapas 2 y 3 despliegan desde ahí.</td></tr>
+    <tr><td><code>curl</code> + <code>jq</code></td><td>cualquiera</td><td>Todo el checklist de verificación de §14.9 es curl + jq.</td></tr>
+    <tr><td>Bruno</td><td>última · <em>opcional</em></td><td>El equivalente gráfico del checklist; espeja <code>firstTable/bruno-collection/</code> con un entorno <code>Local</code>.</td></tr>
+    <tr><td>Docker</td><td>última · <em>opcional pero recomendado</em></td><td>Solo para Flowise. Correr <code>flowiseai/flowise:3.1.2</code> en local da <strong>paridad de versión con Render</strong>, lo que evita la sorpresa <code>customMCP</code> vs <code>customMcpServerTool</code> (§14.6).</td></tr>
+    <tr><td>Claude Desktop / Claude Code</td><td>última · <em>opcional</em></td><td>El cliente MCP más rápido para probar las tools sin Flowise en el medio (§14.5).</td></tr>
+    <tr><td>API key de Fireworks</td><td>—</td><td>Hace falta recién al levantar Flowise. Una key <strong>real</strong>, nunca un placeholder <code>_FLOWISE_BLANK_</code>.</td></tr>
+  </table>
+
+  <h3>14.2 Armar el esqueleto del repo <span class="est">1 h</span></h3>
+  <p>Recrear el layout de <code>firstTable</code> tal cual (ver §5). Dos apps Node independientes, sin workspaces:</p>
+<pre><code>mkdir researchrabbit-copilot &amp;&amp; cd researchrabbit-copilot &amp;&amp; git init
+
+mkdir -p server/src/adapters server/data mcp-server site bruno-collection/environments evals
+
+cd server     &amp;&amp; npm init -y &amp;&amp; npm i express cors &amp;&amp; cd ..
+cd mcp-server &amp;&amp; npm init -y &amp;&amp; npm i express @modelcontextprotocol/sdk &amp;&amp; cd ..
+
+printf 'node_modules/\n.env\n*.log\n' &gt; .gitignore</code></pre>
+  <p>Después dejar los bloques <code>scripts</code> iguales a los de <code>firstTable</code>, para que los comandos de build/start
+  de Render en la Etapa&nbsp;2 no requieran pensar nada:</p>
+<pre><code>// server/package.json
+"name": "researchrabbit-copilot-server",
+"scripts": { "start": "node src/index.js", "dev": "node --watch src/index.js" }
+
+// mcp-server/package.json
+"name": "researchrabbit-mcp-server",
+"scripts": { "start": "node index.js", "dev": "node --watch index.js" }</code></pre>
+  <table>
+    <tr><th>Carpeta</th><th>Qué es</th><th>Puerto local</th></tr>
+    <tr><td><code>server/</code></td><td>Gateway REST frente a la API privada de RR + el adaptador OpenAlex (§7)</td><td><strong>8821</strong></td></tr>
+    <tr><td><code>mcp-server/</code></td><td>Servidor MCP que expone el gateway como 22 tools (§8)</td><td><strong>8822</strong></td></tr>
+    <tr><td><code>site/</code></td><td>One-pager estático con el widget de chat embebido (§14.7)</td><td>se abre como archivo, o <code>npx serve site</code></td></tr>
+    <tr><td><code>bruno-collection/</code></td><td>Colección de requests del gateway, entorno <code>Local</code></td><td>—</td></tr>
+    <tr><td><code>agent-system-prompt.md</code> · <code>evals/</code></td><td>El prompt de Warren (§10) y el set dorado de 15 preguntas (§18)</td><td>—</td></tr>
+  </table>
+  <div class="note">Los puertos <strong>8821/8822</strong> espejan los <strong>8811/8812</strong> de First Table con el anteúltimo
+  dígito corrido, así los dos proyectos pueden correr en paralelo en la misma máquina.</div>
+
+  <h3>14.3 Variables de entorno <span class="est">0,5 h</span></h3>
+  <p>Commitear un <code>.env.example</code> en cada app (como hace <code>firstTable</code>) y mantener el <code>.env</code> real
+  fuera de git. Node 20+ lo lee con <code>node --env-file=.env src/index.js</code>, así que no hace falta la dependencia
+  <code>dotenv</code>.</p>
+  <table>
+    <tr><th>Variable</th><th>App</th><th>Valor local</th><th>Para qué</th></tr>
+    <tr><td><code>PORT</code></td><td>server</td><td><code>8821</code></td><td>Puerto del gateway. Render lo inyecta en la Etapa 2 — nunca hardcodearlo.</td></tr>
+    <tr><td><code>RR_BACKEND</code></td><td>server</td><td><code>openalex</code></td><td><code>openalex</code> | <code>rr</code> — el switch de adaptador de §6.</td></tr>
+    <tr><td><code>RR_API_BASE</code></td><td>server</td><td><code>https://api.researchrabbit.ai</code></td><td>Host upstream.</td></tr>
+    <tr><td><code>RR_APP_BASE</code></td><td>server</td><td><code>https://app.researchrabbit.ai</code></td><td>Se usa para construir el enlace profundo de la sesión.</td></tr>
+    <tr><td><code>RR_SESSION_COOKIE</code></td><td>server</td><td><em>secreto</em></td><td>Solo backend A. Nunca commiteado, nunca en un prompt, nunca en Flowise.</td></tr>
+    <tr><td><code>RR_PROJECT_ID</code></td><td>server</td><td><em>secreto</em></td><td>El gateway lo inyecta en cada llamada a RR; el agente nunca lo ve.</td></tr>
+    <tr><td><code>RR_ALLOW_WRITES</code></td><td>server</td><td><code>false</code></td><td>Habilita <code>create_collection</code> / <code>save_articles</code>.</td></tr>
+    <tr><td><code>OPENALEX_MAILTO</code></td><td>server</td><td>tu email</td><td>Parámetro de contacto para el polite pool de OpenAlex.</td></tr>
+    <tr><td><code>CACHE_TTL_SECONDS</code></td><td>server</td><td><code>86400</code></td><td>Caché de metadatos de artículos; RR refresca semanalmente, así que un día es seguro.</td></tr>
+    <tr><td><code>MAX_TOOL_CALLS_PER_CONV</code></td><td>server</td><td><code>40</code></td><td>El presupuesto de requests de §11.</td></tr>
+    <tr><td><code>ALLOWED_ORIGINS</code></td><td>server</td><td><code>http://localhost:3000</code></td><td>Lista blanca de CORS para el origen de Flowise y el sitio estático.</td></tr>
+    <tr><td><code>MCP_PORT</code></td><td>mcp-server</td><td><code>8822</code></td><td>Override local. <strong><code>PORT</code> tiene prioridad</strong> para que Render pueda inyectarlo — la convención exacta de <code>firstTable/mcp-server</code>.</td></tr>
+    <tr><td><code>GATEWAY_URL</code></td><td>mcp-server</td><td><code>http://localhost:8821</code></td><td>La única línea que cambia en la Etapa 2.</td></tr>
+  </table>
+  <div class="warn"><strong>Nunca</strong> pongas <code>RR_SESSION_COOKIE</code> en otro lado que no sea el entorno del gateway:
+  ni en el servidor MCP, ni en Flowise, ni en el system prompt. Y nunca le pidas credenciales de ResearchRabbit al usuario en el
+  chat (§6, §10).</div>
+
+  <h3>14.4 Correr el gateway en local <span class="est">3–4 días</span></h3>
+  <p>Acá está el grueso del trabajo real: la app Express, los dos adaptadores, la resolución título→id con su caché, el ranking por
+  consenso de semillas, el screening, el BibTeX y la forma de respuesta de §7.</p>
+<pre><code>cd server
+npm install
+npm start                      # o: npm run dev   (node --watch)
+# → escuchando en http://localhost:8821</code></pre>
+  <p>Construirlo en este orden — cada paso se verifica solo con <code>curl</code>, sin ningún LLM en el medio:</p>
+  <ol class="big">
+    <li><code>/api/health</code> + el adaptador OpenAlex (no necesita credenciales — tenés un gateway útil el día uno).</li>
+    <li><code>/api/search/keyword</code>, <code>/api/search/network</code>, <code>/api/articles/:idOrDoi</code> — los tres con los que se compone todo lo demás.</li>
+    <li><code>/api/resolve</code> y su caché. <strong>Hacerlo antes que las tools</strong>: todo el diseño anti-alucinación de §10 depende de que los títulos resuelvan de forma confiable.</li>
+    <li><code>/api/expand</code>, <code>/api/screen</code>, <code>/api/credibility</code>, <code>/api/gaps</code>, <code>/api/export/bibtex</code> — los endpoints derivados.</li>
+    <li><code>/api/sessions</code> + <code>/api/collections</code> + <code>/api/library</code> — necesitan backend A y una cookie válida; el enlace profundo vive acá.</li>
+    <li>La colección Bruno, un <code>.bru</code> por endpoint, con un entorno <code>Local</code> que tenga <code>baseUrl=http://localhost:8821</code>.</li>
+  </ol>
+
+  <h3>14.5 Correr el servidor MCP en local y registrarlo <span class="est">1–1,5 días</span></h3>
+<pre><code>cd mcp-server
+npm install
+GATEWAY_URL=http://localhost:8821 MCP_PORT=8822 npm start
+# → MCP (Streamable HTTP) en http://localhost:8822/mcp
+# → GET / devuelve un descriptor JSON con los nombres de las 22 tools</code></pre>
+  <p>Registralo en un cliente MCP real y usá ese cliente como banco de pruebas <em>antes</em> de tocar Flowise — es de lejos el
+  ciclo de feedback más rápido, y además es la app alternativa #1 de §12, terminada. <strong>Este es exactamente el montaje que la
+  Etapa&nbsp;2 pone en internet:</strong> el mismo registro, con <code>localhost:8822</code> reemplazado por la URL pública HTTPS
+  (§15.9).</p>
+<pre><code># Claude Code (transporte Streamable HTTP)
+claude mcp add --transport http researchrabbit http://localhost:8822/mcp
+
+# Claude Desktop — claude_desktop_config.json
+{
+  "mcpServers": {
+    "researchrabbit": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "http://localhost:8822/mcp"]
+    }
+  }
+}</code></pre>
+  <div class="warn"><strong>El 406 que no es un bug.</strong> Streamable HTTP exige
+  <code>Accept: application/json, text/event-stream</code> en cada <code>POST /mcp</code>. Sin los dos media types el servidor
+  responde <strong>406</strong>, y está bien. Igual que <code>GET /mcp</code> devolviendo <strong>405</strong>: el endpoint es
+  solo POST. Las dos cosas se confirmaron en First Table.</div>
+
+  <h3>14.6 Correr Flowise en local — el smoke-check <span class="est">0,5 día</span></h3>
+  <p><strong>Lo que este paso demuestra, y nada más:</strong> que Flowise arranca en tu máquina, que puede llegar a tu servidor MCP
+  local a través de la lista anti-SSRF, y que un nodo agente puede llamar una de las 22 tools y recibir datos reales. El agentflow
+  de producción —el prompt de Warren, el <code>chatbotConfig</code>, la URL pública— se arma una sola vez sobre la instancia
+  desplegada en la <strong>Etapa&nbsp;3</strong> (§16.3–§16.6), así que acá no hace falta pulir nada.</p>
+  <p>Dos opciones. <strong>Se recomienda Docker</strong>, porque pinear <code>3.1.2</code> te da los mismos tipos de nodo que vas
+  a tener en Render.</p>
+<pre><code># Opción A — Docker, pineado a la versión que va a correr Render (recomendado)
+docker run -d --name rr-flowise -p 3000:3000 \
+  --add-host=host.docker.internal:host-gateway \
+  -e HOST=0.0.0.0 \
+  -e HTTP_SECURITY_CHECK=false \
+  -e DATABASE_PATH=/root/.flowise \
+  -e APIKEY_PATH=/root/.flowise \
+  -e SECRETKEY_PATH=/root/.flowise \
+  -e LOG_PATH=/root/.flowise/logs \
+  -e BLOB_STORAGE_PATH=/root/.flowise/storage \
+  -v rr-flowise-data:/root/.flowise \
+  flowiseai/flowise:3.1.2
+
+# Opción B — sin Docker
+npx flowise start        # http://localhost:3000</code></pre>
+  <div class="warn"><strong>Dos gotchas que solo existen en local.</strong>
+  (1) <code>HTTP_SECURITY_CHECK=false</code> es <strong>obligatorio</strong>: sin eso, la lista anti-SSRF de Flowise bloquea toda
+  llamada a un servidor MCP en <code>localhost</code>. (2) Si Flowise corre <em>dentro de Docker</em>, <code>localhost</code>
+  adentro del contenedor es el contenedor mismo: apuntá la tool MCP a
+  <code><b>http://host.docker.internal:8822/mcp</b></code>, no a <code>http://localhost:8822/mcp</code>.</div>
+
+  <p>Después, en la UI local de Flowise, armá el <em>mínimo</em> que demuestra el cableado (es el mismo grafo de dos nodos que
+  <code>firsttable-flowise.onrender.com/v2/agentcanvas/8aebb104-…</code>, solo que sin el pulido):</p>
+  <ol>
+    <li>Crear el usuario admin e iniciar sesión (<code>http://localhost:3000</code>).</li>
+    <li>Agregar la <strong>credencial de Fireworks</strong> (componente <code>fireworksApi</code>) con una API key real.</li>
+    <li>Nuevo <strong>Agentflow</strong> → <code>startAgentflow_0</code> → <code>agentAgentflow_0</code>, una arista.</li>
+    <li>Modelo: <code>chatFireworks</code> · <code>accounts/fireworks/models/glm-5p2</code>, temperatura <code>0.1</code>,
+      streaming activado, memoria <code>allMessages</code> (§9.2).</li>
+    <li>Agregar la tool MCP con la URL local y las 12 acciones seleccionadas de §9.1:
+<pre><code>"mcpServerConfig": "{\"url\":\"http://host.docker.internal:8822/mcp\"}",
+"mcpActions": [
+  "search_keyword","search_similar","search_earlier_work","search_later_work",
+  "expand_frontier","get_article","rank_candidates","credibility_check",
+  "resolve_article","create_research_session","update_session_step","build_session_link"
+]</code></pre></li>
+    <li><strong>Hacerle una pregunta</strong> — “buscame papers sobre cobertura arbórea urbana y mortalidad por calor” — y
+      confirmar en la traza que realmente se llamó <code>search_keyword</code> y que volvieron artículos reales con DOI.
+      <strong>Ese es todo el smoke-check.</strong> Pará ahí: sin system prompt, sin <code>chatbotConfig</code>, sin
+      <code>isPublic</code>, sin branding — todo eso es §16.5, y se hace una sola vez contra la instancia desplegada.</li>
+    <li><strong>Exportar el flow ahora:</strong> <code>GET /api/v1/chatflows/{id}</code> y commitear el JSON de
+      <code>flowData</code> al repo. Ese archivo es lo que se vuelve a POSTear en la <strong>Etapa&nbsp;3</strong> (§16.4) — es la
+      diferencia entre una etapa de Flowise de una hora y una de un día.</li>
+  </ol>
+  <div class="note">Si tu Flowise local es <em>más nuevo</em> que 3.1.2 te va a ofrecer el nodo gestionado
+  <code>customMcpServerTool</code> (servidores MCP referenciados por id vía <code>/api/v1/custom-mcp-servers</code>). Funciona en
+  local, pero esa ruta <strong>no existe en 3.1.2</strong>, así que el nodo hay que reescribirlo como un <code>customMCP</code>
+  inline antes de la Etapa&nbsp;3. Este desajuste ya costó un ciclo de depuración en First Table — pinear la imagen local a 3.1.2
+  lo evita por completo. Además: toda llamada a <code>/api/v1/…</code> necesita <code>credentials:'include'</code> <em>y</em>
+  <code>x-request-from: internal</code>, o devuelve 401 incluso con la sesión iniciada.</div>
+
+  <h3>14.7 Conectar la UI del chat a los endpoints locales — vista previa opcional <span class="est">0,5 h</span></h3>
+  <p>Opcional, y solo vale la pena si querés ver temprano la forma del producto final. Dos maneras de llegar al flow de
+  smoke-check local; la página de chat real y con branding se arma en la <strong>Etapa&nbsp;3</strong> (§16.6):</p>
+  <ol>
+    <li><strong>La propia página de Flowise:</strong> <code>http://localhost:3000/chatbot/&lt;agentflow-id&gt;</code>.</li>
+    <li><strong>El widget embebido</strong> en <code>site/index.html</code> — espeja <code>firstTable/site/</code>:
+<pre><code>&lt;script type="module"&gt;
+  import Chatbot from "https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js"
+  Chatbot.init({
+    chatflowid: "&lt;agentflow-id&gt;",
+    apiHost: "http://localhost:3000",          // Etapa 3: la URL de Flowise en Render
+    theme: { button: { backgroundColor: "#7c3aed" } }
+  })
+&lt;/script&gt;</code></pre>
+      Servilo con <code>npx serve site</code> para que el origen sea coherente con <code>ALLOWED_ORIGINS</code>.
+      <strong>La línea <code>apiHost</code> es lo único que cambia en la Etapa&nbsp;3.</strong></li>
+  </ol>
+  <div class="note">El widget renderiza dentro de un <strong>Shadow DOM</strong> (<code>&lt;flowise-fullchatbot&gt;</code>). Para
+  verificar título, colores, avatares, mensaje de bienvenida o placeholder de forma programática hay que consultar a través de
+  <code>document.querySelector('flowise-fullchatbot').shadowRoot</code> — un <code>document.querySelectorAll</code> común no
+  devuelve nada. Y ojo: sin barras finales en las URLs de los avatares (GitHub raw tira 404 en
+  <code>usericon.png/</code>).</div>
+
+  <h3>14.8 System prompt y set dorado <span class="est">2–3 días, se solapa con 14.4–14.6</span></h3>
+  <p>Escribir <code>agent-system-prompt.md</code> según §10 y <code>evals/golden-questions.json</code> con las 15 preguntas de
+  investigación fijas. Correr el set dorado contra el stack <strong>local</strong> e iterar sobre las trazas hasta que pasen las
+  cuatro compuertas de corrección de §18. Hacerlo antes de la Etapa&nbsp;2: iterar el prompt contra un Flowise desplegado es más
+  lento y cuesta plata.</p>
+
+  <h3>14.9 Checklist de verificación local — esto es lo que significa “Etapa 1 lista”</h3>
+<pre><code># 1 · El gateway responde y reporta su backend
+curl -s localhost:8821/api/health | jq
+# → {"ok":true,"backend":"openalex","authOk":true,"plan":"free","seedCap":50}
+
+# 2 · La búsqueda por keyword devuelve la forma de §7 (cada item con su doi)
+curl -s -X POST localhost:8821/api/search/keyword \
+  -H 'content-type: application/json' \
+  -d '{"q":"urban tree canopy heat mortality","per":5}' \
+  | jq '{totalCount, backend, n:(.items|length), dois:[.items[].doi]}'
+# → n = 5, sin ningún null en dois
+
+# 3 · Resolución título → id (la piedra angular anti-alucinación)
+curl -s -X POST localhost:8821/api/resolve \
+  -H 'content-type: application/json' \
+  -d '{"query":"What makes climate change adaptation effective? A systematic review"}' | jq
+# → {"articleId":21400232,"title":"What makes climate change adaptation…","doi":"10.1016/J.GLOENVCHA.2020.102071","confidence":0.97}
+
+# 4 · Un artículo por DOI (la barra va URL-encodeada)
+curl -s localhost:8821/api/articles/10.1016%2FJ.GLOENVCHA.2020.102071 \
+  | jq '{title, year, citedBy, retracted, doctype}'
+
+# 5 · Todo el bucle “Grow and go!” en una sola llamada
+curl -s -X POST localhost:8821/api/expand \
+  -H 'content-type: application/json' \
+  -d '{"seeds":["Redlining and intra-urban heat"],"iterations":2,"limit":10}' \
+  | jq '[.items[] | {title, seedHits, citationsPerYear}]'
+# → seedHits y citationsPerYear presentes en todos los items
+
+# 6 · El descriptor MCP lista las 22 tools
+curl -s localhost:8822/ | jq '.tools | length'      # → 22
+
+# 7 · Handshake MCP (con LOS DOS accept, si no el 406 es correcto)
+curl -s -X POST localhost:8822/mcp \
+  -H 'content-type: application/json' \
+  -H 'accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{
+        "protocolVersion":"2025-06-18","capabilities":{},
+        "clientInfo":{"name":"curl","version":"0"}}}'
+# → 200 con serverInfo
+
+# 8 · Las tools listadas por MCP
+curl -s -X POST localhost:8822/mcp \
+  -H 'content-type: application/json' \
+  -H 'accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' \
+  | grep -o '"name"' | wc -l                        # → 22
+
+# 9 · Flowise levantado y el flow existe
+curl -s -o /dev/null -w '%{http_code}\n' localhost:3000/          # → 200
+curl -s localhost:3000/api/v1/chatflows -H 'x-request-from: internal' \
+  --cookie "$FLOWISE_COOKIE" | jq '.[].name'</code></pre>
+  <p>Y después, las dos verificaciones que no se pueden hacer desde una terminal:</p>
+  <ul>
+    <li><strong>Bruno:</strong> abrir <code>bruno-collection/</code>, elegir el entorno <code>Local</code>, correr la carpeta
+      entera — todos los requests en verde.</li>
+    <li><strong>Smoke test conversacional</strong> — corrélo en tu cliente MCP (Claude Desktop/Code) contra
+      <code>localhost:8822/mcp</code>, que es donde está la vara de calidad real en esta etapa:
+      <em>“Estoy empezando una revisión sobre si la cobertura arbórea urbana reduce la mortalidad por calor en barrios de bajos
+      ingresos.”</em> Confirmar que se llamaron tools reales (no una respuesta alucinada), que cada paper recomendado trae su DOI,
+      que ninguna retractación quedó sin marcar y que llegás a un enlace <code>app.researchrabbit.ai/search/…</code> que funciona.
+      Después repetí <em>solo el primer turno</em> en <code>localhost:3000/chatbot/&lt;id&gt;</code> para confirmar que Flowise
+      llega a las mismas tools — la conversación pulida es tarea de §16.8, no de esta etapa.</li>
+  </ul>
+
+  <div class="exit">
+    <h4>La Etapa 1 está completa cuando…</h4>
+    <ul>
+      <li><code>curl localhost:8821/api/health</code> devuelve <code>ok:true</code> con el backend esperado.</li>
+      <li>Las nueve verificaciones de arriba pasan y la colección Bruno está verde de punta a punta.</li>
+      <li><code>GET localhost:8822/</code> lista <strong>22</strong> tools y el handshake <code>initialize</code> de MCP devuelve 200.</li>
+      <li>El servidor MCP está registrado en Claude Desktop/Code y contesta una pregunta de investigación real desde ahí.</li>
+      <li>Flowise corre en local, su nodo agente llega al servidor MCP gracias a <code>HTTP_SECURITY_CHECK=false</code> y
+        <strong>una</strong> de las 22 tools devuelve datos reales en la traza — el smoke-check de §14.6, nada más.</li>
+      <li>El JSON <code>flowData</code> de ese flow mínimo está <strong>commiteado en el repo</strong>, listo para volver a
+        POSTearse en §16.4.</li>
+      <li>El set dorado de 15 preguntas pasa las cuatro compuertas de §18 — <strong>cero DOIs inventados</strong>.</li>
+      <li>No hay ningún secreto commiteado: <code>git grep -i 'RR_SESSION_COOKIE\|fw_'</code> no encuentra nada fuera de
+        <code>.env.example</code>.</li>
+    </ul>
+    <p style="margin:8px 0 0">Recién ahí se empieza la Etapa&nbsp;2. <span class="est">≈7–10 días</span></p>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────── ETAPA 2 ─────────────────── -->
+<section id="stage2" class="stg2">
+  <h2><span class="dot" style="background:var(--accent)"></span>15. <span class="stage s2">Etapa&nbsp;2 · Render</span> &nbsp;Desplegar gateway + servidor MCP</h2>
+  <p><strong>Objetivo:</strong> tomar exactamente el repo que pasó §14.9 y poner en Render <strong>solo los dos servicios
+  Node</strong> — <code>researchrabbit-server</code> y <code>researchrabbit-mcp-server</code>. Sin Flowise, sin factura de LLM
+  propia, sin prompt que ajustar. Lo que queda al final de esta etapa es un <strong>endpoint MCP público por HTTPS</strong> que
+  registrás en Claude Desktop, Claude Code o cualquier agente de código compatible con MCP, y que te hace investigación
+  bibliográfica real a través de las 22 tools de §8. Eso ya es un producto terminado y útil —
+  <strong>con el chatbot todavía sin existir</strong>.</p>
+
+  <div class="tip"><strong>Lo que NO se hace en esta etapa: escribir código, y Flowise.</strong> Si te encontrás editando
+  <code>server/src</code> durante la Etapa&nbsp;2, frená — eso es un bug de la Etapa&nbsp;1 que se escapó, y hay que arreglarlo y
+  re-verificarlo en local primero. Flowise queda deliberadamente postergado a la <strong>Etapa&nbsp;3</strong> (§16): es
+  empaquetado, no el activo. Todo lo de abajo es configuración pura — servicios, variables de entorno, URLs, secretos y CORS.</div>
+
+  <h3>15.1 Pre-vuelo <span class="est">0,5–1 h</span></h3>
+  <ol>
+    <li>Subir <code>researchrabbit-copilot</code> a GitHub (un monorepo; los dos servicios usan distintos root directories,
+      <code>server</code> y <code>mcp-server</code>).</li>
+    <li>Instalar la <strong>Render GitHub App solo en ese repositorio</strong> — mínimo privilegio.</li>
+    <li><strong>Elegir la región midiendo, no por costumbre.</strong> First Table usó Singapur porque sus usuarios están en NZ. Acá
+      el camino caliente es <code>api.researchrabbit.ai</code> (y OpenAlex), así que medí la latencia desde las candidatas antes de
+      crear nada — lo más probable es <strong>Oregon</strong> o <strong>Frankfurt</strong> (§5). Los dos servicios van en la
+      <em>misma</em> región, y también el servicio de Flowise que quizá agregues en la Etapa&nbsp;3.</li>
+    <li>Confirmar que <code>server/.env</code> está ignorado por git y que no hay ningún secreto en el historial:
+      <code>git log -p | grep -i 'RR_SESSION_COOKIE\|fw_'</code> no tiene que encontrar nada.</li>
+  </ol>
+
+  <h3>15.2 Servicio #1 — <code>researchrabbit-server</code> (gateway) <span class="est">30–45 min</span></h3>
+  <table>
+    <tr><th>Ajuste</th><th>Valor</th></tr>
+    <tr><td>Tipo</td><td>Web Service · Runtime <strong>Node</strong></td></tr>
+    <tr><td>Root directory</td><td><code>server</code></td></tr>
+    <tr><td>Build command</td><td><code>npm install</code></td></tr>
+    <tr><td>Start command</td><td><code>npm start</code> (= <code>node src/index.js</code>)</td></tr>
+    <tr><td>Health check path</td><td><code>/api/health</code></td></tr>
+    <tr><td>Plan</td><td>Starter ($7/mes) — <strong>no duerme</strong>, ver §15.6</td></tr>
+    <tr><td>Env vars</td><td><code>RR_BACKEND</code>, <code>RR_API_BASE</code>, <code>RR_APP_BASE</code>,
+      <code>RR_SESSION_COOKIE</code> 🔒, <code>RR_PROJECT_ID</code> 🔒, <code>RR_ALLOW_WRITES=false</code>,
+      <code>OPENALEX_MAILTO</code>, <code>CACHE_TTL_SECONDS</code>, <code>MAX_TOOL_CALLS_PER_CONV</code>,
+      <code>ALLOWED_ORIGINS</code>. <strong>No definir <code>PORT</code></strong> — lo inyecta Render.</td></tr>
+    <tr><td>URL</td><td><code>https://researchrabbit-server.onrender.com</code></td></tr>
+  </table>
+  <p>Nada de <code>server/</code> cambia entre §14.4 y acá. El <code>.env</code> local pasa a ser variables del dashboard y
+  <code>PORT</code> deja de ser tuyo — ese es todo el diff.</p>
+
+  <h3>15.3 Servicio #2 — <code>researchrabbit-mcp-server</code> <span class="est">30–45 min</span></h3>
+  <table>
+    <tr><th>Ajuste</th><th>Valor</th></tr>
+    <tr><td>Tipo</td><td>Web Service · Runtime <strong>Node</strong></td></tr>
+    <tr><td>Root directory</td><td><code>mcp-server</code></td></tr>
+    <tr><td>Build command</td><td><code>npm install</code></td></tr>
+    <tr><td>Start command</td><td><code>npm start</code> (= <code>node index.js</code>)</td></tr>
+    <tr><td>Health check path</td><td><code>/</code> (el descriptor JSON de tools — tiene que listar 22)</td></tr>
+    <tr><td>Plan</td><td>Starter ($7/mes)</td></tr>
+    <tr><td>Env vars</td><td><strong><code>GATEWAY_URL=https://researchrabbit-server.onrender.com</code></strong> — la única
+      variable obligatoria y, literalmente, la única línea que difiere de la Etapa&nbsp;1. Dejar <code>MCP_PORT</code> sin definir;
+      <code>PORT</code> gana (§14.3).</td></tr>
+    <tr><td>URL MCP pública</td><td><code>https://researchrabbit-mcp-server.onrender.com/mcp</code> — Streamable HTTP,
+      <strong>solo POST</strong> (§8)</td></tr>
+  </table>
+  <div class="warn"><strong><code>GATEWAY_URL</code> es el único cable entre los dos servicios.</strong> Sin barra final y sin
+  sufijo <code>/api</code> — el servidor MCP agrega los paths del gateway por su cuenta (§8). Creá <em>primero</em> el gateway,
+  copiá su hostname real <code>.onrender.com</code> y recién ahí creá el servidor MCP. Un <code>GATEWAY_URL</code> viejo o mal
+  tipeado es la falla más probable de esta etapa, y la verificación&nbsp;4 de §15.8 existe justamente para atraparla.</div>
+
+  <h3>15.4 <code>render.yaml</code> — un blueprint para los dos servicios <span class="est">45 min · opcional</span></h3>
+  <p>Los dos servicios se pueden crear a mano en el dashboard (así se hizo First Table), pero commitear un blueprint hace el deploy
+  reproducible y revisable. <strong>Este blueprint contiene solo los dos servicios Node</strong>; el bloque de Flowise se agrega al
+  mismo archivo en la Etapa&nbsp;3 (§16.2).</p>
+<pre><code>services:
+  - type: web
+    name: researchrabbit-server
+    runtime: node
+    region: oregon                # medida en §15.1 — todos los servicios deben coincidir
+    plan: starter
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: RR_BACKEND            ; value: openalex
+      - key: RR_API_BASE           ; value: https://api.researchrabbit.ai
+      - key: RR_APP_BASE           ; value: https://app.researchrabbit.ai
+      - key: RR_ALLOW_WRITES       ; value: "false"
+      - key: CACHE_TTL_SECONDS     ; value: "86400"
+      - key: MAX_TOOL_CALLS_PER_CONV ; value: "40"
+      - key: ALLOWED_ORIGINS       ; value: ""          # todavía no hay nada de navegador; se define en §16.7
+      - key: OPENALEX_MAILTO       ; sync: false        # se carga en el dashboard
+      - key: RR_SESSION_COOKIE     ; sync: false        # secreto — nunca en el repo
+      - key: RR_PROJECT_ID         ; sync: false        # secreto — nunca en el repo
+
+  - type: web
+    name: researchrabbit-mcp-server
+    runtime: node
+    region: oregon
+    plan: starter
+    rootDir: mcp-server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: GATEWAY_URL
+        value: https://researchrabbit-server.onrender.com</code></pre>
+  <p class="note" style="margin-top:0"><em>(Los pares <code>key ; value</code> de arriba están en una sola línea por legibilidad;
+  en YAML real cada uno es un mapping de dos líneas dentro del ítem de la lista.)</em> Después de aplicar el blueprint,
+  <strong>re-chequear el plan y la región en el dashboard</strong> — son las dos cosas que conviene confirmar a ojo.</p>
+
+  <h3>15.5 Variables de entorno y secretos en el dashboard <span class="est">15 min</span></h3>
+  <ul>
+    <li>Los secretos (<code>RR_SESSION_COOKIE</code>, <code>RR_PROJECT_ID</code>, <code>OPENALEX_MAILTO</code>) entran como
+      <code>sync: false</code> / valores solo-dashboard. Existen <strong>únicamente</strong> en
+      <code>researchrabbit-server</code> — el servidor MCP no los tiene que ver nunca, y Flowise tampoco en la Etapa&nbsp;3.</li>
+    <li>El servidor MCP tiene exactamente una variable: <code>GATEWAY_URL</code>. Si alguna vez aparece una segunda, algo se
+      filtró hacia abajo.</li>
+    <li>Si manejás más de un entorno (staging/prod), usá un <strong>Environment Group</strong> de Render en lugar de duplicar
+      variables por servicio.</li>
+    <li><strong>Rotación de la cookie:</strong> cuando <code>authOk</code> pase a <code>false</code>, editá
+      <code>RR_SESSION_COOKIE</code> en el dashboard y reiniciá el gateway. Mientras tanto el gateway cae a OpenAlex, así que las
+      tools se degradan en vez de mentir (§6).</li>
+    <li>En esta etapa no va ninguna key de Fireworks. Acá no hay LLM — el modelo es el que ya corre tu cliente MCP. La credencial
+      de Fireworks aparece por primera vez en §16.3.</li>
+  </ul>
+  <div class="note"><strong>Almacenamiento persistente: ninguno.</strong> <code>researchrabbit-server</code> guarda solo una caché
+  en memoria de artículos y resoluciones (un reinicio apenas la enfría) y <code>researchrabbit-mcp-server</code> es Streamable HTTP
+  sin estado, sin sesiones. Ninguno necesita disco, Postgres ni Redis. El <em>único</em> componente con estado de todo el sistema
+  es la base SQLite de Flowise, que llega en la Etapa&nbsp;3 (§16.1).</div>
+
+  <h3>15.6 Arranques en frío, tier gratuito y keep-alive <span class="est">15 min</span></h3>
+  <ul>
+    <li><strong>Las instancias Free duermen</strong> después de ~15 minutos sin tráfico y tardan ~30 s en despertar. Un cliente MCP
+      que espera 30 s por <code>tools/list</code> suele cortar el handshake por timeout, y entonces el agente reporta las tools
+      como no disponibles. Por eso First Table usó <strong>Starter</strong>.</li>
+    <li>En <strong>Starter los servicios no duermen</strong>, así que no hace falta keep-alive. Si igual querés correr estos dos en
+      Free para ahorrarte los $14, agregá un ping externo (cron-job.org / UptimeRobot) contra
+      <code>https://researchrabbit-server.onrender.com/api/health</code> y
+      <code>https://researchrabbit-mcp-server.onrender.com/</code> cada 10 minutos, y asumí que la primera llamada de cada sesión
+      va a seguir siendo lenta.</li>
+    <li>Aun sin dormir, la <strong>primera request después de un deploy</strong> es más lenta. Esperá a que los dos health checks
+      estén en verde antes de hacer el smoke test.</li>
+    <li>Un turno de descubrimiento hace varias llamadas a tools: mantené <code>expand_frontier</code> como la forma de colapsar N
+      búsquedas de red en una sola llamada (§7), y dejá <code>CACHE_TTL_SECONDS</code> generoso — los metadatos de artículo son
+      casi estáticos.</li>
+  </ul>
+
+  <h3>15.7 CORS y URLs públicas <span class="est">15 min</span></h3>
+  <table>
+    <tr><th>Salto</th><th>¿Cruza un origen de navegador?</th><th>Qué hacer</th></tr>
+    <tr><td>Cliente MCP (Claude Desktop/Code) → servidor MCP</td><td>No — es un proceso nativo/CLI, no un navegador</td>
+      <td>Nada. No hay CORS. La URL tiene que ser <strong>HTTPS</strong>, que Render te da gratis.</td></tr>
+    <tr><td>Servidor MCP → gateway</td><td>No — servidor a servidor</td>
+      <td>Sin CORS. HTTPS público entre servicios de Render (no hay red privada en los planes bajos). Si algún día agregás
+      endpoints sensibles, poné un header con secreto compartido entre los dos.</td></tr>
+    <tr><td>Navegador → gateway</td><td>Solo si lo llamás directo desde una página</td>
+      <td>Dejá <code>ALLOWED_ORIGINS</code> vacío o bien acotado. En esta etapa no existe nada de cara al navegador, así que el
+      gateway no necesita acceso público desde el browser.</td></tr>
+    <tr><td>Navegador → chat de Flowise</td><td><em>Solo Etapa&nbsp;3</em></td>
+      <td>Postergado a §16.7 — ahí es donde <code>ALLOWED_ORIGINS</code> recibe por primera vez un valor real.</td></tr>
+  </table>
+  <p>URLs públicas después de esta etapa: gateway <code>https://researchrabbit-server.onrender.com</code>, MCP
+  <code>https://researchrabbit-mcp-server.onrender.com/mcp</code>. Todavía no hay URL de chatbot, y es a propósito.</p>
+
+  <h3>15.8 Smoke tests por HTTPS <span class="est">0,5 h</span></h3>
+<pre><code># 1 · Salud del gateway por HTTPS
+curl -s https://researchrabbit-server.onrender.com/api/health | jq
+# → {"ok":true,"backend":"openalex","authOk":true,"plan":"free","seedCap":50}
+
+# 2 · El gateway hace trabajo real en producción
+curl -s -X POST https://researchrabbit-server.onrender.com/api/search/keyword \
+  -H 'content-type: application/json' \
+  -d '{"q":"urban heat mortality","per":3}' | jq '[.items[].doi]'
+# → tres DOIs no nulos
+
+# 3 · Descriptor y handshake MCP por HTTPS
+curl -s https://researchrabbit-mcp-server.onrender.com/ | jq '.tools | length'   # → 22
+curl -s -X POST https://researchrabbit-mcp-server.onrender.com/mcp \
+  -H 'content-type: application/json' \
+  -H 'accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{
+        "protocolVersion":"2025-06-18","capabilities":{},
+        "clientInfo":{"name":"curl","version":"0"}}}'                            # → 200
+
+# 4 · El servidor MCP realmente llega al gateway (no un GATEWAY_URL viejo)
+curl -s -X POST https://researchrabbit-mcp-server.onrender.com/mcp \
+  -H 'content-type: application/json' \
+  -H 'accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{
+        "name":"search_keyword","arguments":{"q":"urban heat mortality","limit":3}}}'
+# → artículos reales con DOI, no un error de conexión al gateway
+
+# 5 · El hand-off sigue funcionando de punta a punta por HTTPS
+curl -s -X POST https://researchrabbit-mcp-server.onrender.com/mcp \
+  -H 'content-type: application/json' \
+  -H 'accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{
+        "name":"resolve_article","arguments":{
+          "query":"What makes climate change adaptation effective? A systematic review"}}}'
+# → {"articleId":21400232,…,"confidence":0.97}</code></pre>
+  <div class="warn"><strong>El 406 y el 405 que no son bugs.</strong> Streamable HTTP exige
+  <code>Accept: application/json, text/event-stream</code> en cada <code>POST /mcp</code>; sin los dos media types,
+  <strong>406</strong> es la respuesta correcta. Que <code>GET /mcp</code> devuelva <strong>405</strong> también es correcto: el
+  endpoint es solo POST. Las dos cosas se confirmaron en First Table y otra vez en local, en §14.5.</div>
+
+  <h3>15.9 <strong>Usar el servidor MCP hosteado desde Claude Desktop / Claude Code / tu agente de código</strong> <span class="est">0,5 h</span></h3>
+  <p>Este es el paso que convierte la Etapa&nbsp;2 en un producto. Es <em>el mismo registro que ya hiciste en §14.5</em>, con
+  <code>http://localhost:8822/mcp</code> reemplazado por la URL pública HTTPS — no cambia nada más, porque no hace falta.</p>
+
+  <h4>Claude Code — un solo comando</h4>
+<pre><code>claude mcp add --transport http researchrabbit \
+  https://researchrabbit-mcp-server.onrender.com/mcp
+
+claude mcp list            # → researchrabbit  ✓ connected
+</code></pre>
+
+  <h4>Claude Desktop — <code>claude_desktop_config.json</code></h4>
+<pre><code>{
+  "mcpServers": {
+    "researchrabbit": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://researchrabbit-mcp-server.onrender.com/mcp"]
+    }
+  }
+}</code></pre>
+  <p>Reiniciá Claude Desktop; las 22 tools de §8 aparecen en la lista de herramientas. Cualquier otro cliente compatible con MCP
+  funciona igual — el servidor habla MCP puro sobre Streamable HTTP en <code>POST /mcp</code>, sin código específico por cliente.</p>
+
+  <h4>Tres prompts que demuestran que es un asistente de investigación real</h4>
+  <div class="chat">
+    <div class="u">Usando las tools de researchrabbit: estoy empezando una revisión sobre si la cobertura arbórea urbana reduce la
+      mortalidad por calor en barrios de bajos ingresos. Buscame 3 papers semilla, expandí dos iteraciones y dame los 5 que más
+      importan, con DOI y un motivo cada uno.</div>
+    <div class="t">→ search_keyword · expand_frontier · rank_candidates · create_research_session · build_session_link</div>
+    <div class="u">Tomá doi:10.1016/j.gloenvcha.2020.102071 y mostrame el Later Work desde 2025, rankeado por citas por año.
+      Marcá cualquier retractación.</div>
+    <div class="t">→ resolve_article · search_later_work(sinceYear: 2025) · credibility_check</div>
+    <div class="u">Dame las bases de este campo: el trabajo anterior detrás de esas semillas, rankeado por cantidad de citas, y
+      exportá los 10 primeros en BibTeX.</div>
+    <div class="t">→ search_earlier_work · rank_candidates · export_bibtex</div>
+  </div>
+  <div class="note">El razonamiento y el formato los pone el modelo del propio cliente, así que el system prompt de Warren (§10)
+  todavía no está en juego — la disciplina de citas la ponés vos pidiendo DOIs. Ese es el trueque honesto de esta etapa: las tools
+  son de producción, las barandas conversacionales todavía no. Agregar esas barandas, empaquetadas para alguien que nunca va a
+  editar un JSON de configuración, <strong>es</strong> la Etapa&nbsp;3.</div>
+
+  <div class="exit">
+    <h4>La Etapa 2 está completa cuando…</h4>
+    <ul>
+      <li>Los dos servicios de Render están <strong>live/verdes</strong> y sus health checks pasan
+        (<code>/api/health</code> y <code>/</code>).</li>
+      <li>Los cinco comandos del smoke test de §15.8 funcionan por HTTPS y el descriptor MCP reporta <strong>22</strong> tools.</li>
+      <li>Un <code>tools/call</code> a través del servidor MCP desplegado devuelve datos reales del gateway — la prueba de que
+        <code>GATEWAY_URL</code> está bien.</li>
+      <li>La URL MCP pública está registrada en Claude Desktop / Claude Code / tu agente de código y las 22 tools aparecen ahí.</li>
+      <li><strong>Al menos uno de los tres prompts de §15.9 se corrió de punta a punta</strong> y produjo papers reales con DOIs
+        reales, marcas de retractación donde corresponde y un enlace profundo
+        <code>app.researchrabbit.ai/search/…</code> que funciona.</li>
+      <li>No hay ningún secreto en el repo; todos viven en el dashboard de Render y solo en <code>researchrabbit-server</code>, y
+        el procedimiento de rotación de la cookie está escrito.</li>
+      <li>El costo mensual es <strong>$14/mes</strong> (2× Starter, §5) y <strong>sin factura de LLM propia</strong>.</li>
+    </ul>
+    <p style="margin:8px 0 0"><strong>Ya tenés un asistente de investigación funcionando, accesible desde cualquier lado y sin
+    Flowise en el medio.</strong> Este es un lugar legítimo para parar: la Etapa&nbsp;3 agrega una UI de chat para otras personas,
+    no capacidad para vos. <span class="est">≈0,5 día</span></p>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────── ETAPA 3 ─────────────────── -->
+<section id="stage3" class="stg3">
+  <h2><span class="dot" style="background:#10b981"></span>16. <span class="stage s3">Etapa&nbsp;3 · Flowise</span> &nbsp;Agregar el agente</h2>
+  <p><strong>Objetivo:</strong> envolver el endpoint MCP de la Etapa&nbsp;2 en una UI de chat que una persona no técnica pueda usar
+  desde un enlace. Desplegar Flowise en Render, armar el agentflow <em>una sola vez</em>, apuntar su nodo Custom MCP a
+  <code>https://researchrabbit-mcp-server.onrender.com/mcp</code>, cargar el system prompt de Warren y publicar la página de chat
+  pública.</p>
+
+  <div class="tip"><strong>Nada de lo de abajo cambia la capacidad de investigación.</strong> Las 22 tools, el gateway y el ranking
+  ya están desplegados y ya funcionan (§15.9). La Etapa&nbsp;3 es <strong>empaquetado</strong>: un modelo hosteado, un system prompt
+  que hace cumplir el contrato de citas de §10 automáticamente, y una URL que le podés mandar a un director de tesis. El único
+  archivo del repo que se toca acá es <code>site/index.html</code>, y solo su línea <code>apiHost</code>.</div>
+
+  <h3>16.1 El servicio de Flowise en Render (Docker + disco persistente) <span class="est">20 min + primer arranque</span></h3>
+  <table>
+    <tr><th>Ajuste</th><th>Valor</th></tr>
+    <tr><td>Tipo</td><td>Web Service · Runtime <strong>Docker / imagen</strong></td></tr>
+    <tr><td>Imagen</td><td><code>docker.io/flowiseai/flowise:3.1.2</code> — <strong>pineada</strong></td></tr>
+    <tr><td>Docker command</td><td><code>node /usr/local/lib/node_modules/flowise/flowise start</code></td></tr>
+    <tr><td>Región</td><td>la misma que se midió en §15.1</td></tr>
+    <tr><td>Health check path</td><td><code>/</code></td></tr>
+    <tr><td>Plan</td><td><strong>Standard ($25/mes, 2 GB)</strong> — no Starter</td></tr>
+    <tr><td>Disco</td><td>1 GB montado en <code>/opt/render/.flowise</code></td></tr>
+    <tr><td>Env vars (8)</td><td><code>HOST=0.0.0.0</code>, <code>HTTP_SECURITY_CHECK=false</code>,
+      <code>DATABASE_PATH=/opt/render/.flowise</code>, <code>APIKEY_PATH=/opt/render/.flowise</code>,
+      <code>SECRETKEY_PATH=/opt/render/.flowise</code>, <code>LOG_PATH=/opt/render/.flowise/logs</code>,
+      <code>BLOB_STORAGE_PATH=/opt/render/.flowise/storage</code>,
+      <code>NODE_OPTIONS=--max-old-space-size=384</code></td></tr>
+    <tr><td>URL</td><td><code>https://researchrabbit-flowise.onrender.com</code></td></tr>
+  </table>
+  <div class="warn"><strong>Tres restricciones que costaron caro en First Table y se copian tal cual.</strong>
+  (1) <strong>Pinear 3.1.2.</strong> <code>:latest</code> (3.1.4) y 3.1.3 están rotas en Render — falta
+  <code>@smithy/eventstream-codec</code> y hay un error fatal de export en <code>./utils/uuid</code>.
+  (2) <strong>Hacen falta 2 GB.</strong> Con 512 MB, Flowise 3.1.2 muere por OOM durante la inicialización;
+  <code>NODE_OPTIONS=--max-old-space-size=384</code> solo cambia el mensaje de error, no el resultado.
+  (3) <strong>El disco persistente no es opcional</strong> — sin él, la base SQLite, las credenciales y tu agentflow se borran en
+  cada redeploy. El primer arranque tarda ~30–60&nbsp;s.</div>
+  <div class="tip"><strong>Opción más barata:</strong> ya tenés <code>firsttable-flowise</code> corriendo. Un
+  <em>segundo agentflow en esa misma instancia</em> cuesta <strong>$0 extra</strong> y comparte el disco, lo que convierte la
+  Etapa&nbsp;3 en un trabajo de ~1 hora en vez de ~4. Creá un servicio de Flowise aparte solo si querés uptime independiente para
+  los dos productos (§20, decisión 6).</div>
+
+  <h3>16.2 <code>render.yaml</code> — el bloque de Flowise <span class="est">15 min · opcional</span></h3>
+  <p>Se agrega al blueprint de §15.4; los dos servicios Node de arriba quedan intactos.</p>
+<pre><code>  - type: web
+    name: researchrabbit-flowise
+    runtime: image
+    image:
+      url: docker.io/flowiseai/flowise:3.1.2
+    dockerCommand: node /usr/local/lib/node_modules/flowise/flowise start
+    region: oregon              # la misma región que en §15.4
+    plan: standard              # 2 GB — con Starter hay OOM
+    healthCheckPath: /
+    disk:
+      name: flowise-data
+      mountPath: /opt/render/.flowise
+      sizeGB: 1
+    envVars:
+      - key: HOST               ; value: 0.0.0.0
+      - key: HTTP_SECURITY_CHECK; value: "false"
+      - key: DATABASE_PATH      ; value: /opt/render/.flowise
+      - key: APIKEY_PATH        ; value: /opt/render/.flowise
+      - key: SECRETKEY_PATH     ; value: /opt/render/.flowise
+      - key: LOG_PATH           ; value: /opt/render/.flowise/logs
+      - key: BLOB_STORAGE_PATH  ; value: /opt/render/.flowise/storage
+      - key: NODE_OPTIONS       ; value: --max-old-space-size=384</code></pre>
+  <p class="note" style="margin-top:0">Después de aplicar el blueprint, <strong>re-chequear el disco y el plan en el
+  dashboard</strong> — son las dos cosas que conviene confirmar a ojo, y las dos que matan el servicio en silencio si están mal.</p>
+
+  <h3>16.3 Usuario admin y credencial de Fireworks <span class="est">15 min</span></h3>
+  <ol>
+    <li>Abrir la URL de Flowise y crear el <strong>usuario admin</strong> (contraseña: 16 caracteres con minúscula + mayúscula +
+      dígito + especial — Flowise exige los cuatro).</li>
+    <li>Crear la <strong>credencial de Fireworks</strong>: <code>POST /api/v1/credentials</code>, componente
+      <code>fireworksApi</code>. Anotá su id — §16.4 lo necesita. Usá una key <strong>real</strong>; un placeholder
+      <code>_FLOWISE_BLANK_…</code> copiado de otra instancia produce un bot que nunca contesta, en silencio.</li>
+  </ol>
+  <div class="warn">Toda llamada a <code>/api/v1/…</code> necesita <code>credentials:'include'</code> <em>y</em>
+  <code>x-request-from: internal</code>, o devuelve <strong>401</strong> incluso con la sesión iniciada.</div>
+
+  <h3>16.4 El agentflow, apuntado a la URL MCP de la Etapa&nbsp;2 <span class="est">0,5–1 h</span></h3>
+  <p>Recrear el grafo de dos nodos que probaste en §14.6 — <code>startAgentflow_0</code> → <code>agentAgentflow_0</code>, una
+  arista — a partir del <code>flowData</code> que commiteaste al repo:</p>
+  <ol>
+    <li>Parsear el <code>flowData</code> commiteado y poner en
+      <code>inputs.agentModelConfig.FLOWISE_CREDENTIAL_ID</code> el id de credencial de §16.3.</li>
+    <li>Ajustes del modelo según §9.2: <code>chatFireworks</code> · <code>accounts/fireworks/models/glm-5p2</code>, temperatura
+      <code>0.1</code>, streaming activado, memoria <code>allMessages</code>.</li>
+    <li>Reescribir el nodo de tool como el bloque <strong>inline <code>customMCP</code></strong> de §9.1, apuntando a la URL que
+      está viva desde la Etapa&nbsp;2:
+<pre><code>"agentTools": [{
+  "agentSelectedTool": "customMCP",
+  "agentSelectedToolRequiresHumanInput": "",
+  "agentSelectedToolConfig": {
+    "mcpServerConfig": "{\"url\":\"https://researchrabbit-mcp-server.onrender.com/mcp\"}",
+    "mcpActions": [
+      "search_keyword","search_similar","search_earlier_work","search_later_work",
+      "expand_frontier","get_article","rank_candidates","credibility_check",
+      "resolve_article","create_research_session","update_session_step","build_session_link"
+    ],
+    "agentSelectedTool": "customMCP"
+  }
+}]</code></pre></li>
+    <li><code>POST /api/v1/chatflows</code> con <code>type: AGENTFLOW</code> e <code>isPublic: true</code>.</li>
+    <li><strong>Re-autorizar / refrescar la tool MCP</strong> en la UI para que Flowise vuelva a descubrir las 22 tools desde la
+      URL HTTPS, y confirmar que las 12 <code>mcpActions</code> siguen seleccionadas. Si la lista vuelve vacía, casi siempre es
+      <code>HTTP_SECURITY_CHECK</code> o un error de tipeo en la URL — no el servidor MCP, que §15.8 ya probó que funciona.</li>
+  </ol>
+  <div class="warn"><strong>No</strong> usar <code>customMcpServerTool</code>: Flowise 3.1.2 no tiene la ruta
+  <code>/api/v1/custom-mcp-servers</code>, así que el nodo tiene que ser el viejo de configuración inline, y
+  <code>mcpServerConfig</code> tiene que ser un <strong>string con JSON adentro</strong>, no un objeto (§9.1). El payload de
+  <code>flowData</code> pesa ~64 KB, incómodo de pegar en la consola del navegador: servilo desde un HTTP server local chiquito con
+  <code>Access-Control-Allow-Origin: *</code> y hacele <code>fetch()</code> desde la pestaña autenticada de Flowise.</div>
+
+  <h3>16.5 System prompt y <code>chatbotConfig</code> <span class="est">15 min</span></h3>
+  <ul>
+    <li>Pegar <code>agent-system-prompt.md</code> (§10) en <code>agentAgentflow_0</code>. Acá es donde el contrato de integridad de
+      citas deja de ser responsabilidad tuya y pasa a ser del producto: DOI o nada, retractación primero, solo abstracts, títulos
+      nunca ids, y siempre terminar con el enlace de sesión.</li>
+    <li><code>PUT /api/v1/chatflows/{id}</code> con el <code>chatbotConfig</code> de §9.3 <strong>stringificado</strong> — título,
+      header violeta <code>#7c3aed</code>, avatares, mensaje de bienvenida, placeholder “¿Qué estás investigando?”.</li>
+    <li>Gotcha conocido, se repite: <strong>sin barras finales en las URLs de los avatares</strong> (GitHub raw tira 404 en
+      <code>usericon.png/</code>).</li>
+  </ul>
+
+  <h3>16.6 URL pública de chat y widget embebido <span class="est">15 min</span></h3>
+  <ol>
+    <li>La página hosteada por Flowise queda viva apenas ponés <code>isPublic: true</code>:
+      <code>https://researchrabbit-flowise.onrender.com/chatbot/&lt;agentflow-id&gt;</code>. Ese enlace solo ya es un producto
+      entregable.</li>
+    <li>Para tu propia página, cambiá la única línea <code>apiHost</code> de <code>site/index.html</code> —
+      <strong>la única edición del repo en toda esta etapa:</strong>
+<pre><code>&lt;script type="module"&gt;
+  import Chatbot from "https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js"
+  Chatbot.init({
+    chatflowid: "&lt;agentflow-id&gt;",
+    apiHost: "https://researchrabbit-flowise.onrender.com",   // era http://localhost:3000 en §14.7
+    theme: { button: { backgroundColor: "#7c3aed" } }
+  })
+&lt;/script&gt;</code></pre></li>
+  </ol>
+  <div class="note">El widget renderiza dentro de un <strong>Shadow DOM</strong> (<code>&lt;flowise-fullchatbot&gt;</code>). Para
+  verificar título, colores, avatares, mensaje de bienvenida o placeholder de forma programática hay que consultar a través de
+  <code>document.querySelector('flowise-fullchatbot').shadowRoot</code> — un <code>document.querySelectorAll</code> común no
+  devuelve nada.</div>
+
+  <h3>16.7 CORS para los saltos de navegador <span class="est">15 min</span></h3>
+  <table>
+    <tr><th>Salto</th><th>¿Cruza un origen de navegador?</th><th>Qué hacer</th></tr>
+    <tr><td>Navegador → chat de Flowise</td><td>Sí, si está embebido en <code>site/</code> u otro dominio</td>
+      <td>Configurar los allowed-origins/CORS de Flowise con el origen de tu sitio; el <code>apiHost</code> del widget tiene que
+      ser la URL HTTPS de Flowise.</td></tr>
+    <tr><td>Flowise → servidor MCP</td><td>No — servidor a servidor</td>
+      <td>Sin CORS. Pero <code>HTTP_SECURITY_CHECK=false</code> sigue puesto, y la URL MCP tiene que ser <strong>HTTPS</strong>.</td></tr>
+    <tr><td>Navegador → gateway</td><td>Solo si tu página lo llama directo</td>
+      <td>Ahora sí, y recién ahora, dale a <code>ALLOWED_ORIGINS</code> un valor real en <code>researchrabbit-server</code>: el
+      origen del sitio, nada más ancho. El camino normal es navegador → Flowise → MCP → gateway, que no necesita nada de esto.</td></tr>
+  </table>
+
+  <h3>16.8 Smoke test post-deploy y set dorado <span class="est">1–2 h</span></h3>
+<pre><code># 1 · Flowise levantado y la página de chatbot servida
+curl -s -o /dev/null -w '%{http_code}\n' https://researchrabbit-flowise.onrender.com/            # → 200
+curl -s -o /dev/null -w '%{http_code}\n' \
+  https://researchrabbit-flowise.onrender.com/chatbot/&lt;agentflow-id&gt;                            # → 200
+
+# 2 · El flow existe, es público y tiene el chatbotConfig correcto
+curl -s https://researchrabbit-flowise.onrender.com/api/v1/chatflows \
+  -H 'x-request-from: internal' --cookie "$FLOWISE_COOKIE" \
+  | jq '.[] | {name, isPublic, type}'
+
+# 3 · Los servicios de la Etapa 2 siguen verdes por debajo (acá no se tocó nada)
+curl -s https://researchrabbit-server.onrender.com/api/health | jq '.ok'                        # → true
+curl -s https://researchrabbit-mcp-server.onrender.com/ | jq '.tools | length'                  # → 22</code></pre>
+  <p>Y después, en un navegador:</p>
+  <ul>
+    <li>Abrir la URL pública del chatbot y verificar a través de <code>.shadowRoot</code>: título, header violeta
+      (<code>#7c3aed</code>), los dos avatares cargados, mensaje de bienvenida y placeholder “¿Qué estás investigando?”.</li>
+    <li>Mandar el prompt estrella del Flujo A de §11. Confirmar llamadas reales a tools en la traza, un DOI en cada recomendación,
+      marcas de retractación donde corresponda y un enlace <code>app.researchrabbit.ai/search/…</code> vivo que abra el paso
+      correcto.</li>
+    <li>Re-correr el <strong>set dorado de 15 preguntas</strong> contra el bot desplegado y volver a chequear las cuatro compuertas
+      de §18. Los números deberían coincidir con los de la Etapa&nbsp;1; si no, es una diferencia de configuración: revisá la
+      credencial, la lista de <code>mcpActions</code> y la URL MCP dentro de <code>mcpServerConfig</code>.</li>
+    <li>Probarlo en un teléfono. Las reglas de formato de §10 existen para esa pantalla.</li>
+    <li>Disparar un redeploy manual y confirmar que el agentflow, la credencial y el usuario admin sobreviven — para eso está el
+      disco de 1 GB.</li>
+  </ul>
+
+  <div class="exit">
+    <h4>La Etapa 3 está completa cuando…</h4>
+    <ul>
+      <li>El servicio de Flowise está <strong>live/verde</strong>, pineado a <code>3.1.2</code>, en Standard 2 GB y con el disco de
+        1 GB montado en <code>/opt/render/.flowise</code>.</li>
+      <li>El agentflow existe con <code>isPublic: true</code>, su nodo inline <code>customMCP</code> apunta a
+        <code>https://researchrabbit-mcp-server.onrender.com/mcp</code> y las 12 <code>mcpActions</code> de §9.1 están
+        seleccionadas.</li>
+      <li>El system prompt de Warren (§10) y el <code>chatbotConfig</code> stringificado (§9.3) están aplicados, y el branding se
+        verifica a través del <code>.shadowRoot</code>.</li>
+      <li>La URL pública de chat completa una conversación entera que termina en un enlace profundo de sesión que funciona, en
+        escritorio <em>y</em> en teléfono.</li>
+      <li>El set dorado pasa las compuertas de §18 <em>sobre el chatbot desplegado</em>, igualando los resultados de la
+        Etapa&nbsp;1.</li>
+      <li>El agentflow sobrevive un redeploy manual.</li>
+      <li>El registro MCP de la Etapa&nbsp;2 sigue funcionando sin cambios — Flowise fue aditivo, no rompió nada.</li>
+      <li>El costo mensual coincide con §5: <strong>$39/mes</strong> de infraestructura + tokens.</li>
+    </ul>
+    <p style="margin:8px 0 0">Acá el proyecto está entregado por completo. <span class="est">≈0,5–1 día</span></p>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────── RIESGOS ─────────────────── -->
+<section id="risks">
+  <h2><span class="dot"></span>17. Riesgos y mitigaciones</h2>
+  <table>
+    <tr><th>Riesgo</th><th>Severidad</th><th>Mitigación</th></tr>
+    <tr><td><strong>Los endpoints privados cambian o bloquean tráfico automatizado</strong></td><td>Alta · probable</td>
+      <td>Patrón de adaptadores (§6): backend OpenAlex por defecto. Tests de contrato contra las formas documentadas, corriendo
+      a diario; alerta ante desvíos. El bot se degrada, no muere.</td></tr>
+    <tr><td><strong>Exposición legal / ToS de un producto público sobre una API privada</strong></td><td>Alta</td>
+      <td>Single-tenant con tu propia cuenta para uso personal/laboratorio; el build público sale con backend B. Consultar a
+      Litmap antes de cualquier distribución. No cachear ni redistribuir su corpus de artículos.</td></tr>
+    <tr><td><strong>La cookie de sesión expira</strong></td><td>Media · segura</td>
+      <td><code>/api/health</code> expone <code>authOk:false</code>; fallback automático a backend B; procedimiento de rotación
+      documentado; alerta cuando cambia.</td></tr>
+    <tr><td><strong>Citas fabricadas</strong></td><td>Crítica</td>
+      <td>Contrato de §10 + regla “DOI o nada” + un chequeo posterior en el gateway de que todo DOI de una respuesta apareció en
+      un resultado de tool de ese turno (registrar violaciones como falla de eval).</td></tr>
+    <tr><td><strong>El modelo re-escribe ids recordados</strong></td><td>Media · segura</td>
+      <td>Las tools reciben títulos, no ids (solución probada en First Table). <code>resolve_article</code> es la única fuente
+      de ids.</td></tr>
+    <tr><td><strong>Turnos lentos (varias tools + arranques en frío)</strong></td><td>Media</td>
+      <td>Planes Starter (no duermen); streaming activado; <code>expand_frontier</code> colapsa N llamadas en una; cachear
+      metadatos de artículos.</td></tr>
+    <tr><td><strong>Un upgrade de Flowise rompe el flow</strong></td><td>Media</td>
+      <td>Fijar <code>flowiseai/flowise:3.1.2</code> — <code>:latest</code>/3.1.4 y 3.1.3 están rotas en Render. Disco
+      persistente en <code>/opt/render/.flowise</code>. Guardar el JSON del flowData en el repo para poder re-POSTearlo.</td></tr>
+    <tr><td><strong>OOM de Flowise</strong></td><td>Media</td>
+      <td>Plan Standard (2 GB). Está comprobado que 512 MB hace OOM durante la inicialización; <code>NODE_OPTIONS</code> solo
+      cambia el modo de falla.</td></tr>
+    <tr><td><strong>Se excede el tope de semillas (50 Free / 300 RR+)</strong></td><td>Baja</td>
+      <td>El gateway recorta y encadena pasos; el tope se le informa al agente en el resultado de la tool.</td></tr>
+    <tr><td><strong>El usuario pega datos personales o credenciales</strong></td><td>Media</td>
+      <td>El prompt rechaza credenciales de plano; no se guarda PII; las transcripciones no se persisten más allá de la memoria
+      de Flowise.</td></tr>
+  </table>
+</section>
+
+<!-- ─────────────────────────────────────────── KPI ─────────────────────── -->
+<section id="kpi">
+  <h2><span class="dot"></span>18. Cómo vamos a saber si funciona</h2>
+  <p style="margin-top:0">Estas compuertas se corren <strong>tres veces</strong>: contra el stack local al final de la
+  Etapa&nbsp;1 (§14.9), contra el servidor MCP hosteado desde tu cliente MCP al final de la Etapa&nbsp;2 (§15.9), y contra el
+  chatbot desplegado al final de la Etapa&nbsp;3 (§16.8). Los resultados deberían ser idénticos las tres veces — cualquier
+  divergencia es una diferencia de configuración, no del modelo.</p>
+  <h3>Compuertas de corrección (deben pasar antes de compartir cualquier enlace público)</h3>
+  <ul>
+    <li><strong>0 citas fabricadas</strong> en un set dorado fijo de 15 preguntas de investigación. Todo DOI de toda respuesta
+    debe aparecer en un resultado de tool de ese mismo turno. Esto es una compuerta dura, no una métrica.</li>
+    <li><strong>≥90% de precisión en la resolución de ids</strong> — el paper del que habla el agente es el paper que resolvió
+    el gateway.</li>
+    <li><strong>100% de retractaciones marcadas</strong> sobre un set de prueba sembrado con papers retractados conocidos.</li>
+    <li><strong>0 autocontradicciones</strong> (la falla “no hay resultados… acá están los resultados” vista en el build de
+    First Table).</li>
+  </ul>
+  <h3>Métricas de calidad</h3>
+  <ul>
+    <li><strong>Solape con el set semilla:</strong> ≥70% del top-10 del agente aparece en el top-20 que obtiene un humano
+    haciendo la misma búsqueda a mano en la app.</li>
+    <li><strong>Tiempo hasta la primera lista útil:</strong> &lt;2 minutos desde una pregunta vaga y en frío.</li>
+    <li><strong>Tasa de entrega:</strong> % de conversaciones en las que el usuario abre el enlace profundo de la sesión.
+    <em>Esta es la métrica estrella</em> — mide si el copiloto está alimentando a la app en vez de reemplazarla.</li>
+    <li><strong>Mediana de llamadas a tools por conversación</strong> (proxy de costo) y latencia p95 por turno.</li>
+  </ul>
+  <div class="tip">Mantener <code>evals/golden-questions.json</code> en el repo y re-correrlo después de cada cambio de prompt.
+  El prompt de First Table llegó a 7,3 KB acumulando arreglos; sin un set de regresión, cada arreglo rompe otra cosa en
+  silencio.</div>
+</section>
+
+<!-- ─────────────────────────────────────────── CHECKLIST ───────────────── -->
+<section id="checklist">
+  <h2><span class="dot"></span>19. Checklist de reproducción — las tres etapas</h2>
+  <p style="margin-top:0">La versión condensada y tildable de §14, §15 y §16. <strong>No empieces una lista hasta que todos los
+  casilleros de la anterior estén tildados.</strong> Las listas son acumulativas en dependencia pero no en valor: la lista&nbsp;2
+  ya entrega un producto usable, y la lista&nbsp;3 es empaquetado opcional.</p>
+
+  <h3><span class="stage">Etapa&nbsp;1 · Local</span> &nbsp;(§14)</h3>
+  <ol>
+    <li>[ ] Instalar Node 20+ / npm 10+, <code>curl</code>, <code>jq</code>; opcionalmente Bruno, Docker y un cliente MCP.</li>
+    <li>[ ] Contestar las tres decisiones de §20 (backend, audiencia, escrituras) y re-verificar a mano los endpoints privados.</li>
+    <li>[ ] Armar <code>researchrabbit-copilot/</code> con <code>server/</code>, <code>mcp-server/</code>, <code>site/</code>,
+      <code>bruno-collection/</code>, <code>evals/</code>; dos <code>package.json</code> independientes; <code>.gitignore</code>
+      que cubra <code>.env</code>.</li>
+    <li>[ ] Escribir el <code>.env.example</code> de las dos apps (§14.3); crear el <code>.env</code> real, fuera de git.</li>
+    <li>[ ] <code>cd server &amp;&amp; npm install &amp;&amp; npm start</code> → <code>curl localhost:8821/api/health</code>
+      devuelve <code>{"ok":true,"backend":"openalex",…}</code>.</li>
+    <li>[ ] Todos los endpoints del gateway devuelven la forma de §7; <code>/api/resolve</code> mapea un título al
+      <code>articleId</code> correcto; el entorno <code>Local</code> de Bruno corre en verde.</li>
+    <li>[ ] <code>cd mcp-server &amp;&amp; npm install &amp;&amp; npm start</code> → <code>GET localhost:8822/</code> lista
+      <strong>22</strong> tools; <code>POST /mcp</code> <code>initialize</code> devuelve 200 con
+      <code>Accept: application/json, text/event-stream</code> (sin ese header, el 406 es <em>correcto</em>).</li>
+    <li>[ ] Registrar el servidor MCP en Claude Desktop/Code contra <code>http://localhost:8822/mcp</code> y contestar una
+      pregunta de investigación real desde ahí.</li>
+    <li>[ ] Levantar Flowise en local con <code>HTTP_SECURITY_CHECK=false</code> (Docker <code>3.1.2</code> recomendado por
+      paridad); crear el admin y una credencial de Fireworks <strong>real</strong>.</li>
+    <li>[ ] <strong>Solo smoke-check</strong> (§14.6): Start → Agent, <code>chatFireworks</code>/<code>glm-5p2</code>, temp 0.1,
+      streaming, <code>allMessages</code>, tool MCP en <code>http://host.docker.internal:8822/mcp</code> — confirmar que una de
+      las 22 tools devuelve datos reales. El agentflow de producción se arma en la Etapa&nbsp;3, no acá.</li>
+    <li>[ ] Exportar el <code>flowData</code> y commitearlo al repo — ese archivo es la entrada de §16.4.</li>
+    <li>[ ] Apuntar <code>site/index.html</code> a <code>apiHost: "http://localhost:3000"</code>; verificar el widget por
+      <code>.shadowRoot</code>.</li>
+    <li>[ ] Correr las nueve verificaciones de §14.9 — todas pasan.</li>
+    <li>[ ] El smoke test conversacional local termina en un enlace <code>app.researchrabbit.ai/search/…</code> que funciona.</li>
+    <li>[ ] Correr el set dorado de 15 preguntas en local; pasan las cuatro compuertas de corrección de §18.</li>
+  </ol>
+
+  <h3><span class="stage s2">Etapa&nbsp;2 · Render</span> &nbsp;(§15) — gateway + servidor MCP</h3>
+  <ol>
+    <li>[ ] Subir <code>researchrabbit-copilot</code> a GitHub; instalar la Render GitHub App solo en ese repo (mínimo
+      privilegio).</li>
+    <li>[ ] Medir la latencia hacia <code>api.researchrabbit.ai</code> desde las regiones candidatas de Render; elegir una y usarla
+      para todos los servicios, ahora y en la Etapa&nbsp;3.</li>
+    <li>[ ] Crear <code>researchrabbit-server</code> (Node, root <code>server</code>, Starter, health <code>/api/health</code>,
+      env <code>RR_BACKEND</code>, <code>RR_SESSION_COOKIE</code>, <code>RR_PROJECT_ID</code>,
+      <code>RR_ALLOW_WRITES=false</code>, <code>CACHE_TTL_SECONDS</code>, <code>MAX_TOOL_CALLS_PER_CONV</code>; sin
+      <code>PORT</code>). Verificar <code>/api/health</code> → <code>{"ok":true,"backend":"openalex"}</code>.</li>
+    <li>[ ] Crear <code>researchrabbit-mcp-server</code> (Node, root <code>mcp-server</code>, Starter, health <code>/</code>,
+      env <code>GATEWAY_URL=https://researchrabbit-server.onrender.com</code> — la única variable). Verificar que
+      <code>GET /</code> lista 22 tools y que el handshake <code>initialize</code> devuelve 200 — recordar
+      <code>Accept: application/json, text/event-stream</code>; sin ese header, el 406 es <em>correcto</em>.</li>
+    <li>[ ] (Opcional) Commitear el <code>render.yaml</code> de dos servicios (§15.4); después de aplicarlo, re-chequear el plan y
+      la región en el dashboard.</li>
+    <li>[ ] Mover todos los secretos al dashboard, solo en <code>researchrabbit-server</code> (§15.5); dejar escrito el
+      procedimiento de rotación de la cookie.</li>
+    <li>[ ] Confirmar que ninguno de los dos servicios duerme (Starter) o, si elegiste Free, que hay un ping externo configurado
+      (§15.6).</li>
+    <li>[ ] Correr los cinco smoke tests HTTPS de §15.8, incluido el <code>tools/call</code> que prueba que
+      <code>GATEWAY_URL</code> es correcta.</li>
+    <li>[ ] <strong>Registrar el servidor MCP hosteado</strong> en Claude Code
+      (<code>claude mcp add --transport http researchrabbit https://researchrabbit-mcp-server.onrender.com/mcp</code>) o en
+      Claude Desktop vía <code>mcp-remote</code> (§15.9); confirmar que aparecen las 22 tools.</li>
+    <li>[ ] Correr al menos uno de los tres prompts de investigación de §15.9 de punta a punta; confirmar papers reales, DOI en
+      cada ítem, marcas de retractación y un enlace profundo <code>app.researchrabbit.ai/search/…</code> que funciona.</li>
+    <li>[ ] Confirmar que el costo es <strong>$14/mes</strong> (2× Starter, §5) y sin factura de LLM propia.</li>
+    <li>[ ] <strong>Decidir</strong> si la Etapa&nbsp;3 vale la pena para tu audiencia. Parar acá es un resultado válido.</li>
+  </ol>
+
+  <h3><span class="stage s3">Etapa&nbsp;3 · Flowise</span> &nbsp;(§16) — el chatbot empaquetado</h3>
+  <ol>
+    <li>[ ] Crear <code>researchrabbit-flowise</code> (Docker <code>flowiseai/flowise:3.1.2</code> <strong>pineado</strong>,
+      Standard 2 GB, health <code>/</code>, las 8 env vars, disco de 1 GB en <code>/opt/render/.flowise</code>, misma región) — o
+      reutilizar la instancia <code>firsttable-flowise</code> existente por $0 extra.</li>
+    <li>[ ] (Opcional) Agregar el bloque de Flowise a <code>render.yaml</code> (§16.2); después de aplicarlo, re-chequear el disco
+      y el plan en el dashboard.</li>
+    <li>[ ] Crear el admin de Flowise (16 caracteres, minúscula + mayúscula + dígito + especial); iniciar sesión.</li>
+    <li>[ ] <code>POST /api/v1/credentials</code> — componente <code>fireworksApi</code>, con una API key
+      <strong>real</strong> (nunca un placeholder <code>_FLOWISE_BLANK_</code>). Anotar el id.</li>
+    <li>[ ] Re-postear el <code>flowData</code> commiteado en la Etapa 1: cambiar el bloque inline <code>customMCP</code> de §9.1
+      por <code>https://researchrabbit-mcp-server.onrender.com/mcp</code> y el nuevo id de credencial.
+      <code>POST /api/v1/chatflows</code> con <code>type: AGENTFLOW</code>, <code>isPublic: true</code>.
+      (Recordar <code>x-request-from: internal</code>.)</li>
+    <li>[ ] Re-autorizar la tool MCP para que Flowise redescubra las 22 tools; confirmar que las 12 <code>mcpActions</code> están
+      seleccionadas.</li>
+    <li>[ ] Pegar el system prompt de Warren (§10); <code>PUT /api/v1/chatflows/{id}</code> con el <code>chatbotConfig</code>
+      stringificado (§9.3).</li>
+    <li>[ ] Cambiar el <code>apiHost</code> de <code>site/index.html</code> a la URL de Flowise en Render; definir
+      <code>ALLOWED_ORIGINS</code> en el gateway y confirmar CORS (§16.7).</li>
+    <li>[ ] Abrir <code>/chatbot/{id}</code>; verificar título, colores, avatares, mensaje de bienvenida y placeholder a través
+      del <code>.shadowRoot</code>.</li>
+    <li>[ ] Correr los tres comandos del smoke test de §16.8 y confirmar que los servicios de la Etapa&nbsp;2 siguen verdes por
+      debajo.</li>
+    <li>[ ] Smoke test: “Estoy empezando una revisión sobre calor urbano y mortalidad.” Confirmar llamadas reales a tools, DOI
+      presente en cada recomendación y un enlace <code>app.researchrabbit.ai/search/…</code> que funcione. Repetir en un
+      teléfono.</li>
+    <li>[ ] Re-correr el set dorado de 15 preguntas contra el chatbot desplegado; verificar las cuatro compuertas de §18 y
+      confirmar que los resultados coinciden con los de la Etapa&nbsp;1.</li>
+    <li>[ ] Confirmar que planes y costos coinciden con §5 ($39/mes) y que el agentflow sobrevive a un redeploy manual.</li>
+  </ol>
+</section>
+
+<!-- ─────────────────────────────────────────── DECISIONES ──────────────── -->
+<section id="decisions">
+  <h2><span class="dot"></span>20. Decisiones abiertas — necesitamos tu definición</h2>
+  <table>
+    <tr><th>#</th><th>Decisión</th><th>Nuestra recomendación</th></tr>
+    <tr><td>1</td><td><strong>Audiencia:</strong> ¿herramienta personal/de laboratorio, o algo que pensás compartir
+      públicamente?</td>
+      <td>Construir single-tenant primero. Cambia por completo el modelo de auth y es barato ampliarlo después.</td></tr>
+    <tr><td>2</td><td><strong>Backend:</strong> ¿la API privada de RR, OpenAlex, o los dos?</td>
+      <td><strong>Los dos</strong>, detrás de una interfaz. OpenAlex por defecto, RR cuando hay autenticación. No negociable si
+      la respuesta a #1 es “público”.</td></tr>
+    <tr><td>3</td><td><strong>¿Contactar a Litmap Limited?</strong></td>
+      <td>Sí, si esto va más allá del uso personal. Este documento es algo razonable para mandarles.</td></tr>
+    <tr><td>4</td><td><strong>¿Escrituras habilitadas?</strong> (crear colecciones, guardar artículos en la biblioteca real)</td>
+      <td>Apagadas en la v1. El descubrimiento de solo lectura tiene todo el valor y ninguno del riesgo de “el bot me desordenó
+      la biblioteca”.</td></tr>
+    <tr><td>5</td><td><strong>¿Qué app primero?</strong></td>
+      <td>Servidor MCP → chatbot → generador de informes → digest, según §12.</td></tr>
+    <tr><td>6</td><td><strong>¿Reutilizar la instancia de Flowise existente o crear otra?</strong> (solo Etapa&nbsp;3)</td>
+      <td>Un segundo agentflow en el <em>mismo</em> servicio de Flowise cuesta $0 extra y comparte el disco. Separar solo si
+      querés uptime independiente para First Table.</td></tr>
+    <tr><td>7</td><td><strong>¿Hacemos la Etapa&nbsp;3?</strong></td>
+      <td>Solo si la audiencia incluye gente que nunca va a instalar un cliente MCP. Después de la Etapa&nbsp;2 ya tenés el
+      asistente de investigación por $14/mes; la Etapa&nbsp;3 suma $25/mes más tokens puramente por la UI de chat
+      empaquetada (§13).</td></tr>
+  </table>
+  <div class="tip"><strong>La forma más rápida de probar la premisa:</strong> antes de cualquier deploy, construir el gateway
+  local solo con el adaptador OpenAlex, apuntar Claude Desktop al servidor MCP y pasarle cinco preguntas de investigación
+  reales. Si eso se siente útil, el chatbot se va a sentir útil — y habrás gastado dos días, no dos semanas. Eso es exactamente
+  lo que son los pasos §14.1–§14.5 de la <span class="stage">Etapa&nbsp;1</span>, así que no cuesta nada extra: es el arranque del
+  plan, no un desvío. La misma lógica escala un nivel: la <span class="stage s2">Etapa&nbsp;2</span> pone ese mismo montaje en
+  internet por $14/mes, y recién la <span class="stage s3">Etapa&nbsp;3</span> te compromete a operar un chatbot.</div>
+</section>
+
+</main>
+
+<footer>
+  Propuesta redactada a partir de <code>~/Documentos/firstTable</code> (CLAUDE.md, README.md, server, mcp-server,
+  agent-system-prompt.md), <code>researchrabbit-howto-api-en.html</code> y <code>researchrabbit-report-en.html</code> ·
+  2026-07-31.<br>
+  ResearchRabbit es un producto de Litmap Limited (Litmaps), Nueva Zelanda. Los endpoints de API referenciados acá son
+  endpoints privados de la SPA observados en vivo, no un contrato público; pueden cambiar en cualquier momento. Nada de lo aquí
+  escrito implica respaldo ni acuerdo con Litmap Limited.
+</footer>
+
+</body>
+</html>

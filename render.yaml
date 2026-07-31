@@ -36,7 +36,7 @@ services:
       - key: MAX_TOOL_CALLS_PER_CONV
         value: "40"
       - key: ALLOWED_ORIGINS
-        value: https://researchrabbit-mcp-server.onrender.com
+        value: https://researchrabbit-mcp-server.onrender.com,https://researchrabbit-site.onrender.com,http://localhost:3000,http://localhost:8088
       - key: RR_SESSION_COOKIE
         sync: false
       - key: RR_PROJECT_ID
@@ -55,3 +55,56 @@ services:
     envVars:
       - key: GATEWAY_URL
         value: https://researchrabbit-server.onrender.com
+
+  # ── Stage 3 · Flowise (Docker image web service) — added in §16.2 ──
+  # Pinned to flowiseai/flowise:3.1.2 — :latest (3.1.4) and 3.1.3 are broken on
+  # Render (missing @smithy/eventstream-codec, fatal ./utils/uuid export error).
+  # Standard plan (2 GB) is required: free/Starter (512 MB) OOM-kills 3.1.2 during
+  # init. The 1 GB persistent disk keeps the SQLite DB, credentials and agentflow
+  # across redeploys. Deployed via the Render REST API (see site/agentflow.json);
+  # this block is the reproducible Blueprint spec.
+  - type: web
+    name: researchrabbit-flowise
+    runtime: image
+    image:
+      url: docker.io/flowiseai/flowise:3.1.2
+    region: oregon
+    plan: standard
+    healthCheckPath: /
+    disk:
+      name: flowise-data
+      mountPath: /opt/render/.flowise
+      sizeGB: 1
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: HTTP_SECURITY_CHECK
+        value: "false"
+      - key: DATABASE_PATH
+        value: /opt/render/.flowise
+      - key: APIKEY_PATH
+        value: /opt/render/.flowise
+      - key: SECRETKEY_PATH
+        value: /opt/render/.flowise
+      - key: LOG_PATH
+        value: /opt/render/.flowise/logs
+      - key: BLOB_STORAGE_PATH
+        value: /opt/render/.flowise/storage
+      - key: NODE_OPTIONS
+        value: --max-old-space-size=384
+      - key: FLOWISE_USERNAME
+        sync: false
+      - key: FLOWISE_PASSWORD
+        sync: false
+
+  # ── Stage 3 · Static site (landing + docs + Connect panel) ──
+  # Serves site/ as static HTML (no build step). The Connect-account panel
+  # (Camino C) talks to the gateway's /api/rr/* endpoints, so the gateway's
+  # ALLOWED_ORIGINS must include https://researchrabbit-site.onrender.com.
+  - type: static_site
+    name: researchrabbit-site
+    branch: master
+    rootDir: ""
+    buildCommand: ""
+    publishPath: site
+    autoDeploy: true

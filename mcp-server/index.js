@@ -1,15 +1,25 @@
 // ResearchRabbit Copilot MCP server.
-// Exposes the REST gateway (http://localhost:8821) as 22 MCP tools over the
-// Streamable HTTP transport, so a Flowise agent or Claude Code can call them.
+// Exposes the REST gateway as 22 MCP tools over the Streamable HTTP transport,
+// so a Flowise agent or Claude Code can call them.
 //
 // Run:  node index.js   (or: GATEWAY_URL=http://localhost:8821 MCP_PORT=8822 node index.js)
 // Listens on http://localhost:8822/mcp  (Streamable HTTP, stateless).
 //
+// Camino B — per-user ResearchRabbit credentials:
+//   A client (Claude Code / Cursor / Windsurf / VS Code) may send two request
+//   headers on every POST /mcp:
+//     X-RR-Cookie:      the SPRSESSION cookie value from app.researchrabbit.ai
+//     X-RR-Project-Id:  the user's projectId
+//   The server reads them once per request, closes them over a fresh server
+//   instance (stateless: one createServer(credCtx) per request — race-free),
+//   and forwards them to the gateway, which upgrades that single call to the
+//   rr backend with that session. No credential is stored here. See
+//   .mcp.json "headers" in site/index.html for the client config.
+//
 // Mirrors firsttable-mcp-server: a TOOLS array of {name, description, inputSchema, call},
-// a gw(method, path, query, body) helper returning {status, ok, data}, GET / as a JSON
-// descriptor listing tool names, POST /mcp stateless (one createServer() per request,
-// sessionIdGenerator: undefined), GET /mcp -> 405, a plain POST /mcp without the
-// Accept: application/json, text/event-stream header -> 406 (correct, from the SDK).
+// a gw(method, path, query, body, ctx) helper returning {status, ok, data}, GET / as a
+// JSON descriptor, POST /mcp stateless, GET /mcp -> 405, a plain POST /mcp without the
+// Accept: application/json, text/event-stream header -> 406 (from the SDK).
 // PORT wins over MCP_PORT so Render can inject PORT.
 
 const express = require("express");
@@ -26,6 +36,9 @@ const PORT = Number(process.env.PORT || process.env.MCP_PORT || 8822);
 // ---------------------------------------------------------------------------
 // Tool catalogue: 22 tools (12 on, 8 off, 2 write). Each maps to one gateway
 // endpoint. `seeds` take TITLES or DOIs — never invent numeric ids.
+// Each `call(args, ctx)` forwards the per-request ResearchRabbit credential
+// (ctx = {cookie, projectId}) to gw(), which adds X-RR-Cookie / X-RR-Project-Id
+// headers on the gateway call. ctx may be empty ({}) for anonymous (openalex) use.
 // ---------------------------------------------------------------------------
 const TOOLS = [
   {
@@ -42,7 +55,7 @@ const TOOLS = [
       },
       required: ["q"],
     },
-    call: (a) => gw("POST", "/api/search/keyword", null, { q: a.q, per: a.per ?? 5 }),
+    call: (a, ctx) => gw("POST", "/api/search/keyword", null, { q: a.q, per: a.per ?? 5 }, ctx),
   },
   {
     name: "search_similar",
@@ -59,7 +72,7 @@ const TOOLS = [
       },
       required: ["seeds"],
     },
-    call: (a) => gw("POST", "/api/search/network", null, { seeds: a.seeds, edgeMode: "both", sinceYear: a.sinceYear, per: a.limit ?? 10 }),
+    call: (a, ctx) => gw("POST", "/api/search/network", null, { seeds: a.seeds, edgeMode: "both", sinceYear: a.sinceYear, per: a.limit ?? 10 }, ctx),
   },
   {
     name: "search_earlier_work",
@@ -75,7 +88,7 @@ const TOOLS = [
       },
       required: ["seeds"],
     },
-    call: (a) => gw("POST", "/api/search/network", null, { seeds: a.seeds, edgeMode: "backward", per: a.limit ?? 10 }),
+    call: (a, ctx) => gw("POST", "/api/search/network", null, { seeds: a.seeds, edgeMode: "backward", per: a.limit ?? 10 }, ctx),
   },
   {
     name: "search_later_work",
@@ -92,7 +105,7 @@ const TOOLS = [
       },
       required: ["seeds"],
     },
-    call: (a) => gw("POST", "/api/search/network", null, { seeds: a.seeds, edgeMode: "forward", sinceYear: a.sinceYear, per: a.limit ?? 10 }),
+    call: (a, ctx) => gw("POST", "/api/search/network", null, { seeds: a.seeds, edgeMode: "forward", sinceYear: a.sinceYear, per: a.limit ?? 10 }, ctx),
   },
   {
     name: "expand_frontier",
@@ -108,7 +121,7 @@ const TOOLS = [
       },
       required: ["seeds"],
     },
-    call: (a) => gw("POST", "/api/expand", null, { seeds: a.seeds, iterations: a.iterations ?? 2, limit: a.limit ?? 10 }),
+    call: (a, ctx) => gw("POST", "/api/expand", null, { seeds: a.seeds, iterations: a.iterations ?? 2, limit: a.limit ?? 10 }, ctx),
   },
   {
     name: "get_article",
@@ -120,7 +133,7 @@ const TOOLS = [
       properties: { id: { type: "string", description: "OpenAlex id (W...), DOI (10.…), or title" } },
       required: ["id"],
     },
-    call: (a) => gw("GET", `/api/articles/${encodeURIComponent(a.id)}`),
+    call: (a, ctx) => gw("GET", `/api/articles/${encodeURIComponent(a.id)}`, null, null, ctx),
   },
   {
     name: "rank_candidates",
@@ -137,7 +150,7 @@ const TOOLS = [
       },
       required: ["items"],
     },
-    call: (a) => gw("POST", "/api/rank", null, { items: a.items, seeds: a.seeds, sortBy: a.sortBy }),
+    call: (a, ctx) => gw("POST", "/api/rank", null, { items: a.items, seeds: a.seeds, sortBy: a.sortBy }, ctx),
   },
   {
     name: "credibility_check",
@@ -152,7 +165,7 @@ const TOOLS = [
         title: { type: "string", description: "Title" },
       },
     },
-    call: (a) => gw("POST", "/api/credibility", null, { id: a.id, doi: a.doi, title: a.title }),
+    call: (a, ctx) => gw("POST", "/api/credibility", null, { id: a.id, doi: a.doi, title: a.title }, ctx),
   },
   {
     name: "resolve_article",
@@ -164,7 +177,7 @@ const TOOLS = [
       properties: { query: { type: "string", description: "A paper title or DOI" } },
       required: ["query"],
     },
-    call: (a) => gw("POST", "/api/resolve", null, { query: a.query }),
+    call: (a, ctx) => gw("POST", "/api/resolve", null, { query: a.query }, ctx),
   },
   {
     name: "create_research_session",
@@ -179,7 +192,7 @@ const TOOLS = [
       },
       required: ["seeds"],
     },
-    call: (a) => gw("POST", "/api/sessions", null, { seeds: a.seeds, title: a.title }),
+    call: (a, ctx) => gw("POST", "/api/sessions", null, { seeds: a.seeds, title: a.title }, ctx),
   },
   {
     name: "update_session_step",
@@ -195,7 +208,7 @@ const TOOLS = [
       },
       required: ["sessionId", "stepId"],
     },
-    call: (a) => gw("PATCH", `/api/sessions/${encodeURIComponent(a.sessionId)}/steps/${encodeURIComponent(a.stepId)}`, null, { step: a.step }),
+    call: (a, ctx) => gw("PATCH", `/api/sessions/${encodeURIComponent(a.sessionId)}/steps/${encodeURIComponent(a.stepId)}`, null, { step: a.step }, ctx),
   },
   {
     name: "build_session_link",
@@ -212,7 +225,7 @@ const TOOLS = [
       },
       required: ["sessionId"],
     },
-    call: (a) => gw("POST", "/api/session-link", null, { sessionId: a.sessionId, stepIndex: a.stepIndex, query: a.query }),
+    call: (a, ctx) => gw("POST", "/api/session-link", null, { sessionId: a.sessionId, stepIndex: a.stepIndex, query: a.query }, ctx),
   },
   {
     name: "get_search_results",
@@ -223,7 +236,7 @@ const TOOLS = [
       properties: { id: { type: "string", description: "Search id (rr) or article id/DOI/title (openalex)" } },
       required: ["id"],
     },
-    call: (a) => gw("GET", `/api/searches/${encodeURIComponent(a.id)}`),
+    call: (a, ctx) => gw("GET", `/api/searches/${encodeURIComponent(a.id)}`, null, null, ctx),
   },
   {
     name: "get_research_session",
@@ -234,7 +247,7 @@ const TOOLS = [
       properties: { id: { type: "string", description: "Session id" } },
       required: ["id"],
     },
-    call: (a) => gw("GET", `/api/sessions/${encodeURIComponent(a.id)}`),
+    call: (a, ctx) => gw("GET", `/api/sessions/${encodeURIComponent(a.id)}`, null, null, ctx),
   },
   {
     name: "search_by_author",
@@ -249,7 +262,7 @@ const TOOLS = [
         per: { type: "number", description: "Max works (default 10, max 20)" },
       },
     },
-    call: (a) => gw("POST", "/api/search/author", null, { name: a.authorName, authorIds: a.authorIds, per: a.per ?? 10 }),
+    call: (a, ctx) => gw("POST", "/api/search/author", null, { name: a.authorName, authorIds: a.authorIds, per: a.per ?? 10 }, ctx),
   },
   {
     name: "screen_articles",
@@ -268,10 +281,10 @@ const TOOLS = [
         excludeRetracted: { type: "boolean", description: "Drop retracted papers (default false)" },
       },
     },
-    call: (a) => gw("POST", "/api/screen", null, {
+    call: (a, ctx) => gw("POST", "/api/screen", null, {
       items: a.items, ids: a.ids, yearMin: a.yearMin, yearMax: a.yearMax,
       doctype: a.doctype, minCitations: a.minCitations, excludeRetracted: a.excludeRetracted,
-    }),
+    }, ctx),
   },
   {
     name: "export_bibtex",
@@ -284,7 +297,7 @@ const TOOLS = [
         dois: { type: "array", items: { type: "string" }, description: "DOIs" },
       },
     },
-    call: (a) => gw("POST", "/api/export/bibtex", null, { ids: a.ids, dois: a.dois }),
+    call: (a, ctx) => gw("POST", "/api/export/bibtex", null, { ids: a.ids, dois: a.dois }, ctx),
   },
   {
     name: "find_gaps",
@@ -298,21 +311,21 @@ const TOOLS = [
         collectionId: { type: "string", description: "Collection to compare against (rr)" },
       },
     },
-    call: (a) => gw("POST", "/api/gaps", null, { seeds: a.seeds, collectionId: a.collectionId }),
+    call: (a, ctx) => gw("POST", "/api/gaps", null, { seeds: a.seeds, collectionId: a.collectionId }, ctx),
   },
   {
     name: "list_collections",
     description:
       "List the user's ResearchRabbit folders with item counts and colours (rr backend only). On openalex returns a structured 'not available' message.",
     inputSchema: { type: "object", properties: {} },
-    call: () => gw("GET", "/api/collections"),
+    call: (_a, ctx) => gw("GET", "/api/collections", null, null, ctx),
   },
   {
     name: "list_library",
     description:
       "List the user's saved articles (the ResearchRabbit library). On openalex returns a structured 'not available' message.",
     inputSchema: { type: "object", properties: {} },
-    call: () => gw("GET", "/api/library"),
+    call: (_a, ctx) => gw("GET", "/api/library", null, null, ctx),
   },
   {
     name: "create_collection",
@@ -327,7 +340,7 @@ const TOOLS = [
       },
       required: ["collectionName"],
     },
-    call: (a) => gw("POST", "/api/collections", null, { name: a.collectionName, color: a.color }),
+    call: (a, ctx) => gw("POST", "/api/collections", null, { name: a.collectionName, color: a.color }, ctx),
   },
   {
     name: "save_articles",
@@ -342,25 +355,29 @@ const TOOLS = [
       },
       required: ["ids"],
     },
-    call: (a) => gw("POST", "/api/library/save", null, { ids: a.ids, collectionId: a.collectionId }),
+    call: (a, ctx) => gw("POST", "/api/library/save", null, { ids: a.ids, collectionId: a.collectionId }, ctx),
   },
 ];
 
 // ---------------------------------------------------------------------------
 // Gateway helper — returns { status, ok, data }
+// ctx = { cookie, projectId } (Camino B). Forwarded as X-RR-Cookie /
+// X-RR-Project-Id so the gateway can upgrade this single call to the rr backend
+// with the caller's own ResearchRabbit session. Empty ctx => anonymous (openalex).
 // ---------------------------------------------------------------------------
-async function gw(method, path, query, body) {
+async function gw(method, path, query, body, ctx) {
   const url = new URL(GATEWAY + path);
   if (query) {
     for (const [k, v] of Object.entries(query)) {
       if (v !== undefined && v !== null && v !== "") url.searchParams.set(k, String(v));
     }
   }
-  const init = { method, headers: { Accept: "application/json" } };
-  if (body) {
-    init.headers["Content-Type"] = "application/json";
-    init.body = JSON.stringify(body);
-  }
+  const headers = { Accept: "application/json" };
+  if (body) headers["Content-Type"] = "application/json";
+  if (ctx && ctx.cookie) headers["X-RR-Cookie"] = String(ctx.cookie);
+  if (ctx && ctx.projectId) headers["X-RR-Project-Id"] = String(ctx.projectId);
+  const init = { method, headers };
+  if (body) init.body = JSON.stringify(body);
   const res = await fetch(url.toString(), init);
   const text = await res.text();
   let parsed;
@@ -373,9 +390,11 @@ async function gw(method, path, query, body) {
 }
 
 // ---------------------------------------------------------------------------
-// MCP server factory (stateless: one server per request)
+// MCP server factory (stateless: one server per request). credCtx is closed
+// over so tool calls forward the caller's ResearchRabbit credential without any
+// module-level mutable state (safe under concurrent requests).
 // ---------------------------------------------------------------------------
-function createServer() {
+function createServer(credCtx) {
   const server = new Server(
     { name: "researchrabbit-copilot", version: "1.0.0" },
     { capabilities: { tools: {} } }
@@ -399,7 +418,7 @@ function createServer() {
       };
     }
     try {
-      const result = await tool.call(args || {});
+      const result = await tool.call(args || {}, credCtx);
       const text = JSON.stringify(result.data, null, 2);
       return {
         isError: !result.ok,
@@ -431,11 +450,20 @@ app.get("/", (_req, res) =>
     endpoint: "POST /mcp",
     gateway: GATEWAY,
     tools: TOOLS.map((t) => t.name),
+    perRequestAuth:
+      "Camino B — send X-RR-Cookie + X-RR-Project-Id headers on POST /mcp to use your own ResearchRabbit session (forwarded to the gateway). Omit them for the anonymous openalex backend.",
   })
 );
 
 app.post("/mcp", async (req, res) => {
-  const server = createServer();
+  // Camino B: read the caller's ResearchRabbit credential from request headers.
+  // Headers are case-insensitive via req.get(); values are kept only for this
+  // request's server instance — never stored.
+  const credCtx = {
+    cookie: req.get("X-RR-Cookie") || null,
+    projectId: req.get("X-RR-Project-Id") || null,
+  };
+  const server = createServer(credCtx);
   try {
     const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
     await server.connect(transport);
@@ -465,5 +493,5 @@ app.delete("/mcp", (_req, res) =>
 
 app.listen(PORT, () => {
   console.log(`ResearchRabbit MCP server listening on http://localhost:${PORT}/mcp`);
-  console.log(`Gateway: ${GATEWAY} | tools: ${TOOLS.length}`);
+  console.log(`Gateway: ${GATEWAY} | tools: ${TOOLS.length} | per-request RR auth: on (X-RR-Cookie / X-RR-Project-Id)`);
 });

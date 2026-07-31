@@ -592,36 +592,60 @@ function createRrAdapter(cred) {
 
     // --- sessions (rr-unique) ------------------------------------------------
     async createSession({ seeds, title } = {}) {
+      // RR creates a session in TWO steps, in this order (verified live by
+      // capturing the real app's POST /search-sessions body):
+      //   1. POST /searches  -> searchId (the citation network for the seeds)
+      //   2. POST /search-sessions with body
+      //        { session:{projectId}, stepNumber:0, selected:[],
+      //          inspectedType:null, inspectedId:null, view:"list", searchId }
+      //      -> { id: sessionId, steps:[{ id: stepId, searchId, stepIndex:0 }] }
+      // The step already points at the search, so NO separate PATCH is needed.
+      // The previous code created the session first then the search + PATCH,
+      // and sent a bare {projectId,title} body that RR 400'd with
+      // "No such key 'session'".
       return guarded(async () => {
         if (!configured) return notConfigured("sessions");
         const pid = await ensureProjectId();
         if (!pid) return needProject("sessions");
         const { resolved, missing } = await resolveSeeds(seeds);
-        const session = await rrFetch("/search-sessions", {
-          method: "POST",
-          body: { projectId: pid, ...(title ? { title } : {}) },
-        });
-        const sessionId = session && (session.id || (session.data && session.data.id));
-        let stepId = null, searchId = null;
-        if (resolved.length && sessionId) {
-          try {
-            const { searchId: sid } = await runSearch({
+        // RR rejects searchId:null (expects a String), so we MUST create a
+        // search first and pass its id. Network search when seeds resolve;
+        // keyword-search fallback on the raw seed string otherwise.
+        let searchId = null;
+        try {
+          if (resolved.length) {
+            const r = await runSearch({
               type: "singleSet", projectId: pid,
               set: { userArticleIds: [], articleIds: resolved, authorIds: [], folderIds: [], tagIds: [], edgeMode: "both" },
               outputType: "articles", showPlaceholders: true, per: 20, page: 1,
-            }, { per: 20, polls: 3 });
-            searchId = sid;
-            const steps = (session.steps || (session.data && session.data.steps) || []);
-            stepId = steps[0] && steps[0].id;
-            if (stepId && searchId) {
-              await rrFetch(`/search-sessions/${encodeURIComponent(sessionId)}/steps/${encodeURIComponent(stepId)}`, {
-                method: "PATCH", body: { searchId },
-              });
-            }
-          } catch { /* best-effort: the session still exists */ }
+            }, { per: 20, polls: 4 });
+            searchId = r.searchId;
+          } else if (Array.isArray(seeds) && seeds.length) {
+            const r = await runSearch({
+              type: "singleSet", projectId: pid,
+              set: { userArticleIds: [], articleIds: [], authorIds: [], folderIds: [], tagIds: [] },
+              outputType: "articles", showPlaceholders: true, per: 20, page: 1,
+              stringFilter: String(seeds[0]), stringFilterTypes: ["title", "abstract"],
+            }, { per: 20, polls: 4 });
+            searchId = r.searchId;
+          }
+        } catch { /* fall through to the no-searchId guard */ }
+        if (!searchId) {
+          return { ok: false, backend: "rr", error: "Could not create a ResearchRabbit search for the session (no seeds resolved and keyword fallback failed).", missing };
         }
+        const session = await rrFetch("/search-sessions", {
+          method: "POST",
+          body: {
+            session: { projectId: pid, ...(title ? { title } : {}) },
+            stepNumber: 0, selected: [], inspectedType: null, inspectedId: null,
+            view: "list", searchId,
+          },
+        });
+        const sessionId = session && (session.id || (session.data && session.data.id));
+        const steps = (session && (session.steps || (session.data && session.data.steps))) || [];
+        const stepId = steps[0] && steps[0].id;
         return {
-          ok: true, backend: "rr", sessionId, stepId, searchId, missing,
+          ok: true, backend: "rr", sessionId, stepId, searchId, missing, title: title || null,
           link: sessionId ? `${RR_APP_BASE}/search/${sessionId}/0` : null,
         };
       });

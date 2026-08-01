@@ -459,22 +459,23 @@ code {
   </svg>
   <div class="wrap">
     <div class="hero-inner">
-      <span class="eyebrow">Literature discovery by chat</span>
-      <h1>Find the papers that matter — just ask Warren.</h1>
+      <span class="eyebrow">ResearchRabbit, for AI agents</span>
+      <h1>Give your agent the citation graph.</h1>
       <p class="lede">
-        Warren is an AI literature-discovery assistant for <strong>ResearchRabbit</strong>. Tell it your
-        review topic and it finds seed papers, grows the citation frontier (similar / earlier / later
-        work), screens and ranks candidates, checks credibility, and hands you off to ResearchRabbit —
-        every paper it shows you carries a <strong>real DOI</strong>.
+        An <strong>MCP server</strong> that exposes ResearchRabbit's citation graph as <strong>22
+        tools</strong> over a single URL — so any MCP-aware agent (Claude Code, Cursor, Windsurf, VS
+        Code) can search for papers, grow the frontier (similar / earlier / later work), screen and
+        rank candidates, and open ResearchRabbit sessions in your account. Every result carries a
+        <strong>real DOI</strong>, pulled straight from <code>api.researchrabbit.ai</code> — your agent
+        never invents a citation.
       </p>
       <div class="hero-actions">
-        <a class="btn btn-amber" href="#try">Chat with Warren now</a>
-        <a class="btn btn-outline" href="#agent-client">Use it in Claude Code</a>
+        <a class="btn btn-amber" href="#agent-client">Connect your agent</a>
+        <a class="btn btn-outline" href="#try">or try the Warren chat</a>
       </div>
       <p class="hero-note">
-        Warren <strong>never invents a citation</strong>. If a tool returns nothing, it says so. It
-        works off metadata and abstracts only — it will not tell you "this study found X" unless X is
-        in the abstract it was given.
+        No agent to wire up? <strong>Warren</strong> is a ready-made chat built on the same 22 tools —
+        same DOIs, same sessions, no install. It's one click further down the page.
       </p>
     </div>
   </div>
@@ -486,9 +487,10 @@ code {
     <div class="section-head">
       <h2>What is this?</h2>
       <p>
-        A conversational front door to ResearchRabbit's citation graph. Instead of clicking through
-        databases and building a seed set by hand, you have one short conversation and walk away with a
-        ranked, DOI-backed shortlist and a link to keep exploring visually.
+        A front door to ResearchRabbit's citation graph for AI agents. An MCP server exposes 22 tools
+        over one URL — your agent calls them to search, grow and rank the literature, and every paper
+        comes back with a real DOI straight from <code>api.researchrabbit.ai</code>. No more agents that
+        hallucinate citations.
       </p>
     </div>
 
@@ -526,7 +528,8 @@ code {
   <div class="wrap">
     <div class="section-head">
       <h2>From first question to ranked shortlist</h2>
-      <p>Six short turns. Warren asks only what it needs and never makes you repeat yourself.</p>
+      <p>Six steps your agent runs — frame, seed, expand, screen, rank, hand off. It asks only what it
+         needs and never makes you repeat yourself.</p>
     </div>
 
     <ol class="steps">

@@ -168,7 +168,8 @@ p { margin: 0 0 1rem; }
 }
 .stack-tag { font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--rr-muted); margin-bottom: 6px; }
 .stack-item h3 { font-family: var(--font-display); font-weight: 500; font-size: 1.3rem; color: var(--rr-purple-deep); margin-bottom: 8px; }
-.stack-item p:last-child { margin: 0; font-size: .94rem; color: #4b5563; }
+.stack-item p:last-child,
+.stack-item.is-clickable > p:not(.stack-tag) { margin: 0; font-size: .94rem; color: #4b5563; }
 
 /* ---------- Request-path flow ---------- */
 .flow { background: var(--rr-mist); border-radius: var(--radius); padding: 32px 30px 34px; }
@@ -224,7 +225,7 @@ code {
 }
 .code-block .cb-copy:hover { background: #383055; color: #fff; }
 
-/* ---------- Tool / example cards ---------- */
+/* ---------- Tool cards ---------- */
 .tools { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); margin: 14px 0 8px; }
 .tool-card {
   background: #fff; border: 1px solid var(--rr-line); border-radius: var(--radius);
@@ -263,26 +264,19 @@ code {
 .chat-fab:hover .fab-label { opacity: 1; }
 @media (max-width: 640px) { .chat-fab .fab-label { display: none; } }
 
-/* ---------- Two-column layout for examples ---------- */
+/* ---------- Two-column layout ---------- */
 .grid-2 { display: grid; gap: 26px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); margin-top: 8px; }
 
-/* ---------- Chat sample ---------- */
-.chat-sample { background: #fff; border: 1px solid var(--rr-line); border-radius: var(--radius); padding: 18px 18px 6px; box-shadow: var(--shadow-sm); }
-.msg { margin-bottom: 16px; }
-.msg .who { font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 4px; }
-.msg.user .who { color: var(--rr-muted); }
-.msg.bot .who { color: var(--rr-purple-deep); }
-.bubble { padding: 12px 15px; border-radius: 12px; font-size: .94rem; line-height: 1.55; }
-.msg.user .bubble { background: var(--rr-mist); color: var(--rr-ink); border-top-left-radius: 3px; }
-.msg.bot .bubble { background: var(--rr-purple); color: #fff; border-top-left-radius: 3px; }
-.msg.bot .bubble .why { display: block; opacity: .82; font-size: .86rem; margin-top: 2px; }
-.msg.bot .bubble .doi { color: #fde68a; }
-
-/* ---------- Callout ---------- */
-.callout { background: var(--rr-purple); color: #fff; border-radius: var(--radius); padding: 34px 32px; box-shadow: var(--shadow-md); }
-.callout h2 { color: #fff; }
-.callout p { color: rgba(255,255,255,.9); margin-bottom: 18px; }
-.callout .btn { margin-right: 10px; }
+/* ---------- Example prompts (Try it) ---------- */
+/* One stacked card per prompt: long sentences stay readable and wrap on
+   narrow screens instead of being squeezed into columns. */
+.prompts { list-style: none; margin: 0; padding: 0; max-width: 820px; display: grid; gap: 12px; }
+.prompts li {
+  background: #fff; border: 1px solid var(--rr-line); border-left: 4px solid var(--rr-purple);
+  border-radius: var(--radius); padding: 14px 18px; box-shadow: var(--shadow-sm);
+  font-size: .97rem; line-height: 1.6; color: var(--rr-ink); overflow-wrap: break-word;
+}
+.prompts li em { color: var(--rr-purple-deep); font-style: italic; }
 
 /* ---------- Note / tip ---------- */
 .note {
@@ -298,7 +292,7 @@ code {
 .site-footer .wrap { display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; align-items: center; }
 
 /* ---------- Responsive ---------- */
-/* ---------- RR connect panel (Camino C) ---------- */
+/* ---------- RR connect panel (Warren chatbot card) ---------- */
 .rr-panel { background: var(--rr-pale); border: 1px solid var(--rr-line); border-top: 4px solid var(--rr-purple); border-radius: var(--radius); padding: 22px 22px 18px; box-shadow: var(--shadow-sm); }
 .rr-panel h3 { margin-top: 0; }
 .rr-lbl { display: block; font-size: .82rem; font-weight: 600; color: var(--rr-purple-deep); margin-bottom: 12px; }
@@ -316,6 +310,65 @@ code {
 .rr-howto { margin-top: 36px; }
 .rr-steps { padding-left: 1.1rem; line-height: 1.7; }
 .rr-steps li { margin-bottom: 8px; }
+
+/* ---------- Agent-as-a-client cards + progressive disclosure ---------- */
+/* Two entry points (editor MCP / web chatbot) are shown as cards; the long
+   configuration docs live in a panel that opens *behind* (below) the cards. */
+.client-cards { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); margin-top: 30px; }
+.client-card {
+  display: flex; flex-direction: column;
+  background: #fff; border: 1px solid var(--rr-line); border-top: 4px solid var(--rr-purple);
+  border-radius: var(--radius); padding: 24px 22px 20px; box-shadow: var(--shadow-sm);
+}
+.client-card h3 { margin-top: 0; font-size: 1.22rem; }
+.client-tag { font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--rr-muted); margin-bottom: 6px; }
+.client-card p { font-size: .94rem; color: #4b5563; }
+.client-card ul { margin: 0 0 16px; padding-left: 1.15rem; font-size: .9rem; line-height: 1.65; color: #4b5563; }
+.client-card ul li { margin-bottom: 5px; }
+/* pushed to the bottom of the flex column, then parked on the right edge;
+   text-align (not flex) so the dotted underline keeps hugging the label */
+.card-cta { margin: auto 0 0; padding-top: 10px; text-align: right; }
+
+/* The whole card is the click target; the dotted-underline text is the
+   affordance (and the real <button>, so keyboard and screen readers work). */
+.is-clickable { cursor: pointer; -webkit-tap-highlight-color: rgba(124,58,237,.10); }
+.card-link {
+  font-family: inherit; font-size: .95rem; font-weight: 700; line-height: 1.4;
+  color: var(--rr-purple); background: none; border: 0; padding: 0 0 3px; cursor: pointer;
+  border-bottom: 2px dotted var(--rr-purple-soft);
+  transition: color .15s, border-bottom-color .15s, border-bottom-style .15s;
+}
+.card-link .chev { display: inline-block; margin-left: 7px; font-size: .8em; transition: transform .15s; }
+.card-link[aria-expanded="true"] { color: var(--rr-purple-deep); border-bottom-style: solid; }
+.card-link[aria-expanded="true"] .chev { transform: rotate(180deg); }
+.is-clickable { transition: box-shadow .15s, transform .15s, border-color .15s; }
+.is-clickable:hover { border-color: var(--rr-purple-soft); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.is-clickable:hover .card-link { color: var(--rr-purple-deep); border-bottom-color: var(--rr-purple); border-bottom-style: solid; }
+/* touch devices have no real hover: drop the lift so a tap doesn't leave it stuck */
+@media (hover: none) {
+  .is-clickable:hover { transform: none; box-shadow: var(--shadow-sm); border-color: var(--rr-line); }
+  .is-clickable:hover .card-link { color: var(--rr-purple); border-bottom-color: var(--rr-purple-soft); border-bottom-style: dotted; }
+  .is-clickable.is-open:hover { border-color: var(--rr-purple); box-shadow: var(--shadow-md); }
+  .is-clickable.is-open:hover .card-link { color: var(--rr-purple-deep); border-bottom-style: solid; }
+}
+.is-clickable:active { transform: translateY(0); box-shadow: var(--shadow-sm); }
+.is-clickable.is-open { border-color: var(--rr-purple); box-shadow: var(--shadow-md); }
+.is-clickable:focus-within { outline: 3px solid var(--rr-purple-soft); outline-offset: 3px; }
+.card-link:focus { outline: none; }
+.card-link:focus-visible { outline: 2px solid var(--rr-purple); outline-offset: 3px; border-radius: 3px; }
+.disclosure { display: none; margin-top: 26px; background: #fff; border: 1px solid var(--rr-line); border-radius: var(--radius); padding: 24px 26px 18px; box-shadow: var(--shadow-md); }
+.disclosure.open { display: block; }
+.disclosure-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; border-bottom: 1px solid var(--rr-line); padding-bottom: 12px; margin-bottom: 18px; }
+.disclosure-head h3 { margin: 0; font-size: 1.15rem; }
+.disclosure-close {
+  font-family: var(--font-body); background: transparent; border: 1px solid var(--rr-line);
+  border-radius: 999px; color: var(--rr-muted); font-size: .8rem; font-weight: 600;
+  padding: 6px 14px; cursor: pointer;
+}
+.disclosure-close:hover { color: var(--rr-purple-deep); border-color: var(--rr-purple); }
+.stack-item.is-clickable { display: flex; flex-direction: column; }
+.stack-item .card-cta { margin-top: auto; padding-top: 14px; }
+.stack-item .card-link { font-size: .88rem; }
 
 @media (max-width: 768px) { .nav { gap: 14px; font-size: .9rem; } }
 @media (max-width: 640px) {
@@ -339,7 +392,16 @@ code {
   .section { padding-block: 48px; }
   .section-head { margin-bottom: 32px; }
   .step, .feature, .stack-item { padding: 18px 16px; }
-  .callout { padding: 26px 22px; }
+  .prompts li { padding: 13px 15px; font-size: .95rem; }
+  .client-card { padding: 20px 18px 18px; }
+  .disclosure { padding: 20px 18px 14px; }
+  /* the whole card is the tap target, so give the hint room to breathe */
+  .card-cta { padding-top: 14px; }
+  .card-link { font-size: 1rem; padding-bottom: 4px; }
+  .stack-item .card-link { font-size: .95rem; }
+  .disclosure-head { gap: 10px; }
+  .disclosure-head h3 { font-size: 1.05rem; flex: 1 1 auto; min-width: 0; }
+  .disclosure-close { padding: 8px 14px; }
   .flow { padding: 22px 16px 24px; }
   .flow-row { grid-template-columns: 36px minmax(0,1fr); gap: 14px; }
   .flow-dot { width: 36px; height: 36px; font-size: .9rem; }
@@ -370,9 +432,7 @@ code {
     <nav class="nav" id="main-nav">
       <a href="#how" onclick="closeNav()">How it works</a>
       <a href="#tech" onclick="closeNav()">Architecture</a>
-      <a href="#mcp" onclick="closeNav()">MCP &amp; Claude</a>
-      <a href="#account" onclick="closeNav()">RR account</a>
-      <a href="#examples" onclick="closeNav()">Examples</a>
+      <a href="#agent-client" onclick="closeNav()">Agent as a client</a>
       <a href="#try" onclick="closeNav()">Try it</a>
     </nav>
   </div>
@@ -409,7 +469,7 @@ code {
       </p>
       <div class="hero-actions">
         <a class="btn btn-amber" href="#try">Chat with Warren now</a>
-        <a class="btn btn-outline" href="#mcp">Use it in Claude Code</a>
+        <a class="btn btn-outline" href="#agent-client">Use it in Claude Code</a>
       </div>
       <p class="hero-note">
         Warren <strong>never invents a citation</strong>. If a tool returns nothing, it says so. It
@@ -528,12 +588,16 @@ code {
         <p><code>accounts/fireworks/models/glm-5p2</code> at temperature 0.2, streaming on, with
            <code>allMessages</code> memory so the whole conversation stays in context. Native tool-calling.</p>
       </li>
-      <li class="stack-item">
+      <li class="stack-item is-clickable" onclick="cardActivate(event, this)">
         <p class="stack-tag">Tool layer</p>
-        <h3>MCP server (22 tools)</h3>
+        <h3 id="card-tools-title">MCP server (22 tools)</h3>
         <p>Node + Express with the <code>@modelcontextprotocol/sdk</code>, speaking Streamable HTTP on
            <code>POST /mcp</code>. Stateless: one JSON-RPC message per request. All 22 tools are wired to
            the agent.</p>
+        <div class="card-cta">
+          <button class="card-link" id="tools-btn" aria-expanded="false" aria-controls="tools-panel"
+                  onclick="toggleDisclosure(this, 'tools-panel')">Check tools <span class="chev">&#9662;</span></button>
+        </div>
       </li>
       <li class="stack-item">
         <p class="stack-tag">Data layer</p>
@@ -544,6 +608,153 @@ code {
            call and maps RR's citation graph into a canonical paper shape with real DOIs.</p>
       </li>
     </ul>
+
+    <!-- opened by the "check tools" button on the MCP server card above -->
+    <div class="disclosure" id="tools-panel" role="region" aria-labelledby="tools-panel-title">
+      <div class="disclosure-head">
+        <h3 id="tools-panel-title">The 22 tools you get</h3>
+        <button class="disclosure-close" onclick="closeDisclosure('tools-panel')">Close &#10005;</button>
+      </div>
+      <p class="tool-note">Every tool calls the gateway, which forwards to <code>api.researchrabbit.ai</code> as you with <code>Authorization: Bearer &lt;sessionToken&gt;</code>. Most calls also need your <code>projectId</code> (auto-discovered via <code>GET /projects</code>). The RR endpoint(s) each tool drives are listed below.</p>
+      <div class="tools">
+        <div class="tool-card">
+          <span class="tag tag-on">Discovery</span>
+          <h3><code>search_keyword</code></h3>
+          <p>Find candidate seed papers from a topic, phrase, or DOI (title + abstract match).</p>
+          <p class="ep">RR&nbsp;<code>POST /searches</code> &rarr; <code>GET /searches/{id}</code></p>
+        </div>
+        <div class="tool-card">
+          <span class="tag tag-on">Discovery</span>
+          <h3><code>search_similar</code></h3>
+          <p>Similar Work — every connection around the seeds (references + cited-by + related).</p>
+          <p class="ep">RR&nbsp;<code>POST /searches</code> <span class="epm">(edgeMode: both)</span></p>
+        </div>
+        <div class="tool-card">
+          <span class="tag tag-on">Discovery</span>
+          <h3><code>search_earlier_work</code></h3>
+          <p>Papers the seeds BUILT ON (their references / Earlier Work).</p>
+          <p class="ep">RR&nbsp;<code>POST /searches</code> <span class="epm">(edgeMode: backward)</span></p>
+        </div>
+        <div class="tool-card">
+          <span class="tag tag-on">Discovery</span>
+          <h3><code>search_later_work</code></h3>
+          <p>Papers published AFTER the seeds that CITE them (Later Work / Cited By).</p>
+          <p class="ep">RR&nbsp;<code>POST /searches</code> <span class="epm">(edgeMode: forward)</span></p>
+        </div>
+        <div class="tool-card">
+          <span class="tag tag-on">Discovery</span>
+          <h3><code>expand_frontier</code></h3>
+          <p>N iterations of network search server-side, deduped and consensus-ranked — the 'Grow and go!' loop in one call.</p>
+          <p class="ep">RR&nbsp;<code>POST /searches</code> <span class="epm">(edgeMode: both, iterated)</span></p>
+        </div>
+        <div class="tool-card">
+          <span class="tag tag-on">Discovery</span>
+          <h3><code>search_by_author</code></h3>
+          <p>Find papers by author name or by author ids.</p>
+          <p class="ep">RR&nbsp;<code>POST /searches</code> <span class="epm">(stringFilter / authorIds)</span></p>
+        </div>
+        <div class="tool-card">
+          <span class="tag tag-on">Resolve &amp; verify</span>
+          <h3><code>get_article</code></h3>
+          <p>Full metadata for one paper by id, DOI, or title: abstract, authors w/ h-index, citation counts, retraction flag.</p>
+          <p class="ep">RR&nbsp;<code>GET /articles/{id}</code></p>
+        </div>
+        <div class="tool-card">
+          <span class="tag tag-on">Resolve &amp; verify</span>
+          <h3><code>resolve_article</code></h3>
+          <p>Resolve a title or DOI to a stable articleId (+ confidence). The anti-hallucination keystone.</p>
+          <p class="ep">RR&nbsp;<code>POST /searches</code> &rarr; <code>GET /articles/{id}</code></p>
+        </div>
+        <div class="tool-card">
+          <span class="tag tag-on">Resolve &amp; verify</span>
+          <h3><code>credibility_check</code></h3>
+          <p>&ldquo;Should I trust this paper?&rdquo; triage: retraction, doctype, venue, citations, citations/yr, first-author h-index + caveats.</p>
+          <p class="ep">RR&nbsp;<code>GET /articles/{id}</code></p>
+        </div>
+        <div class="tool-card">
+          <span class="tag tag-on">Resolve &amp; verify</span>
+          <h3><code>rank_candidates</code></h3>
+          <p>Re-rank a candidate set by seed-consensus, recency, citations/yr, or raw citations, with a reason per item.</p>
+          <p class="ep">RR&nbsp;<code>GET /articles/{id}</code> <span class="epm">(per item)</span></p>
+        </div>
+        <div class="tool-card">
+          <span class="tag tag-on">Resolve &amp; verify</span>
+          <h3><code>screen_articles</code></h3>
+          <p>Filter a candidate set by year range, doctype, min citations, and/or exclude retracted.</p>
+          <p class="ep">RR&nbsp;<code>GET /articles/{id}</code> <span class="epm">(per item)</span></p>
+        </div>
+        <div class="tool-card">
+          <span class="tag tag-on">Resolve &amp; verify</span>
+          <h3><code>find_gaps</code></h3>
+          <p>Well-connected network papers the user's collection does NOT already contain.</p>
+          <p class="ep">RR&nbsp;<code>POST /searches</code> + <code>GET /folders/{id}</code></p>
+        </div>
+        <div class="tool-card">
+          <span class="tag tag-off">Sessions</span>
+          <h3><code>get_search_results</code></h3>
+          <p>Re-read a previous search by id.</p>
+          <p class="ep">RR&nbsp;<code>GET /searches/{id}</code></p>
+        </div>
+        <div class="tool-card">
+          <span class="tag tag-off">Sessions</span>
+          <h3><code>get_research_session</code></h3>
+          <p>Read a session and its ordered steps.</p>
+          <p class="ep">RR&nbsp;<code>GET /search-sessions/{id}</code></p>
+        </div>
+        <div class="tool-card">
+          <span class="tag tag-off">Sessions</span>
+          <h3><code>create_research_session</code></h3>
+          <p>Create a ResearchRabbit search session + first step from a seed set.</p>
+          <p class="ep">RR&nbsp;<code>POST /search-sessions</code></p>
+        </div>
+        <div class="tool-card">
+          <span class="tag tag-off">Sessions</span>
+          <h3><code>update_session_step</code></h3>
+          <p>Point a session step at a search/inspected article so the app opens where the chat left off.</p>
+          <p class="ep">RR&nbsp;<code>PATCH /search-sessions/{id}/steps/{stepId}</code></p>
+        </div>
+        <div class="tool-card">
+          <span class="tag tag-off">Sessions</span>
+          <h3><code>build_session_link</code></h3>
+          <p>Return the deep link app.researchrabbit.ai/search/{sessionId}/{stepIndex} — the hand-off to the app.</p>
+          <p class="ep">RR&nbsp;<span class="epm">no call — builds </span><code>app.researchrabbit.ai/search/{sid}/{step}</code></p>
+        </div>
+        <div class="tool-card">
+          <span class="tag tag-off">Sessions</span>
+          <h3><code>export_bibtex</code></h3>
+          <p>Export a set of papers to BibTeX text, ready to paste into Zotero.</p>
+          <p class="ep">RR&nbsp;<code>GET /articles/{id}</code> <span class="epm">(per item)</span></p>
+        </div>
+        <div class="tool-card">
+          <span class="tag tag-write">Library</span>
+          <h3><code>list_collections</code></h3>
+          <p>List the user's ResearchRabbit folders with item counts and colours.</p>
+          <p class="ep">RR&nbsp;<code>GET /folders</code></p>
+        </div>
+        <div class="tool-card">
+          <span class="tag tag-write">Library</span>
+          <h3><code>list_library</code></h3>
+          <p>List the user's saved articles (the ResearchRabbit library).</p>
+          <p class="ep">RR&nbsp;<code>GET /user-articles</code></p>
+        </div>
+        <div class="tool-card">
+          <span class="tag tag-write">Library</span>
+          <h3><code>create_collection</code></h3>
+          <p>Create a ResearchRabbit folder with a name + optional colour. Write — gated by RR_ALLOW_WRITES.</p>
+          <p class="ep">RR&nbsp;<code>POST /folders</code></p>
+        </div>
+        <div class="tool-card">
+          <span class="tag tag-write">Library</span>
+          <h3><code>save_articles</code></h3>
+          <p>Save a shortlist of articles into a ResearchRabbit collection. Write — gated by RR_ALLOW_WRITES.</p>
+          <p class="ep">RR&nbsp;<code>POST /user-articles/batch</code></p>
+        </div>
+      </div>
+      <p class="faq-note">
+        Pass seeds as <strong>titles or DOIs</strong>, never a numeric id from memory — the gateway
+        resolves them. That rule is what keeps citations honest across turns.
+      </p>
+    </div>
 
     <div class="flow">
       <h3 class="flow-title">The path of a single question</h3>
@@ -602,21 +813,98 @@ code {
   </div>
 </section>
 
-<!-- ============================ MCP & CLAUDE ============================ -->
-<section class="section section-alt" id="mcp">
+<!-- ================== AGENT AS A FIRST-CLASS CLIENT ================== -->
+<section class="section section-alt" id="agent-client">
   <div class="wrap">
     <div class="section-head">
-      <h2>Use the same tools in Claude (and any MCP client)</h2>
+      <h2>Agent as a first-class client</h2>
+      <p>
+        Warren isn't a website with a chat box bolted on — it's a toolbox an agent drives. There are two
+        ways in, and both run against <strong>your</strong> ResearchRabbit account with the same
+        <code>sessionToken</code>: point your own agent at the MCP server, or talk to the Warren chatbot
+        right here. Grab your token first, then pick a client and hit <em>More info</em> for its setup.
+      </p>
+    </div>
+
+    <!-- always visible: you need a token whichever client you pick -->
+    <div class="rr-howto" id="how-to-token" style="margin-top:0">
+      <h3>How to get your sessionToken</h3>
+      <p>ResearchRabbit keeps your signed-in session as a JWT in the app's <code>localStorage</code>.
+         Copying it takes about a minute:</p>
+      <ol class="rr-steps">
+        <li>Open <a href="https://app.researchrabbit.ai/" target="_blank" rel="noopener">app.researchrabbit.ai</a> and sign in (email/password or Google).</li>
+        <li>Open DevTools (F12) → <strong>Application</strong> → <strong>Local Storage</strong> →
+            <code>https://app.researchrabbit.ai</code>. Click the <code>tokens</code> key. The value is
+            JSON like <code>{"sessionToken":"eyJ…"}</code> — copy just the <code>sessionToken</code>
+            string (the long <code>eyJ…</code> JWT, not the whole JSON).</li>
+        <li>Paste it into the <code>X-RR-Token</code> header of your <code>.mcp.json</code> (harness
+            agent) or into the Connect panel of the Warren chatbot — both are one <em>More info</em>
+            click away in the cards below. Your <code>projectId</code> is auto-discovered — you don't
+            need it.</li>
+      </ol>
+      <p class="note">
+        <strong>What is a session token?</strong> It's a bearer credential — anyone who has it can act
+        as you on ResearchRabbit. That's why it's stored only on the gateway (not in the chat
+        transcript, not in the repo) and why you should disconnect when you're done. It expires on its
+        own; if Warren says “session expired”, just repeat the steps with a fresh token.
+      </p>
+    </div>
+
+    <div class="client-cards">
+      <div class="client-card is-clickable" onclick="cardActivate(event, this)">
+        <p class="client-tag">Bring your own agent</p>
+        <h3 id="card-mcp-title">In your favourite harness agent</h3>
+        <p>
+          The 22 tools are an <strong>MCP server</strong> over Streamable HTTP — one URL, no install. Any
+          MCP-aware harness (Claude Code, Claude Desktop, Cursor, Windsurf, VS Code) can mount it:
+        </p>
+        <ul>
+          <li>Point the client at <code>https://researchrabbit-mcp-server.onrender.com/mcp</code>.</li>
+          <li>Add your <code>sessionToken</code> as the <code>X-RR-Token</code> header.</li>
+          <li>Restart the client — the 22 <code>researchrabbit__*</code> tools show up in its tool list.</li>
+        </ul>
+        <p>Your credential stays in your own config; the tools run as you.</p>
+        <div class="card-cta">
+          <button class="card-link" id="btn-panel-mcp" aria-expanded="false" aria-controls="panel-mcp"
+                  onclick="toggleDisclosure(this, 'panel-mcp')">More info <span class="chev">&#9662;</span></button>
+        </div>
+      </div>
+
+      <div class="client-card is-clickable" onclick="cardActivate(event, this)">
+        <p class="client-tag">Nothing to install</p>
+        <h3 id="card-chat-title">Warren chatbot</h3>
+        <p>
+          The same tools, driven for you by Warren on this page. Paste your <code>sessionToken</code> once
+          into the connect panel and every turn of the chat runs against your ResearchRabbit account —
+          your searches, your sessions, your collections, your deep links.
+        </p>
+        <ul>
+          <li>Connect once; the token is held on the gateway, not in the transcript.</li>
+          <li>Ask in plain language — Warren picks the tools.</li>
+          <li>Disconnect whenever you're done.</li>
+        </ul>
+        <p>One active web account at a time — for a per-user setup, use the MCP path.</p>
+        <div class="card-cta">
+          <button class="card-link" id="btn-panel-chat" aria-expanded="false" aria-controls="panel-chat"
+                  onclick="toggleDisclosure(this, 'panel-chat')">More info <span class="chev">&#9662;</span></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- opened behind the cards by the "More info" buttons -->
+    <div class="disclosure" id="panel-mcp" role="region" aria-labelledby="panel-mcp-title">
+      <div class="disclosure-head">
+        <h3 id="panel-mcp-title">Use the same tools in Claude (and any MCP client)</h3>
+        <button class="disclosure-close" onclick="closeDisclosure('panel-mcp')">Close &#10005;</button>
+      </div>
       <p>
         The 22 tools that power Warren are an <strong>MCP server</strong>. You don't need Flowise to use
         them — connect the server straight to Claude Code, Claude Desktop, Cursor, Windsurf or VS Code and
         you get the same literature-discovery tools inside your editor. They run against the ResearchRabbit
         API (<code>api.researchrabbit.ai</code>), so you must send your <code>sessionToken</code> JWT as the
         <code>X-RR-Token</code> header on every request — see
-        <a href="#account">Use your own account</a> and Option B below.
+        <a href="#how-to-token">how to get your sessionToken</a> above, then Option B below.
       </p>
-    </div>
-
     <h3 style="margin-top:8px">The endpoint</h3>
     <p>
       Hosted (always on): <code>https://researchrabbit-mcp-server.onrender.com/mcp</code><br />
@@ -662,8 +950,8 @@ claude mcp get researchrabbit</pre>
     <p>
       Drop this file at the root of your repo (or your home directory). It is the portable, version-controllable
       way to share the server with your team — every MCP-aware client reads the same format. The
-      <code>headers</code> block below carries your <strong>ResearchRabbit session token</strong> (Camino B) —
-      it is required, not optional. See <a href="#account">how to get your sessionToken</a>.
+      <code>headers</code> block below carries your <strong>ResearchRabbit session token</strong> —
+      it is required, not optional. See <a href="#how-to-token">how to get your sessionToken</a>.
     </p>
     <div class="code-block">
       <div class="cb-head"><span class="dot"></span> .mcp.json<button class="cb-copy" onclick="copyCode(this)">copy</button><span class="lang">json</span></div>
@@ -705,413 +993,55 @@ claude mcp get researchrabbit</pre>
       desktop chat too.
     </p>
 
-    <h3>The 22 tools you get</h3>
-    <p class="tool-note">Every tool calls the gateway, which forwards to <code>api.researchrabbit.ai</code> as you with <code>Authorization: Bearer &lt;sessionToken&gt;</code>. Most calls also need your <code>projectId</code> (auto-discovered via <code>GET /projects</code>). The RR endpoint(s) each tool drives are listed below.</p>
-    <div class="tools">
-      <div class="tool-card">
-        <span class="tag tag-on">Discovery</span>
-        <h3><code>search_keyword</code></h3>
-        <p>Find candidate seed papers from a topic, phrase, or DOI (title + abstract match).</p>
-        <p class="ep">RR&nbsp;<code>POST /searches</code> &rarr; <code>GET /searches/{id}</code></p>
-      </div>
-      <div class="tool-card">
-        <span class="tag tag-on">Discovery</span>
-        <h3><code>search_similar</code></h3>
-        <p>Similar Work — every connection around the seeds (references + cited-by + related).</p>
-        <p class="ep">RR&nbsp;<code>POST /searches</code> <span class="epm">(edgeMode: both)</span></p>
-      </div>
-      <div class="tool-card">
-        <span class="tag tag-on">Discovery</span>
-        <h3><code>search_earlier_work</code></h3>
-        <p>Papers the seeds BUILT ON (their references / Earlier Work).</p>
-        <p class="ep">RR&nbsp;<code>POST /searches</code> <span class="epm">(edgeMode: backward)</span></p>
-      </div>
-      <div class="tool-card">
-        <span class="tag tag-on">Discovery</span>
-        <h3><code>search_later_work</code></h3>
-        <p>Papers published AFTER the seeds that CITE them (Later Work / Cited By).</p>
-        <p class="ep">RR&nbsp;<code>POST /searches</code> <span class="epm">(edgeMode: forward)</span></p>
-      </div>
-      <div class="tool-card">
-        <span class="tag tag-on">Discovery</span>
-        <h3><code>expand_frontier</code></h3>
-        <p>N iterations of network search server-side, deduped and consensus-ranked — the 'Grow and go!' loop in one call.</p>
-        <p class="ep">RR&nbsp;<code>POST /searches</code> <span class="epm">(edgeMode: both, iterated)</span></p>
-      </div>
-      <div class="tool-card">
-        <span class="tag tag-on">Discovery</span>
-        <h3><code>search_by_author</code></h3>
-        <p>Find papers by author name or by author ids.</p>
-        <p class="ep">RR&nbsp;<code>POST /searches</code> <span class="epm">(stringFilter / authorIds)</span></p>
-      </div>
-      <div class="tool-card">
-        <span class="tag tag-on">Resolve &amp; verify</span>
-        <h3><code>get_article</code></h3>
-        <p>Full metadata for one paper by id, DOI, or title: abstract, authors w/ h-index, citation counts, retraction flag.</p>
-        <p class="ep">RR&nbsp;<code>GET /articles/{id}</code></p>
-      </div>
-      <div class="tool-card">
-        <span class="tag tag-on">Resolve &amp; verify</span>
-        <h3><code>resolve_article</code></h3>
-        <p>Resolve a title or DOI to a stable articleId (+ confidence). The anti-hallucination keystone.</p>
-        <p class="ep">RR&nbsp;<code>POST /searches</code> &rarr; <code>GET /articles/{id}</code></p>
-      </div>
-      <div class="tool-card">
-        <span class="tag tag-on">Resolve &amp; verify</span>
-        <h3><code>credibility_check</code></h3>
-        <p>&ldquo;Should I trust this paper?&rdquo; triage: retraction, doctype, venue, citations, citations/yr, first-author h-index + caveats.</p>
-        <p class="ep">RR&nbsp;<code>GET /articles/{id}</code></p>
-      </div>
-      <div class="tool-card">
-        <span class="tag tag-on">Resolve &amp; verify</span>
-        <h3><code>rank_candidates</code></h3>
-        <p>Re-rank a candidate set by seed-consensus, recency, citations/yr, or raw citations, with a reason per item.</p>
-        <p class="ep">RR&nbsp;<code>GET /articles/{id}</code> <span class="epm">(per item)</span></p>
-      </div>
-      <div class="tool-card">
-        <span class="tag tag-on">Resolve &amp; verify</span>
-        <h3><code>screen_articles</code></h3>
-        <p>Filter a candidate set by year range, doctype, min citations, and/or exclude retracted.</p>
-        <p class="ep">RR&nbsp;<code>GET /articles/{id}</code> <span class="epm">(per item)</span></p>
-      </div>
-      <div class="tool-card">
-        <span class="tag tag-on">Resolve &amp; verify</span>
-        <h3><code>find_gaps</code></h3>
-        <p>Well-connected network papers the user's collection does NOT already contain.</p>
-        <p class="ep">RR&nbsp;<code>POST /searches</code> + <code>GET /folders/{id}</code></p>
-      </div>
-      <div class="tool-card">
-        <span class="tag tag-off">Sessions</span>
-        <h3><code>get_search_results</code></h3>
-        <p>Re-read a previous search by id.</p>
-        <p class="ep">RR&nbsp;<code>GET /searches/{id}</code></p>
-      </div>
-      <div class="tool-card">
-        <span class="tag tag-off">Sessions</span>
-        <h3><code>get_research_session</code></h3>
-        <p>Read a session and its ordered steps.</p>
-        <p class="ep">RR&nbsp;<code>GET /search-sessions/{id}</code></p>
-      </div>
-      <div class="tool-card">
-        <span class="tag tag-off">Sessions</span>
-        <h3><code>create_research_session</code></h3>
-        <p>Create a ResearchRabbit search session + first step from a seed set.</p>
-        <p class="ep">RR&nbsp;<code>POST /search-sessions</code></p>
-      </div>
-      <div class="tool-card">
-        <span class="tag tag-off">Sessions</span>
-        <h3><code>update_session_step</code></h3>
-        <p>Point a session step at a search/inspected article so the app opens where the chat left off.</p>
-        <p class="ep">RR&nbsp;<code>PATCH /search-sessions/{id}/steps/{stepId}</code></p>
-      </div>
-      <div class="tool-card">
-        <span class="tag tag-off">Sessions</span>
-        <h3><code>build_session_link</code></h3>
-        <p>Return the deep link app.researchrabbit.ai/search/{sessionId}/{stepIndex} — the hand-off to the app.</p>
-        <p class="ep">RR&nbsp;<span class="epm">no call — builds </span><code>app.researchrabbit.ai/search/{sid}/{step}</code></p>
-      </div>
-      <div class="tool-card">
-        <span class="tag tag-off">Sessions</span>
-        <h3><code>export_bibtex</code></h3>
-        <p>Export a set of papers to BibTeX text, ready to paste into Zotero.</p>
-        <p class="ep">RR&nbsp;<code>GET /articles/{id}</code> <span class="epm">(per item)</span></p>
-      </div>
-      <div class="tool-card">
-        <span class="tag tag-write">Library</span>
-        <h3><code>list_collections</code></h3>
-        <p>List the user's ResearchRabbit folders with item counts and colours.</p>
-        <p class="ep">RR&nbsp;<code>GET /folders</code></p>
-      </div>
-      <div class="tool-card">
-        <span class="tag tag-write">Library</span>
-        <h3><code>list_library</code></h3>
-        <p>List the user's saved articles (the ResearchRabbit library).</p>
-        <p class="ep">RR&nbsp;<code>GET /user-articles</code></p>
-      </div>
-      <div class="tool-card">
-        <span class="tag tag-write">Library</span>
-        <h3><code>create_collection</code></h3>
-        <p>Create a ResearchRabbit folder with a name + optional colour. Write — gated by RR_ALLOW_WRITES.</p>
-        <p class="ep">RR&nbsp;<code>POST /folders</code></p>
-      </div>
-      <div class="tool-card">
-        <span class="tag tag-write">Library</span>
-        <h3><code>save_articles</code></h3>
-        <p>Save a shortlist of articles into a ResearchRabbit collection. Write — gated by RR_ALLOW_WRITES.</p>
-        <p class="ep">RR&nbsp;<code>POST /user-articles/batch</code></p>
-      </div>
-    </div>
-    <p class="faq-note">
-      Pass seeds as <strong>titles or DOIs</strong>, never a numeric id from memory — the gateway
-      resolves them. That rule is what keeps citations honest across turns.
-    </p>
-  </div>
-</section>
-
-<!-- ============================ YOUR RR ACCOUNT ============================ -->
-<section class="section" id="account">
-  <div class="wrap">
-    <div class="section-head">
-      <h2>Use your ResearchRabbit account</h2>
-      <p>
-        Warren runs on the ResearchRabbit API (<code>api.researchrabbit.ai</code>), so you must connect
-        your account with a <code>sessionToken</code> JWT — it is mandatory. Once connected, Warren uses
-        <em>your</em> data: real searches, sessions, collections, library, and the
-        <code>app.researchrabbit.ai/search/…</code> deep link. There are two ways to connect, one per
-        surface — both end up at the same gateway, which calls ResearchRabbit as you with
-        <code>Authorization: Bearer</code>.
-      </p>
     </div>
 
-    <div class="grid-2">
-      <div>
-        <h3>Method B — in your editor (Claude, Cursor, …)</h3>
-        <p>
-          Send your credential as <strong>request headers</strong> on the MCP server. Each call then
-          uses <em>your</em> RR session, and the credential lives in <em>your</em> local config — never
-          on the server. This is the <strong>per-user</strong> path. See the exact
-          <code>.mcp.json</code> / <code>claude_desktop_config.json</code> with the
-          <code>headers</code> block in <a href="#mcp">MCP &amp; Claude</a> (Option B / C).
-        </p>
-        <h3 style="margin-top:18px">Method C — on this page (web chat)</h3>
-        <p>
-          Use the panel on the right. Paste your <code>sessionToken</code> once; it is stored
-          <strong>only on the gateway</strong>, for this chat, and every Warren turn then runs against
-          your RR account. Disconnect any time. After about a day (or if the token expires) you
-          reconnect. Your <code>projectId</code> is auto-discovered — you don't need to paste it.
-        </p>
-        <p class="note warn">
-          <strong>One active web account at a time.</strong> The web chat channel keeps a single
-          connected account (the last one you connect). True simultaneous multi-user would need
-          per-request identity from Flowise's MCP node, which it doesn't provide — so the editor path
-          (Method B) is the per-user one; the web panel is the single-account one. For a shared demo
-          team setup, use Method A (one account in gateway env vars) instead.
-        </p>
+    <div class="disclosure" id="panel-chat" role="region" aria-labelledby="panel-chat-title">
+      <div class="disclosure-head">
+        <h3 id="panel-chat-title">Connect your account (web chat)</h3>
+        <button class="disclosure-close" onclick="closeDisclosure('panel-chat')">Close &#10005;</button>
       </div>
-
-      <div class="rr-panel">
-        <h3>Connect your account</h3>
-        <label class="rr-lbl">sessionToken (JWT)
-          <input id="rr-token" type="text" placeholder="paste the sessionToken value from localStorage" autocomplete="off" />
-        </label>
-        <p class="rr-foot" style="margin-top:-4px;margin-bottom:10px">projectId is auto-discovered — no need to paste it.</p>
-        <div class="rr-btns">
-          <button class="btn btn-primary" onclick="rrConnect()">Connect</button>
-          <button class="btn btn-outline-rr" onclick="rrStatus()">Check status</button>
-          <button class="btn btn-outline-rr" onclick="rrDisconnect()">Disconnect</button>
+      <div class="grid-2">
+        <div>
+          <p>
+            Paste your <code>sessionToken</code> in the panel; it is stored <strong>only on the
+            gateway</strong>, for this chat, and every Warren turn then runs against your RR account.
+            Disconnect any time. After about a day (or if the token expires) you reconnect. Your
+            <code>projectId</code> is auto-discovered — you don't need to paste it.
+          </p>
+          <p class="note warn">
+            <strong>One active web account at a time.</strong> The web chat channel keeps a single
+            connected account (the last one you connect). True simultaneous multi-user would need
+            per-request identity from Flowise's MCP node, which it doesn't provide — so the editor path
+            (<a href="#panel-mcp" onclick="openDisclosure('panel-mcp');return false;">the MCP card</a>) is
+            the per-user one; the web panel is the single-account one.
+          </p>
+          <p class="note warn">
+            <strong>Deploy note:</strong> the Connect panel talks to the gateway's
+            <code>/api/rr/*</code> endpoints. Those are live once the new multi-tenant gateway is deployed
+            (push <code>server/</code> to Render) and the gateway's <code>ALLOWED_ORIGINS</code> includes
+            this page's origin. Until then the panel reports “not available on this gateway yet”. The MCP
+            header path (the harness-agent card) works as soon as the new <code>mcp-server/</code> is
+                deployed too.
+          </p>
         </div>
-        <div id="rr-status" class="rr-status rr-info">Checking…</div>
-        <p class="rr-foot">
-          Stored only on the gateway for this chat — never in the chat transcript or the repo.
-          <a href="#how-to-token">How do I get my sessionToken?</a>
-        </p>
-      </div>
-    </div>
 
-    <div class="rr-howto" id="how-to-token">
-      <h3>How to get your sessionToken</h3>
-      <p>ResearchRabbit keeps your signed-in session as a JWT in the app's <code>localStorage</code>.
-         Copying it takes about a minute:</p>
-      <ol class="rr-steps">
-        <li>Open <a href="https://app.researchrabbit.ai/" target="_blank" rel="noopener">app.researchrabbit.ai</a> and sign in (email/password or Google).</li>
-        <li>Open DevTools (F12) → <strong>Application</strong> → <strong>Local Storage</strong> →
-            <code>https://app.researchrabbit.ai</code>. Click the <code>tokens</code> key. The value is
-            JSON like <code>{"sessionToken":"eyJ…"}</code> — copy just the <code>sessionToken</code>
-            string (the long <code>eyJ…</code> JWT, not the whole JSON).</li>
-        <li>Paste it into the panel above (Method C) or into the <code>X-RR-Token</code> header of your
-            <code>.mcp.json</code> (Method B), and you're connected. Your <code>projectId</code> is
-            auto-discovered — you don't need it.</li>
-      </ol>
-      <p class="note">
-        <strong>What is a session token?</strong> It's a bearer credential — anyone who has it can act
-        as you on ResearchRabbit. That's why it's stored only on the gateway (not in the chat
-        transcript, not in the repo) and why you should disconnect when you're done. It expires on its
-        own; if Warren says “session expired”, just repeat the steps with a fresh token.
-      </p>
-      <p class="note warn">
-        <strong>Deploy note:</strong> the Connect panel talks to the gateway's
-        <code>/api/rr/*</code> endpoints. Those are live once the new multi-tenant gateway is deployed
-        (push <code>server/</code> to Render) and the gateway's <code>ALLOWED_ORIGINS</code> includes
-        this page's origin. Until then the panel reports “not available on this gateway yet”. The MCP
-        header path (Method B) works as soon as the new <code>mcp-server/</code> is deployed too.
-      </p>
-    </div>
-  </div>
-</section>
-
-<!-- ============================ EXAMPLES ============================ -->
-<section class="section" id="examples">
-  <div class="wrap">
-    <div class="section-head">
-      <h2>Examples — the MCP directly, and through the chatbot</h2>
-      <p>
-        Same 22 tools, two ways in. The raw MCP examples below are real requests against the hosted
-        endpoint — paste the curl with your own <code>sessionToken</code> in the <code>X-RR-Token</code>
-        header and you get the same shape of answer. The chatbot example is a real reply from Warren.
-      </p>
-    </div>
-
-    <h3>1. List the tools (raw MCP over HTTP)</h3>
-    <p>A single JSON-RPC <code>tools/list</code> to <code>POST /mcp</code>. The server responds with
-       Server-Sent Events (<code>event: message</code> then a <code>data:</code> line).</p>
-    <div class="code-block">
-      <div class="cb-head"><span class="dot"></span> request<button class="cb-copy" onclick="copyCode(this)">copy</button><span class="lang">bash</span></div>
-<pre>curl -X POST https://researchrabbit-mcp-server.onrender.com/mcp \
-  -H 'content-type: application/json' \
-  -H 'accept: application/json, text/event-stream' \
-  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'</pre>
-    </div>
-    <div class="code-block">
-      <div class="cb-head"><span class="dot"></span> response (first tool shown)<span class="lang">sse</span></div>
-<pre>event: message
-data: {"result":{"tools":[
-  {
-    "name": <span class="s">"search_keyword"</span>,
-    "description": <span class="s">"Find candidate seed papers from a topic, phrase, or DOI..."</span>,
-    "inputSchema": {
-      "type": <span class="s">"object"</span>,
-      "properties": {
-        "q":   { "type": <span class="s">"string"</span>, "description": <span class="s">"Topic / phrase / DOI to search for"</span> },
-        "per": { "type": <span class="s">"number"</span>, "description": <span class="s">"Max results (default 5, max 20)"</span> }
-      },
-      "required": [<span class="s">"q"</span>]
-    }
-  }
-  <span class="c">/* …21 more tools… */</span>
-]}}</pre>
-    </div>
-
-    <h3>2. Call a tool — <code>search_keyword</code> (real output)</h3>
-    <p>Ask for seed papers on a topic. The gateway queries ResearchRabbit and returns real papers with real DOIs.</p>
-    <div class="code-block">
-      <div class="cb-head"><span class="dot"></span> request<button class="cb-copy" onclick="copyCode(this)">copy</button><span class="lang">bash</span></div>
-<pre>curl -X POST https://researchrabbit-mcp-server.onrender.com/mcp \
-  -H 'content-type: application/json' \
-  -H 'accept: application/json, text/event-stream' \
-  -H 'X-RR-Token: &lt;your sessionToken&gt;' \
-  -d '{"jsonrpc":"2.0","id":2,"method":"tools/call",
-       "params":{"name":"search_keyword",
-                 "arguments":{"q":"urban tree canopy heat equity","per":3}}}'</pre>
-    </div>
-    <div class="code-block">
-      <div class="cb-head"><span class="dot"></span> response (real, captured live)<span class="lang">json</span></div>
-<pre>{
-  "query": { "kind": <span class="s">"keyword"</span>, "q": <span class="s">"urban tree canopy heat equity"</span>, "per": <span class="n">3</span> },
-  "totalCount": <span class="n">33100</span>,
-  "seedCap": <span class="n">50</span>,
-  "backend": <span class="s">"rr"</span>,
-  "items": [
-    {
-      "articleId": <span class="s">"271610882"</span>,
-      "title": <span class="s">"Current inequality and future potential of US urban tree cover for reducing heat-related health impacts"</span>,
-      "authors": <span class="s">"Robert I. McDonald, Tanushree Biswas, T. C. Chakraborty, T. Kroeger, S. Cook-Patton, Joseph E. Fargione"</span>,
-      "year": <span class="n">2024</span>,
-      "venue": <span class="s">"npj Urban Sustainability"</span>,
-      "doi": <span class="s">"10.1038/S42949-024-00150-3"</span>,
-      "url": <span class="s">"https://doi.org/10.1038/s42949-024-00150-3"</span>,
-      "citedBy": <span class="n">101</span>,
-      "references": <span class="n">56</span>,
-      "retracted": <span class="k">false</span>,
-      "seedHits": <span class="n">0</span>,
-      "citationsPerYear": <span class="n">51</span>
-    },
-    {
-      "articleId": <span class="s">"269612966"</span>,
-      "title": <span class="s">"Monitoring canopy quality and improving equitable outcomes of urban tree planting using LiDAR and machine learning"</span>,
-      "authors": <span class="s">"John Francis, Mathias Disney, Stephen Law"</span>,
-      "year": <span class="n">2023</span>,
-      "venue": <span class="s">"Urban Forestry &amp; Urban Greening"</span>,
-      "doi": <span class="s">"10.1016/J.UFUG.2023.128115"</span>,
-      "url": <span class="s">"https://doi.org/10.1016/j.ufug.2023.128115"</span>,
-      "citedBy": <span class="n">84</span>,
-      "references": <span class="n">27</span>,
-      "retracted": <span class="k">false</span>,
-      "seedHits": <span class="n">0</span>,
-      "citationsPerYear": <span class="n">28</span>
-    },
-    {
-      "articleId": <span class="s">"97981160"</span>,
-      "title": <span class="s">"Urban tree canopy has greater cooling effects in socially vulnerable communities in the US"</span>,
-      "authors": <span class="s">"Weiqi Zhou, Ganlin Huang, Steward T. A. Pickett, Mary L. Cadenasso, Timon McPhearson, J. Morgan Grove, Jing Wang"</span>,
-      "year": <span class="n">2021</span>,
-      "venue": <span class="s">"One Earth"</span>,
-      "doi": <span class="s">"10.1016/J.ONEEAR.2021.11.010"</span>,
-      "url": <span class="s">"https://doi.org/10.1016/j.oneear.2021.11.010"</span>,
-      "citedBy": <span class="n">66</span>,
-      "references": <span class="n">147</span>,
-      "retracted": <span class="k">false</span>,
-      "seedHits": <span class="n">0</span>,
-      "citationsPerYear": <span class="n">13</span>
-    }
-  ]
-}</pre>
-    </div>
-    <p class="note">
-      <strong>SSE wrapping:</strong> the real response is <code>event: message</code> then a
-      <code>data:</code> line containing the JSON above. With a Claude/MCP client you never see the
-      wrapping — the SDK parses it for you. With raw curl, read the <code>data:</code> payload.
-    </p>
-
-    <h3>3. Grow the frontier — <code>expand_frontier</code></h3>
-    <p>One call that runs N network iterations server-side and returns a deduped, consensus-ranked
-       shortlist — the “Grow and go!” loop in a single tool call.</p>
-    <div class="code-block">
-      <div class="cb-head"><span class="dot"></span> request<button class="cb-copy" onclick="copyCode(this)">copy</button><span class="lang">bash</span></div>
-<pre>curl -X POST https://researchrabbit-mcp-server.onrender.com/mcp \
-  -H 'content-type: application/json' \
-  -H 'accept: application/json, text/event-stream' \
-  -H 'X-RR-Token: &lt;your sessionToken&gt;' \
-  -d '{"jsonrpc":"2.0","id":3,"method":"tools/call",
-       "params":{"name":"expand_frontier",
-                 "arguments":{"seeds":[
-                   "Disproportionate exposure to urban heat island intensity across major US cities",
-                   "Trees Grow on Money: Urban Tree Canopy Cover and Environmental Justice"
-                 ],"iterations":2,"limit":10}}}'</pre>
-    </div>
-    <p>Each returned item carries <code>seedHits</code> (how many of your seeds connect to it) and
-       <code>citationsPerYear</code>, so you can say “cited by 4 of your 5 seeds” — a reason a human
-       accepts.</p>
-
-    <h3>4. Through the chatbot — a real Warren reply</h3>
-    <p>Same tools, but Warren picks them for you, frames the answer, and formats it mobile-first. This is
-       a real reply captured from the live agentflow on the question below.</p>
-    <div class="grid-2">
-      <div class="chat-sample">
-        <div class="msg user">
-          <div class="who">You</div>
-          <div class="bubble">Find me 3 seed papers on urban tree canopy and heat equity, each with a DOI.</div>
-        </div>
-        <div class="msg bot">
-          <div class="who">Warren</div>
-          <div class="bubble">
-            1. <strong>Schwarz et al. 2015</strong> — Trees Grow on Money: Urban Tree Canopy Cover and Environmental Justice · PLoS ONE · cited 614× (56/yr) · <span class="doi">doi:10.1371/journal.pone.0122051</span>
-            <span class="why">why: directly links tree canopy cover to environmental justice across 7 US cities.</span>
-            2. <strong>Hsu et al. 2021</strong> — Disproportionate exposure to urban heat island intensity across major US cities · Nature Communications · cited 787× (157/yr) · <span class="doi">doi:10.1038/s41467-021-22799-5</span>
-            <span class="why">why: quantifies heat exposure inequity across 175 US cities — the heat-equity anchor.</span>
-            3. <strong>Locke et al. 2021</strong> — Residential housing segregation and urban tree canopy in 37 US Cities · npj Urban Sustainability · cited 291× (58/yr) · <span class="doi">doi:10.1038/s42949-021-00022-0</span>
-            <span class="why">why: connects historical redlining to present-day canopy disparities.</span>
-            <br/>Would you like me to grow the frontier — later work since 2021, earlier foundations, or a broad similar-work net?
+        <div class="rr-panel">
+          <h3>Connect your account</h3>
+          <label class="rr-lbl">sessionToken (JWT)
+            <input id="rr-token" type="text" placeholder="paste the sessionToken value from localStorage" autocomplete="off" />
+          </label>
+          <p class="rr-foot" style="margin-top:-4px;margin-bottom:10px">projectId is auto-discovered — no need to paste it.</p>
+          <div class="rr-btns">
+            <button class="btn btn-primary" onclick="rrConnect()">Connect</button>
+            <button class="btn btn-outline-rr" onclick="rrStatus()">Check status</button>
+            <button class="btn btn-outline-rr" onclick="rrDisconnect()">Disconnect</button>
           </div>
+          <div id="rr-status" class="rr-status rr-info">Checking…</div>
+          <p class="rr-foot">
+            Stored only on the gateway for this chat — never in the chat transcript or the repo.
+            <a href="#how-to-token">How do I get my sessionToken?</a>
+          </p>
         </div>
-      </div>
-      <div>
-        <h3>More things to ask</h3>
-        <p>Try any of these in the chat bubble, or as a prompt to Claude once the MCP is connected:</p>
-        <ul style="font-size:.95rem;line-height:1.8;padding-left:1.1rem">
-          <li>“What are the foundational papers behind <em>Redlining and intra-urban heat</em>?”</li>
-          <li>“What has been published since 2022 that cites <em>Disproportionate exposure to urban heat island intensity</em>?”</li>
-          <li>“Grow me a broad shortlist around urban greening and heat-vulnerability equity — 10 papers, ranked by consensus.”</li>
-          <li>“I only have a title: <em>Trees Grow on Money</em>. What is its DOI and is it retracted?”</li>
-          <li>“List Carly Ziter’s most-cited papers with her h-index.”</li>
-          <li>“From these candidates, keep only reviews from 2018 onward with 50+ citations, and drop any retracted ones.”</li>
-          <li>“Give me the BibTeX for the 5 seed papers you found.”</li>
-          <li>“I have no idea where to start on <em>climate change adaptation effectiveness</em>. Walk me through it and finish with a link I can open.”</li>
-        </ul>
-        <p class="note warn">
-          <strong>Pass seeds by title or DOI, never a numeric id.</strong> Tool results are not remembered
-          between turns — only the conversation text. The gateway resolves titles/DOIs to ids so Warren
-          never cites the wrong paper by guessing a number.
-        </p>
       </div>
     </div>
   </div>
@@ -1120,18 +1050,24 @@ data: {"result":{"tools":[
 <!-- ============================ TRY IT ============================ -->
 <section class="section section-alt" id="try">
   <div class="wrap">
-    <div class="callout">
-      <h2>Try it right here</h2>
+    <div class="section-head">
+      <h2>Try it</h2>
       <p>
-        Warren is one click away. Click the chat bubble in the bottom-right corner — it opens Warren's
-        chat in a new tab — and start with something like <em>"Find me 5 seed papers on urban tree canopy
-        and heat equity, each with a DOI."</em> The first reply can take a few seconds while the services
-        wake up from a cold start.
-      </p>
-      <p style="margin-bottom:0;font-size:.92rem;opacity:.85">
-        Or skip the UI and use the tools in your editor — see <a href="#mcp" style="color:#fde68a">MCP &amp; Claude</a> above.
+        The chat bubble in the bottom-right corner opens the chat in a new tab. Type one of these to
+        start. The first reply can take a few seconds while the services wake up from a cold start.
       </p>
     </div>
+    <ul class="prompts">
+      <li>&ldquo;Find me 3 seed papers on urban tree canopy and heat equity, each with a DOI.&rdquo;</li>
+      <li>&ldquo;What are the foundational papers behind <em>Redlining and intra-urban heat</em>?&rdquo;</li>
+      <li>&ldquo;What has been published since 2022 that cites <em>Disproportionate exposure to urban heat island intensity</em>?&rdquo;</li>
+      <li>&ldquo;Grow me a broad shortlist around urban greening and heat-vulnerability equity &mdash; 10 papers, ranked by consensus.&rdquo;</li>
+      <li>&ldquo;I only have a title: <em>Trees Grow on Money</em>. What is its DOI and is it retracted?&rdquo;</li>
+      <li>&ldquo;List Carly Ziter&rsquo;s most-cited papers with her h-index.&rdquo;</li>
+      <li>&ldquo;From these candidates, keep only reviews from 2018 onward with 50+ citations, and drop any retracted ones.&rdquo;</li>
+      <li>&ldquo;Give me the BibTeX for the 5 seed papers you found.&rdquo;</li>
+      <li>&ldquo;I have no idea where to start on climate change adaptation effectiveness. Walk me through it and finish with a link I can open.&rdquo;</li>
+    </ul>
   </div>
 </section>
 
@@ -1172,10 +1108,77 @@ data: {"result":{"tools":[
     if (!nav.contains(e.target) && !btn.contains(e.target)) closeNav();
   });
   window.addEventListener('resize', function(){ if (window.innerWidth > 640) closeNav(); });
+
+  // ---- progressive disclosure ----------------------------------------------
+  // The long docs (MCP setup, connect form, the 22-tool grid) live in panels
+  // that open *behind* the card that asks for them. One panel open per group.
+  function closeDisclosure(id){
+    var panel = document.getElementById(id);
+    if (!panel) return;
+    panel.classList.remove('open');
+    var btn = document.querySelector('[aria-controls="' + id + '"]');
+    if (btn) {
+      btn.setAttribute('aria-expanded', 'false');
+      var card = btn.closest('.is-clickable');
+      if (card) card.classList.remove('is-open');
+    }
+  }
+  function toggleDisclosure(btn, id){
+    var panel = document.getElementById(id);
+    if (!panel) return;
+    var open = !panel.classList.contains('open');
+    if (open) {
+      // close any sibling panel in the same section first
+      var group = btn.closest('.wrap') || document;
+      Array.prototype.forEach.call(group.querySelectorAll('.disclosure.open'), function(p){
+        closeDisclosure(p.id);
+      });
+    }
+    panel.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    var card = btn.closest('.is-clickable');
+    if (card) card.classList.toggle('is-open', open);
+    if (open) revealPanel(panel);
+  }
+  // Scroll an opened panel into view without letting the sticky header cover it.
+  function revealPanel(panel){
+    var header = document.querySelector('.site-header');
+    var offset = (header ? header.getBoundingClientRect().height : 0) + 12;
+    var top = panel.getBoundingClientRect().top;
+    if (top < offset || top > window.innerHeight * 0.75) {
+      window.scrollTo({ top: window.scrollY + top - offset, behavior: 'smooth' });
+    }
+  }
+  // The whole card is a click target: a click anywhere in it activates the
+  // card's own button. Clicks on real controls, links or a text selection are
+  // left alone so people can still copy the URLs inside the card.
+  function cardActivate(e, card){
+    if (e.target.closest('a, button, input, textarea, select, label')) return;
+    var sel = window.getSelection && window.getSelection();
+    if (sel && String(sel).length > 0 && card.contains(sel.anchorNode)) return;
+    var link = card.querySelector('.card-link');
+    if (link) link.click();
+  }
+  function openDisclosure(id){
+    var panel = document.getElementById(id);
+    if (!panel) return;
+    if (!panel.classList.contains('open')) {
+      var btn = document.querySelector('[aria-controls="' + id + '"]');
+      if (btn) { toggleDisclosure(btn, id); return; }
+    }
+    revealPanel(panel);
+  }
+  // keep the old deep links (#mcp, #account, #tools) working
+  (function(){
+    var map = { '#mcp': 'panel-mcp', '#account': 'panel-chat', '#tools': 'tools-panel' };
+    function fromHash(){ if (map[window.location.hash]) openDisclosure(map[window.location.hash]); }
+    window.addEventListener('hashchange', fromHash);
+    fromHash();
+  })();
 </script>
 
 <script>
-  // Camino C — web "Connect account" panel. Talks to the gateway's
+  // Web "Connect account" panel (Warren chatbot card). Talks to the gateway's
   // /api/rr/connect | /api/rr/status | /api/rr/disconnect endpoints.
   // Hosted gateway (needs the new multi-tenant server deployed + ALLOWED_ORIGINS
   // to include this page's origin). For local testing, point this at your local

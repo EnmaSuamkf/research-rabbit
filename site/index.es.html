@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Warren — ResearchRabbit Copilot · find papers by chat</title>
-<meta name="description" content="Warren is an AI literature-discovery assistant for ResearchRabbit. Ask it your review topic and it finds seed papers, grows the citation frontier, ranks them, and hands off to ResearchRabbit — every paper carries a real DOI. Powered by a Flowise agentflow, a Fireworks LLM, and a 22-tool MCP server." />
+<title>Warren — Copiloto de ResearchRabbit · encuentra artículos por chat</title>
+<meta name="description" content="Warren es un asistente de IA para el descubrimiento de literatura de ResearchRabbit. Cuéntale tu tema de revisión y encuentra artículos semilla, hace crecer la frontera de citas, los clasifica y te deriva a ResearchRabbit — cada artículo lleva un DOI real. Impulsado por un agentflow de Flowise, un LLM de Fireworks y un servidor MCP de 22 herramientas." />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%87%3C/text%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
 /* ==========================================================================
-   Warren / ResearchRabbit Copilot — single-file landing + docs page
-   Plain HTML/CSS, no build step. Purple brand palette to match the
-   chatbotConfig stored on the Flowise agentflow.
+   Warren / Copiloto de ResearchRabbit — página de aterrizaje + docs en un solo archivo
+   HTML/CSS plano, sin paso de build. Paleta morada de marca para coincidir con el
+   chatbotConfig guardado en el agentflow de Flowise.
    ========================================================================== */
 :root {
   --rr-purple: #7c3aed;
@@ -70,7 +70,7 @@ h3 { font-size: 1.18rem; font-family: var(--font-body); font-weight: 700; color:
 p { margin: 0 0 1rem; }
 .wrap { width: 100%; max-width: var(--wrap); margin-inline: auto; padding-inline: 24px; }
 
-/* ---------- Header ---------- */
+/* ---------- Cabecera ---------- */
 .site-header {
   position: sticky; top: 0; z-index: 50;
   background: rgba(255,255,255,.92);
@@ -87,7 +87,7 @@ p { margin: 0 0 1rem; }
 .nav a:hover { color: var(--rr-purple); border-bottom-color: var(--rr-purple); }
 .nav-toggle { display: none; } /* hamburger, shown on mobile */
 
-/* ---------- Buttons ---------- */
+/* ---------- Botones ---------- */
 .btn {
   display: inline-block; padding: 13px 26px; border-radius: 999px;
   font-weight: 700; font-size: .98rem; text-decoration: none;
@@ -102,7 +102,7 @@ p { margin: 0 0 1rem; }
 .btn-outline { background: transparent; color: #fff; border-color: rgba(255,255,255,.7); }
 .btn-outline:hover { background: rgba(255,255,255,.14); }
 
-/* ---------- Hero ---------- */
+/* ---------- Portada ---------- */
 .hero {
   position: relative; overflow: hidden; color: #fff;
   background-color: var(--rr-purple-deep);
@@ -122,14 +122,14 @@ p { margin: 0 0 1rem; }
 .hero-note { margin-top: 26px; font-size: .92rem; color: rgba(255,255,255,.78); }
 .hero-note strong { color: #fff; }
 
-/* ---------- Sections ---------- */
+/* ---------- Secciones ---------- */
 .section { padding-block: 72px; }
 .section-alt { background: var(--rr-pale); }
 .section-mist { background: var(--rr-mist); }
 .section-head { max-width: 760px; margin-bottom: 40px; }
 .section-head p { color: #4b5563; font-size: 1.05rem; margin-bottom: 0; }
 
-/* ---------- Feature grid ---------- */
+/* ---------- Rejilla de características ---------- */
 .features { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
 .feature {
   background: #fff; border-radius: var(--radius); border: 1px solid var(--rr-line);
@@ -139,7 +139,7 @@ p { margin: 0 0 1rem; }
 .feature h3 { color: var(--rr-purple-deep); margin-bottom: 6px; }
 .feature p { margin: 0; font-size: .95rem; color: #4b5563; }
 
-/* ---------- Steps ---------- */
+/* ---------- Pasos ---------- */
 .steps {
   list-style: none; margin: 0; padding: 0; display: grid; gap: 22px;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); counter-reset: step;
@@ -160,7 +160,7 @@ p { margin: 0 0 1rem; }
 
 .faq-note { max-width: 800px; margin: 30px 0 0; font-size: .94rem; color: #4b5563; }
 
-/* ---------- Stack cards ---------- */
+/* ---------- Tarjetas del stack ---------- */
 .stack { list-style: none; margin: 0 0 48px; padding: 0; display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
 .stack-item {
   background: var(--rr-pale); border: 1px solid var(--rr-line); border-top: 4px solid var(--rr-purple);
@@ -170,7 +170,7 @@ p { margin: 0 0 1rem; }
 .stack-item h3 { font-family: var(--font-display); font-weight: 500; font-size: 1.3rem; color: var(--rr-purple-deep); margin-bottom: 8px; }
 .stack-item p:last-child { margin: 0; font-size: .94rem; color: #4b5563; }
 
-/* ---------- Request-path flow ---------- */
+/* ---------- Flujo del camino de petición ---------- */
 .flow { background: var(--rr-mist); border-radius: var(--radius); padding: 32px 30px 34px; }
 .flow-title { font-family: var(--font-display); font-weight: 500; font-size: clamp(1.3rem, 2.6vw, 1.7rem); color: var(--rr-purple-deep); margin-bottom: 24px; }
 .flow-steps { list-style: none; margin: 0; padding: 0; }
@@ -191,13 +191,13 @@ p { margin: 0 0 1rem; }
 .flow-card p:last-child { margin: 0; font-size: .94rem; color: #4b5563; }
 .tech-note { max-width: 800px; margin: 26px 0 0; font-size: .94rem; color: #4b5563; }
 
-/* ---------- Inline code ---------- */
+/* ---------- Código en línea ---------- */
 code {
   font-family: var(--font-mono); font-size: .86em;
   background: rgba(124, 58, 237, .1); border-radius: 4px; padding: 1px 5px; overflow-wrap: anywhere;
 }
 
-/* ---------- Code blocks ---------- */
+/* ---------- Bloques de código ---------- */
 .code-block {
   margin: 18px 0 26px; border: 1px solid var(--rr-purple-deep); border-radius: 12px;
   overflow: hidden; box-shadow: var(--shadow-sm); background: #1e1b2e;
@@ -214,17 +214,17 @@ code {
   font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; color: #e9e6f5;
   tab-size: 2;
 }
-.code-block pre .k { color: #f0abfc; }   /* key / keyword */
-.code-block pre .s { color: #86efac; }   /* string */
-.code-block pre .c { color: #7c6f99; }   /* comment */
-.code-block pre .n { color: #fcd34d; }   /* number / value highlight */
+.code-block pre .k { color: #f0abfc; }   /* clave / palabra clave */
+.code-block pre .s { color: #86efac; }   /* cadena */
+.code-block pre .c { color: #7c6f99; }   /* comentario */
+.code-block pre .n { color: #fcd34d; }   /* número / resaltado de valor */
 .code-block .cb-copy {
   border: none; background: transparent; color: #c4b5fd; cursor: pointer;
   font-family: var(--font-mono); font-size: .76rem; padding: 2px 8px; border-radius: 6px;
 }
 .code-block .cb-copy:hover { background: #383055; color: #fff; }
 
-/* ---------- Tool / example cards ---------- */
+/* ---------- Tarjetas de herramientas / ejemplos ---------- */
 .tools { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); margin: 14px 0 8px; }
 .tool-card {
   background: #fff; border: 1px solid var(--rr-line); border-radius: var(--radius);
@@ -263,10 +263,10 @@ code {
 .chat-fab:hover .fab-label { opacity: 1; }
 @media (max-width: 640px) { .chat-fab .fab-label { display: none; } }
 
-/* ---------- Two-column layout for examples ---------- */
+/* ---------- Diseño a dos columnas para ejemplos ---------- */
 .grid-2 { display: grid; gap: 26px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); margin-top: 8px; }
 
-/* ---------- Chat sample ---------- */
+/* ---------- Ejemplo de chat ---------- */
 .chat-sample { background: #fff; border: 1px solid var(--rr-line); border-radius: var(--radius); padding: 18px 18px 6px; box-shadow: var(--shadow-sm); }
 .msg { margin-bottom: 16px; }
 .msg .who { font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 4px; }
@@ -278,13 +278,13 @@ code {
 .msg.bot .bubble .why { display: block; opacity: .82; font-size: .86rem; margin-top: 2px; }
 .msg.bot .bubble .doi { color: #fde68a; }
 
-/* ---------- Callout ---------- */
+/* ---------- Caja destacada ---------- */
 .callout { background: var(--rr-purple); color: #fff; border-radius: var(--radius); padding: 34px 32px; box-shadow: var(--shadow-md); }
 .callout h2 { color: #fff; }
 .callout p { color: rgba(255,255,255,.9); margin-bottom: 18px; }
 .callout .btn { margin-right: 10px; }
 
-/* ---------- Note / tip ---------- */
+/* ---------- Notas / avisos ---------- */
 .note {
   border-left: 4px solid var(--rr-teal); background: #ecfdf5; color: #064e3b;
   padding: 14px 18px; border-radius: 8px; font-size: .94rem; margin: 18px 0;
@@ -292,13 +292,13 @@ code {
 .note.warn { border-left-color: var(--rr-amber); background: #fffbeb; color: #78350f; }
 .note strong { color: inherit; }
 
-/* ---------- Footer ---------- */
+/* ---------- Pie ---------- */
 .site-footer { background: var(--rr-purple-deep); color: rgba(255,255,255,.82); padding-block: 40px; font-size: .92rem; }
 .site-footer a { color: #fff; }
 .site-footer .wrap { display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; align-items: center; }
 
 /* ---------- Responsive ---------- */
-/* ---------- RR connect panel (Camino C) ---------- */
+/* ---------- Panel de conexión a RR (Camino C) ---------- */
 .rr-panel { background: var(--rr-pale); border: 1px solid var(--rr-line); border-top: 4px solid var(--rr-purple); border-radius: var(--radius); padding: 22px 22px 18px; box-shadow: var(--shadow-sm); }
 .rr-panel h3 { margin-top: 0; }
 .rr-lbl { display: block; font-size: .82rem; font-weight: 600; color: var(--rr-purple-deep); margin-bottom: 12px; }
@@ -360,27 +360,27 @@ code {
       <span class="bun">🐇</span>
       <span>
         <span class="brand-name">ResearchRabbit</span>
-        <span class="brand-sub">Warren Copilot</span>
+        <span class="brand-sub">Copiloto Warren</span>
       </span>
     </a>
-    <button class="nav-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Menu" onclick="toggleNav(this)">
+    <button class="nav-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Menú" onclick="toggleNav(this)">
       <svg class="bars" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       <svg class="cross" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
     <nav class="nav" id="main-nav">
-      <a href="#how" onclick="closeNav()">How it works</a>
-      <a href="#tech" onclick="closeNav()">Architecture</a>
-      <a href="#mcp" onclick="closeNav()">MCP &amp; Claude</a>
-      <a href="#account" onclick="closeNav()">RR account</a>
-      <a href="#examples" onclick="closeNav()">Examples</a>
-      <a href="#try" onclick="closeNav()">Try it</a>
+      <a href="#how" onclick="closeNav()">Cómo funciona</a>
+      <a href="#tech" onclick="closeNav()">Arquitectura</a>
+      <a href="#mcp" onclick="closeNav()">MCP y Claude</a>
+      <a href="#account" onclick="closeNav()">Cuenta RR</a>
+      <a href="#examples" onclick="closeNav()">Ejemplos</a>
+      <a href="#try" onclick="closeNav()">Pruébalo</a>
     </nav>
   </div>
 </header>
 
-<!-- ============================ HERO ============================ -->
+<!-- ============================ PORTADA ============================ -->
 <section class="hero" id="top">
-  <!-- decorative citation-graph SVG (a rabbit's burrow of connected tunnels) -->
+  <!-- SVG decorativo de grafo de citas (la madriguera de un conejo de túneles conectados) -->
   <svg class="graph" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <g fill="none" stroke="#ffffff" stroke-width="1.2" opacity="0.35">
       <path d="M120 180 L300 120 L470 220 L360 340 L180 300 Z" />
@@ -399,570 +399,573 @@ code {
   </svg>
   <div class="wrap">
     <div class="hero-inner">
-      <span class="eyebrow">Literature discovery by chat</span>
-      <h1>Find the papers that matter — just ask Warren.</h1>
+      <span class="eyebrow">Descubrimiento de literatura por chat</span>
+      <h1>Encuentra los artículos que importan — solo pregúntale a Warren.</h1>
       <p class="lede">
-        Warren is an AI literature-discovery assistant for <strong>ResearchRabbit</strong>. Tell it your
-        review topic and it finds seed papers, grows the citation frontier (similar / earlier / later
-        work), screens and ranks candidates, checks credibility, and hands you off to ResearchRabbit —
-        every paper it shows you carries a <strong>real DOI</strong>.
+        Warren es un asistente de IA para el descubrimiento de literatura de <strong>ResearchRabbit</strong>. Cuéntale tu
+        tema de revisión y encuentra artículos semilla, hace crecer la frontera de citas (trabajo similar / anterior /
+        posterior), filtra y clasifica candidatos, verifica la credibilidad y te deriva a ResearchRabbit — cada artículo
+        que te muestra lleva un <strong>DOI real</strong>.
       </p>
       <div class="hero-actions">
-        <a class="btn btn-amber" href="#try">Chat with Warren now</a>
-        <a class="btn btn-outline" href="#mcp">Use it in Claude Code</a>
+        <a class="btn btn-amber" href="#try">Chatea con Warren ahora</a>
+        <a class="btn btn-outline" href="#mcp">Úsalo en Claude Code</a>
       </div>
       <p class="hero-note">
-        Warren <strong>never invents a citation</strong>. If a tool returns nothing, it says so. It
-        works off metadata and abstracts only — it will not tell you "this study found X" unless X is
-        in the abstract it was given.
+        Warren <strong>nunca inventa una cita</strong>. Si una herramienta no devuelve nada, lo dice. Trabaja solo con
+        metadatos y resúmenes — no te dirá «este estudio halló X» salvo que X esté en el resumen que recibió.
       </p>
     </div>
   </div>
 </section>
 
-<!-- ============================ WHAT IT IS ============================ -->
+<!-- ============================ QUÉ ES ============================ -->
 <section class="section" id="what">
   <div class="wrap">
     <div class="section-head">
-      <h2>What is this?</h2>
+      <h2>¿Qué es esto?</h2>
       <p>
-        A conversational front door to ResearchRabbit's citation graph. Instead of clicking through
-        databases and building a seed set by hand, you have one short conversation and walk away with a
-        ranked, DOI-backed shortlist and a link to keep exploring visually.
+        Una puerta de entrada conversacional al grafo de citas de ResearchRabbit. En vez de hacer clic por las bases de
+        datos y armar un conjunto semilla a mano, tienes una conversación corta y te vas con una lista corta clasificada
+        y respaldada por DOIs, más un enlace para seguir explorando visualmente.
       </p>
     </div>
 
     <div class="features">
       <div class="feature">
         <div class="ico">🛡️</div>
-        <h3>It never fabricates a citation</h3>
-        <p>Every title, author, year, venue and DOI comes from a tool result in the same turn. No DOI,
-           no recommendation. A fabricated citation is the worst thing it can do — so it won't.</p>
+        <h3>Nunca fabrica una cita</h3>
+        <p>Cada título, autor, año, revista y DOI proviene del resultado de una herramienta en el mismo turno. Sin DOI,
+           no hay recomendación. Una cita fabricada es lo peor que puede hacer — así que no lo hace.</p>
       </div>
       <div class="feature">
         <div class="ico">🌱</div>
-        <h3>It grows the frontier</h3>
-        <p>Similar work (the widest net), earlier work (foundations / references), later work
-           (cited-by, optionally since a given year), or a one-call consensus-ranked expansion.</p>
+        <h3>Hace crecer la frontera</h3>
+        <p>Trabajo similar (la red más amplia), trabajo anterior (fundamentos / referencias), trabajo posterior
+           (citas que recibe, opcionalmente desde un año dado), o una expansión clasificada por consenso en una sola
+           llamada.</p>
       </div>
       <div class="feature">
         <div class="ico">📊</div>
-        <h3>It ranks by consensus</h3>
-        <p>Each candidate carries <code>seedHits</code> (how many of your seeds connect to it) and
-           <code>citationsPerYear</code> (so a strong 2024 paper beats a tired 1998 one).</p>
+        <h3>Clasifica por consenso</h3>
+        <p>Cada candidato lleva <code>seedHits</code> (cuántos de tus semillas se conectan a él) y
+           <code>citationsPerYear</code> (para que un artículo fuerte de 2024 le gane a uno cansado de 1998).</p>
       </div>
       <div class="feature">
         <div class="ico">🔗</div>
-        <h3>It hands off to ResearchRabbit</h3>
-        <p>A ResearchRabbit session link on its own line, tappable on mobile — a real
-           <code>app.researchrabbit.ai/search/…</code> deep link into your account, never a fabricated URL.</p>
+        <h3>Te deriva a ResearchRabbit</h3>
+        <p>Un enlace de sesión de ResearchRabbit en su propia línea, tocable en el móvil — un enlace profundo real
+           <code>app.researchrabbit.ai/search/…</code> a tu cuenta, nunca una URL fabricada.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============================ HOW IT WORKS ============================ -->
+<!-- ============================ CÓMO FUNCIONA ============================ -->
 <section class="section section-alt" id="how">
   <div class="wrap">
     <div class="section-head">
-      <h2>From first question to ranked shortlist</h2>
-      <p>Six short turns. Warren asks only what it needs and never makes you repeat yourself.</p>
+      <h2>De la primera pregunta a la lista corta clasificada</h2>
+      <p>Seis turnos cortos. Warren solo pregunta lo que necesita y nunca te hace repetir.</p>
     </div>
 
     <ol class="steps">
       <li class="step">
-        <h3>Frame</h3>
-        <p>It restates your question in one line and notes the angle you care about — population,
-           outcome, mechanism, equity lens, time window.</p>
+        <h3>Encuadrar</h3>
+        <p>Reformula tu pregunta en una línea y anota el ángulo que te interesa — población,
+           resultado, mecanismo, enfoque de equidad, ventana temporal.</p>
       </li>
       <li class="step">
-        <h3>Seed</h3>
-        <p><code>search_keyword</code> on 1–3 phrasings of the topic. It shows 3–5 candidate seeds,
-           each with DOI + citedBy, and asks you to pick 1–3 (or name a known paper).</p>
+        <h3>Sembrar</h3>
+        <p><code>search_keyword</code> sobre 1–3 formulaciones del tema. Muestra 3–5 semillas candidatas,
+           cada una con DOI + citedBy, y te pide elegir 1–3 (o nombrar un artículo conocido).</p>
       </li>
       <li class="step">
-        <h3>Expand</h3>
-        <p>The direction that matches your question: <code>search_similar</code>,
-           <code>search_earlier_work</code>, <code>search_later_work</code>, or
-           <code>expand_frontier</code> for a broad shortlist in one call.</p>
+        <h3>Expandir</h3>
+        <p>La dirección que coincide con tu pregunta: <code>search_similar</code>,
+           <code>search_earlier_work</code>, <code>search_later_work</code>, o
+           <code>expand_frontier</code> para una lista corta amplia en una sola llamada.</p>
       </li>
       <li class="step">
-        <h3>Screen &amp; rank</h3>
-        <p><code>screen_articles</code> drops papers outside a year / doctype / citation floor or
-           retracted ones; <code>rank_candidates</code> orders the shortlist with a reason per item.</p>
+        <h3>Filtrar y clasificar</h3>
+        <p><code>screen_articles</code> descarta artículos fuera de un umbral de año / tipo de documento /
+           citas o los retractados; <code>rank_candidates</code> ordena la lista corta con una razón por
+           elemento.</p>
       </li>
       <li class="step">
-        <h3>Verify</h3>
-        <p>Before endorsing a paper, <code>credibility_check</code> covers retraction, doctype, venue,
-           counts and first-author h-index — with the caveats folded in.</p>
+        <h3>Verificar</h3>
+        <p>Antes de respaldar un artículo, <code>credibility_check</code> cubre retractación, tipo de documento,
+           revista, conteos e h-index del primer autor — con las salvedades integradas.</p>
       </li>
       <li class="step">
-        <h3>Hand off</h3>
-        <p>A ResearchRabbit link on its own line, so you can tap it on your phone and keep going
-           visually in the app.</p>
+        <h3>Derivar</h3>
+        <p>Un enlace de ResearchRabbit en su propia línea, para que puedas tocarlo en el móvil y seguir
+           visualmente en la app.</p>
       </li>
     </ol>
   </div>
 </section>
 
-<!-- ============================ ARCHITECTURE ============================ -->
+<!-- ============================ ARQUITECTURA ============================ -->
 <section class="section" id="tech">
   <div class="wrap">
     <div class="section-head">
-      <h2>Architecture</h2>
-      <p>Four moving parts, one request path. An agentflow for the conversation, a language model for the
-         decisions, an MCP server for the tools, and a REST gateway that speaks to the ResearchRabbit API
-         (<code>api.researchrabbit.ai</code>) using your session token.</p>
+      <h2>Arquitectura</h2>
+      <p>Cuatro partes móviles, un camino de petición. Un agentflow para la conversación, un modelo de lenguaje
+         para las decisiones, un servidor MCP para las herramientas y un gateway REST que habla con la API de
+         ResearchRabbit (<code>api.researchrabbit.ai</code>) usando tu token de sesión.</p>
     </div>
 
     <ul class="stack">
       <li class="stack-item">
-        <p class="stack-tag">Agent &amp; chat UI</p>
+        <p class="stack-tag">Agente e interfaz de chat</p>
         <h3>Flowise 3.1.2</h3>
-        <p>A Docker service hosting the Agentflow — a Start node into an Agent node. It serves the chat
-           window in the corner of this page and orchestrates every turn.</p>
+        <p>Un servicio Docker que aloja el Agentflow — un nodo Start hacia un nodo Agent. Sirve la ventana de
+           chat en la esquina de esta página y orquesta cada turno.</p>
       </li>
       <li class="stack-item">
-        <p class="stack-tag">Language model</p>
+        <p class="stack-tag">Modelo de lenguaje</p>
         <h3>Fireworks glm-5p2</h3>
-        <p><code>accounts/fireworks/models/glm-5p2</code> at temperature 0.2, streaming on, with
-           <code>allMessages</code> memory so the whole conversation stays in context. Native tool-calling.</p>
+        <p><code>accounts/fireworks/models/glm-5p2</code> a temperatura 0.2, streaming activado, con
+           <code>allMessages</code> como memoria para que toda la conversación permanezca en contexto.
+           Tool-calling nativo.</p>
       </li>
       <li class="stack-item">
-        <p class="stack-tag">Tool layer</p>
-        <h3>MCP server (22 tools)</h3>
-        <p>Node + Express with the <code>@modelcontextprotocol/sdk</code>, speaking Streamable HTTP on
-           <code>POST /mcp</code>. Stateless: one JSON-RPC message per request. All 22 tools are wired to
-           the agent.</p>
+        <p class="stack-tag">Capa de herramientas</p>
+        <h3>Servidor MCP (22 herramientas)</h3>
+        <p>Node + Express con <code>@modelcontextprotocol/sdk</code>, hablando Streamable HTTP en
+           <code>POST /mcp</code>. Sin estado: un mensaje JSON-RPC por petición. Las 22 herramientas están
+           cableadas al agente.</p>
       </li>
       <li class="stack-item">
-        <p class="stack-tag">Data layer</p>
-        <h3>REST gateway → ResearchRabbit</h3>
-        <p>A Node + Express service in front of the ResearchRabbit API
-           (<code>api.researchrabbit.ai</code>), authenticated with your <code>sessionToken</code> JWT
-           (sent as <code>Authorization: Bearer</code>). It exposes plain REST endpoints the MCP tools
-           call and maps RR's citation graph into a canonical paper shape with real DOIs.</p>
+        <p class="stack-tag">Capa de datos</p>
+        <h3>Gateway REST → ResearchRabbit</h3>
+        <p>Un servicio Node + Express frente a la API de ResearchRabbit
+           (<code>api.researchrabbit.ai</code>), autenticado con tu JWT <code>sessionToken</code> (enviado
+           como <code>Authorization: Bearer</code>). Expone endpoints REST simples que las herramientas MCP
+           llaman y mapea el grafo de citas de RR a una forma canónica de artículo con DOIs reales.</p>
       </li>
     </ul>
 
     <div class="flow">
-      <h3 class="flow-title">The path of a single question</h3>
+      <h3 class="flow-title">El camino de una sola pregunta</h3>
       <ol class="flow-steps">
         <li class="flow-row">
           <div class="flow-rail"><span class="flow-dot">1</span></div>
           <div class="flow-card">
-            <p class="flow-kicker">You</p>
-            <p>"Find me 5 seed papers on urban tree canopy and heat equity, each with a DOI." goes into the chat window.</p>
+            <p class="flow-kicker">Tú</p>
+            <p>«Encuéntrame 5 artículos semilla sobre doseles arbóreas urbanas y equidad térmica, cada uno con un DOI.» entra en la ventana de chat.</p>
           </div>
         </li>
         <li class="flow-row">
           <div class="flow-rail"><span class="flow-dot">2</span></div>
           <div class="flow-card">
-            <p class="flow-kicker">Flowise Agentflow</p>
-            <p>Flowise receives the message, adds the Warren system prompt and the <code>allMessages</code> history, and hands the turn to the Agent node.</p>
+            <p class="flow-kicker">Agentflow de Flowise</p>
+            <p>Flowise recibe el mensaje, añade el prompt de sistema de Warren y el historial <code>allMessages</code>, y pasa el turno al nodo Agent.</p>
           </div>
         </li>
         <li class="flow-row">
           <div class="flow-rail"><span class="flow-dot">3</span></div>
           <div class="flow-card">
-            <p class="flow-kicker">Fireworks LLM</p>
-            <p>The model decides whether it needs data and, if so, which of its 22 MCP tools to call and with what arguments.</p>
+            <p class="flow-kicker">LLM de Fireworks</p>
+            <p>El modelo decide si necesita datos y, si es así, cuál de sus 22 herramientas MCP llamar y con qué argumentos.</p>
           </div>
         </li>
         <li class="flow-row">
           <div class="flow-rail"><span class="flow-dot">4</span></div>
           <div class="flow-card">
-            <p class="flow-kicker">MCP server</p>
-            <p>The tool call arrives over Streamable HTTP at <code>POST /mcp</code> and is dispatched to the matching tool implementation.</p>
+            <p class="flow-kicker">Servidor MCP</p>
+            <p>La llamada a la herramienta llega por Streamable HTTP a <code>POST /mcp</code> y se despacha a la implementación de la herramienta correspondiente.</p>
           </div>
         </li>
         <li class="flow-row">
           <div class="flow-rail"><span class="flow-dot">5</span></div>
           <div class="flow-card">
-            <p class="flow-kicker">REST gateway → ResearchRabbit</p>
-            <p>That tool calls the gateway, the only component allowed to talk to <code>api.researchrabbit.ai</code> directly (with your session token). It returns real papers with real DOIs.</p>
+            <p class="flow-kicker">Gateway REST → ResearchRabbit</p>
+            <p>Esa herramienta llama al gateway, el único componente que puede hablar con <code>api.researchrabbit.ai</code> directamente (con tu token de sesión). Devuelve artículos reales con DOIs reales.</p>
           </div>
         </li>
         <li class="flow-row flow-row-back">
           <div class="flow-rail"><span class="flow-dot flow-dot-back" aria-hidden="true">↩</span></div>
           <div class="flow-card">
-            <p class="flow-kicker">…and back the same way</p>
-            <p>Gateway → MCP server → the model, which turns the raw result into a DOI-backed answer and streams it token by token into the chat window.</p>
+            <p class="flow-kicker">…y de vuelta por el mismo camino</p>
+            <p>Gateway → servidor MCP → el modelo, que convierte el resultado bruto en una respuesta respaldada por DOIs y la transmite token a token a la ventana de chat.</p>
           </div>
         </li>
       </ol>
     </div>
 
     <p class="tech-note">
-      All three services — Flowise, the MCP server and the REST gateway — are deployed as Render web
-      services. The agentflow, the MCP endpoint and the prediction endpoint are all public; to get real
-      ResearchRabbit data you connect your account with your <code>sessionToken</code> — via the Connect
-      panel (web) or the <code>X-RR-Token</code> MCP header (editor).
+      Los tres servicios — Flowise, el servidor MCP y el gateway REST — están desplegados como servicios web de
+      Render. El agentflow, el endpoint MCP y el endpoint de predicción son todos públicos; para obtener datos
+      reales de ResearchRabbit conectas tu cuenta con tu <code>sessionToken</code> — vía el panel Conectar (web)
+      o la cabecera MCP <code>X-RR-Token</code> (editor).
     </p>
   </div>
 </section>
 
-<!-- ============================ MCP & CLAUDE ============================ -->
+<!-- ============================ MCP Y CLAUDE ============================ -->
 <section class="section section-alt" id="mcp">
   <div class="wrap">
     <div class="section-head">
-      <h2>Use the same tools in Claude (and any MCP client)</h2>
+      <h2>Usa las mismas herramientas en Claude (y cualquier cliente MCP)</h2>
       <p>
-        The 22 tools that power Warren are an <strong>MCP server</strong>. You don't need Flowise to use
-        them — connect the server straight to Claude Code, Claude Desktop, Cursor, Windsurf or VS Code and
-        you get the same literature-discovery tools inside your editor. They run against the ResearchRabbit
-        API (<code>api.researchrabbit.ai</code>), so you must send your <code>sessionToken</code> JWT as the
-        <code>X-RR-Token</code> header on every request — see
-        <a href="#account">Use your own account</a> and Option B below.
+        Las 22 herramientas que dan vida a Warren son un <strong>servidor MCP</strong>. No necesitas Flowise para
+        usarlas — conecta el servidor directamente a Claude Code, Claude Desktop, Cursor, Windsurf o VS Code y
+        obtienes las mismas herramientas de descubrimiento de literatura dentro de tu editor. Corren contra la API
+        de ResearchRabbit (<code>api.researchrabbit.ai</code>), así que debes enviar tu JWT
+        <code>sessionToken</code> como cabecera <code>X-RR-Token</code> en cada petición — ver
+        <a href="#account">Usa tu propia cuenta</a> y la Opción B de abajo.
       </p>
     </div>
 
-    <h3 style="margin-top:8px">The endpoint</h3>
+    <h3 style="margin-top:8px">El endpoint</h3>
     <p>
-      Hosted (always on): <code>https://researchrabbit-mcp-server.onrender.com/mcp</code><br />
-      Local (when running the repo): <code>http://localhost:8822/mcp</code>
+      Alojado (siempre activo): <code>https://researchrabbit-mcp-server.onrender.com/mcp</code><br />
+      Local (al ejecutar el repo): <code>http://localhost:8822/mcp</code>
     </p>
     <p>
-      <strong>Required — your session token:</strong> send one header on every
-      <code>POST /mcp</code> — <code>X-RR-Token</code> (your <code>sessionToken</code> JWT from
-      <code>app.researchrabbit.ai</code> localStorage). The server forwards it to the gateway, which calls
-      <code>api.researchrabbit.ai</code> as you with <code>Authorization: Bearer</code> (and auto-discovers
-      your <code>projectId</code>). Without it the tools cannot reach ResearchRabbit.
+      <strong>Obligatorio — tu token de sesión:</strong> envía una cabecera en cada
+      <code>POST /mcp</code> — <code>X-RR-Token</code> (tu JWT <code>sessionToken</code> del
+      <code>localStorage</code> de <code>app.researchrabbit.ai</code>). El servidor lo reenvía al gateway, que
+      llama a <code>api.researchrabbit.ai</code> como tú con <code>Authorization: Bearer</code> (y descubre
+      automáticamente tu <code>projectId</code>). Sin ella las herramientas no pueden alcanzar ResearchRabbit.
     </p>
     <p class="note">
-      <strong>Transport:</strong> Streamable HTTP, stateless. One JSON-RPC request per
-      <code>POST /mcp</code>. <code>GET /mcp</code> returns <code>405</code>; the descriptor lives at
-      <code>GET /</code>. No <code>initialize</code> handshake is required — just send
-      <code>tools/list</code> or <code>tools/call</code>.
+      <strong>Transporte:</strong> Streamable HTTP, sin estado. Una petición JSON-RPC por
+      <code>POST /mcp</code>. <code>GET /mcp</code> devuelve <code>405</code>; el descriptor vive en
+      <code>GET /</code>. No se requiere handshake de <code>initialize</code> — solo envía
+      <code>tools/list</code> o <code>tools/call</code>.
     </p>
 
-    <h3>Option A — Claude Code (one command)</h3>
-    <p>Register the server with the Claude Code CLI. The <code>--transport http</code> flag is the key
-       part — this is an HTTP server, not a stdio subprocess.</p>
+    <h3>Opción A — Claude Code (un comando)</h3>
+    <p>Registra el servidor con la CLI de Claude Code. La bandera <code>--transport http</code> es la parte
+       clave — este es un servidor HTTP, no un subproceso stdio.</p>
     <div class="code-block">
-      <div class="cb-head"><span class="dot"></span> terminal<button class="cb-copy" onclick="copyCode(this)">copy</button><span class="lang">bash</span></div>
-<pre><span class="c"># register the hosted MCP server (project scope by default)</span>
+      <div class="cb-head"><span class="dot"></span> terminal<button class="cb-copy" onclick="copyCode(this)">copiar</button><span class="lang">bash</span></div>
+<pre><span class="c"># registra el servidor MCP alojado (ámbito de proyecto por defecto)</span>
 claude mcp add --transport http researchrabbit https://researchrabbit-mcp-server.onrender.com/mcp
 
-<span class="c"># or, when running the repo locally:</span>
+<span class="c"># o, cuando ejecutas el repo en local:</span>
 <span class="c"># claude mcp add --transport http researchrabbit http://localhost:8822/mcp</span>
 
-<span class="c"># verify it connected</span>
+<span class="c"># verifica que se conectó</span>
 claude mcp list
 claude mcp get researchrabbit</pre>
     </div>
     <p class="note">
-      The CLI registers the server without a header. To use it you must then edit the generated
-      <code>.mcp.json</code> to add the <code>X-RR-Token</code> header shown in Option B
-      (<code>claude mcp add</code> doesn't take headers directly). Or skip the CLI and use Option B from
-      the start.
+      La CLI registra el servidor sin cabecera. Para usarlo debes editar luego el <code>.mcp.json</code> generado
+      para añadir la cabecera <code>X-RR-Token</code> mostrada en la Opción B (<code>claude mcp add</code> no
+      acepta cabeceras directamente). O sáltate la CLI y usa la Opción B desde el principio.
     </p>
 
-    <h3>Option B — project <code>.mcp.json</code> (Claude Code, Cursor, Windsurf, VS Code)</h3>
+    <h3>Opción B — archivo <code>.mcp.json</code> del proyecto (Claude Code, Cursor, Windsurf, VS Code)</h3>
     <p>
-      Drop this file at the root of your repo (or your home directory). It is the portable, version-controllable
-      way to share the server with your team — every MCP-aware client reads the same format. The
-      <code>headers</code> block below carries your <strong>ResearchRabbit session token</strong> (Camino B) —
-      it is required, not optional. See <a href="#account">how to get your sessionToken</a>.
+      Deja este archivo en la raíz de tu repo (o tu directorio personal). Es la forma portable y versionable de
+      compartir el servidor con tu equipo — todo cliente compatible con MCP lee el mismo formato. El bloque
+      <code>headers</code> de abajo lleva tu <strong>token de sesión de ResearchRabbit</strong> (Camino B) — es
+      obligatorio, no opcional. Ver <a href="#account">cómo obtener tu sessionToken</a>.
     </p>
     <div class="code-block">
-      <div class="cb-head"><span class="dot"></span> .mcp.json<button class="cb-copy" onclick="copyCode(this)">copy</button><span class="lang">json</span></div>
+      <div class="cb-head"><span class="dot"></span> .mcp.json<button class="cb-copy" onclick="copyCode(this)">copiar</button><span class="lang">json</span></div>
 <pre>{
   <span class="k">"mcpServers"</span>: {
     <span class="k">"researchrabbit"</span>: {
       <span class="k">"url"</span>: <span class="s">"https://researchrabbit-mcp-server.onrender.com/mcp"</span>,
       <span class="k">"headers"</span>: {
-        <span class="k">"X-RR-Token"</span>: <span class="s">"&lt;your sessionToken JWT&gt;"</span>
+        <span class="k">"X-RR-Token"</span>: <span class="s">"&lt;tu JWT sessionToken&gt;"</span>
       }
     }
   }
 }</pre>
     </div>
 
-    <h3>Option C — Claude Desktop</h3>
+    <h3>Opción C — Claude Desktop</h3>
     <p>
-      Add the same server to your Claude Desktop config
+      Añade el mismo servidor a tu configuración de Claude Desktop
       (<code>claude_desktop_config.json</code> → <em>Developer → Edit Config</em>):
     </p>
     <div class="code-block">
-      <div class="cb-head"><span class="dot"></span> claude_desktop_config.json<button class="cb-copy" onclick="copyCode(this)">copy</button><span class="lang">json</span></div>
+      <div class="cb-head"><span class="dot"></span> claude_desktop_config.json<button class="cb-copy" onclick="copyCode(this)">copiar</button><span class="lang">json</span></div>
 <pre>{
   <span class="k">"mcpServers"</span>: {
     <span class="k">"researchrabbit"</span>: {
       <span class="k">"type"</span>: <span class="s">"http"</span>,
       <span class="k">"url"</span>: <span class="s">"https://researchrabbit-mcp-server.onrender.com/mcp"</span>,
       <span class="k">"headers"</span>: {
-        <span class="k">"X-RR-Token"</span>: <span class="s">"&lt;your sessionToken JWT&gt;"</span>
+        <span class="k">"X-RR-Token"</span>: <span class="s">"&lt;tu JWT sessionToken&gt;"</span>
       }
     }
   }
 }</pre>
     </div>
     <p class="note warn">
-      <strong>Then restart Claude Desktop.</strong> After restart, the
-      <span class="ico" style="display:inline-block">🔌</span> tools icon will list 22
-      <code>researchrabbit__*</code> tools. Approve them once and Warren's tools are available in the
-      desktop chat too.
+      <strong>Luego reinicia Claude Desktop.</strong> Tras reiniciar, el icono de herramientas
+      <span class="ico" style="display:inline-block">🔌</span> listará 22 herramientas
+      <code>researchrabbit__*</code>. Apruébalas una vez y las herramientas de Warren también están disponibles
+      en el chat de escritorio.
     </p>
 
-    <h3>The 22 tools you get</h3>
-    <p class="tool-note">Every tool calls the gateway, which forwards to <code>api.researchrabbit.ai</code> as you with <code>Authorization: Bearer &lt;sessionToken&gt;</code>. Most calls also need your <code>projectId</code> (auto-discovered via <code>GET /projects</code>). The RR endpoint(s) each tool drives are listed below.</p>
+    <h3>Las 22 herramientas que obtienes</h3>
+    <p class="tool-note">Cada herramienta llama al gateway, que reenvía a <code>api.researchrabbit.ai</code> como tú con <code>Authorization: Bearer &lt;sessionToken&gt;</code>. La mayoría de llamadas también necesitan tu <code>projectId</code> (autodescubierto vía <code>GET /projects</code>). Abajo se listan los endpoints de RR que dirige cada herramienta.</p>
     <div class="tools">
       <div class="tool-card">
-        <span class="tag tag-on">Discovery</span>
+        <span class="tag tag-on">Descubrimiento</span>
         <h3><code>search_keyword</code></h3>
-        <p>Find candidate seed papers from a topic, phrase, or DOI (title + abstract match).</p>
+        <p>Encuentra artículos semilla candidatos a partir de un tema, frase o DOI (coincidencia en título + resumen).</p>
         <p class="ep">RR&nbsp;<code>POST /searches</code> &rarr; <code>GET /searches/{id}</code></p>
       </div>
       <div class="tool-card">
-        <span class="tag tag-on">Discovery</span>
+        <span class="tag tag-on">Descubrimiento</span>
         <h3><code>search_similar</code></h3>
-        <p>Similar Work — every connection around the seeds (references + cited-by + related).</p>
+        <p>Similar Work — todas las conexiones alrededor de las semillas (referencias + citados + relacionados).</p>
         <p class="ep">RR&nbsp;<code>POST /searches</code> <span class="epm">(edgeMode: both)</span></p>
       </div>
       <div class="tool-card">
-        <span class="tag tag-on">Discovery</span>
+        <span class="tag tag-on">Descubrimiento</span>
         <h3><code>search_earlier_work</code></h3>
-        <p>Papers the seeds BUILT ON (their references / Earlier Work).</p>
+        <p>Artículos en los que se BASARON las semillas (sus referencias / Earlier Work).</p>
         <p class="ep">RR&nbsp;<code>POST /searches</code> <span class="epm">(edgeMode: backward)</span></p>
       </div>
       <div class="tool-card">
-        <span class="tag tag-on">Discovery</span>
+        <span class="tag tag-on">Descubrimiento</span>
         <h3><code>search_later_work</code></h3>
-        <p>Papers published AFTER the seeds that CITE them (Later Work / Cited By).</p>
+        <p>Artículos publicados DESPUÉS de las semillas que las CITAN (Later Work / Cited By).</p>
         <p class="ep">RR&nbsp;<code>POST /searches</code> <span class="epm">(edgeMode: forward)</span></p>
       </div>
       <div class="tool-card">
-        <span class="tag tag-on">Discovery</span>
+        <span class="tag tag-on">Descubrimiento</span>
         <h3><code>expand_frontier</code></h3>
-        <p>N iterations of network search server-side, deduped and consensus-ranked — the 'Grow and go!' loop in one call.</p>
+        <p>N iteraciones de búsqueda en red en el servidor, deduplicadas y por consenso — el bucle 'Grow and go!' en una sola llamada.</p>
         <p class="ep">RR&nbsp;<code>POST /searches</code> <span class="epm">(edgeMode: both, iterated)</span></p>
       </div>
       <div class="tool-card">
-        <span class="tag tag-on">Discovery</span>
+        <span class="tag tag-on">Descubrimiento</span>
         <h3><code>search_by_author</code></h3>
-        <p>Find papers by author name or by author ids.</p>
+        <p>Encuentra artículos por nombre de autor o por ids de autor.</p>
         <p class="ep">RR&nbsp;<code>POST /searches</code> <span class="epm">(stringFilter / authorIds)</span></p>
       </div>
       <div class="tool-card">
-        <span class="tag tag-on">Resolve &amp; verify</span>
+        <span class="tag tag-on">Resolver y verificar</span>
         <h3><code>get_article</code></h3>
-        <p>Full metadata for one paper by id, DOI, or title: abstract, authors w/ h-index, citation counts, retraction flag.</p>
+        <p>Metadatos completos de un artículo por id, DOI o título: resumen, autores con h-index, citas, bandera de retractación.</p>
         <p class="ep">RR&nbsp;<code>GET /articles/{id}</code></p>
       </div>
       <div class="tool-card">
-        <span class="tag tag-on">Resolve &amp; verify</span>
+        <span class="tag tag-on">Resolver y verificar</span>
         <h3><code>resolve_article</code></h3>
-        <p>Resolve a title or DOI to a stable articleId (+ confidence). The anti-hallucination keystone.</p>
+        <p>Resuelve un título o DOI a un articleId estable (+ confianza). La piedra angular anti-alucinación.</p>
         <p class="ep">RR&nbsp;<code>POST /searches</code> &rarr; <code>GET /articles/{id}</code></p>
       </div>
       <div class="tool-card">
-        <span class="tag tag-on">Resolve &amp; verify</span>
+        <span class="tag tag-on">Resolver y verificar</span>
         <h3><code>credibility_check</code></h3>
-        <p>&ldquo;Should I trust this paper?&rdquo; triage: retraction, doctype, venue, citations, citations/yr, first-author h-index + caveats.</p>
+        <p>Triaje &laquo;¿debería confiar en este artículo?&raquo;: retractación, doctype, revista, citas, citas/año, h-index del primer autor + advertencias.</p>
         <p class="ep">RR&nbsp;<code>GET /articles/{id}</code></p>
       </div>
       <div class="tool-card">
-        <span class="tag tag-on">Resolve &amp; verify</span>
+        <span class="tag tag-on">Resolver y verificar</span>
         <h3><code>rank_candidates</code></h3>
-        <p>Re-rank a candidate set by seed-consensus, recency, citations/yr, or raw citations, with a reason per item.</p>
+        <p>Reordena un conjunto por consenso de semillas, recencia, citas/año o citas brutas, con una razón por artículo.</p>
         <p class="ep">RR&nbsp;<code>GET /articles/{id}</code> <span class="epm">(per item)</span></p>
       </div>
       <div class="tool-card">
-        <span class="tag tag-on">Resolve &amp; verify</span>
+        <span class="tag tag-on">Resolver y verificar</span>
         <h3><code>screen_articles</code></h3>
-        <p>Filter a candidate set by year range, doctype, min citations, and/or exclude retracted.</p>
+        <p>Filtra un conjunto por rango de años, doctype, citas mínimas y/o excluir retractados.</p>
         <p class="ep">RR&nbsp;<code>GET /articles/{id}</code> <span class="epm">(per item)</span></p>
       </div>
       <div class="tool-card">
-        <span class="tag tag-on">Resolve &amp; verify</span>
+        <span class="tag tag-on">Resolver y verificar</span>
         <h3><code>find_gaps</code></h3>
-        <p>Well-connected network papers the user's collection does NOT already contain.</p>
+        <p>Artículos bien conectados en la red que la colección del usuario NO contiene.</p>
         <p class="ep">RR&nbsp;<code>POST /searches</code> + <code>GET /folders/{id}</code></p>
       </div>
       <div class="tool-card">
-        <span class="tag tag-off">Sessions</span>
+        <span class="tag tag-off">Sesiones</span>
         <h3><code>get_search_results</code></h3>
-        <p>Re-read a previous search by id.</p>
+        <p>Vuelve a leer una búsqueda anterior por id.</p>
         <p class="ep">RR&nbsp;<code>GET /searches/{id}</code></p>
       </div>
       <div class="tool-card">
-        <span class="tag tag-off">Sessions</span>
+        <span class="tag tag-off">Sesiones</span>
         <h3><code>get_research_session</code></h3>
-        <p>Read a session and its ordered steps.</p>
+        <p>Lee una sesión y sus pasos ordenados.</p>
         <p class="ep">RR&nbsp;<code>GET /search-sessions/{id}</code></p>
       </div>
       <div class="tool-card">
-        <span class="tag tag-off">Sessions</span>
+        <span class="tag tag-off">Sesiones</span>
         <h3><code>create_research_session</code></h3>
-        <p>Create a ResearchRabbit search session + first step from a seed set.</p>
+        <p>Crea una sesión de búsqueda de ResearchRabbit + su primer paso a partir de unas semillas.</p>
         <p class="ep">RR&nbsp;<code>POST /search-sessions</code></p>
       </div>
       <div class="tool-card">
-        <span class="tag tag-off">Sessions</span>
+        <span class="tag tag-off">Sesiones</span>
         <h3><code>update_session_step</code></h3>
-        <p>Point a session step at a search/inspected article so the app opens where the chat left off.</p>
+        <p>Apunta un paso de la sesión a una búsqueda/artículo para que la app abra donde quedó el chat.</p>
         <p class="ep">RR&nbsp;<code>PATCH /search-sessions/{id}/steps/{stepId}</code></p>
       </div>
       <div class="tool-card">
-        <span class="tag tag-off">Sessions</span>
+        <span class="tag tag-off">Sesiones</span>
         <h3><code>build_session_link</code></h3>
-        <p>Return the deep link app.researchrabbit.ai/search/{sessionId}/{stepIndex} — the hand-off to the app.</p>
+        <p>Devuelve el enlace profundo app.researchrabbit.ai/search/{sessionId}/{stepIndex} — la entrega a la app.</p>
         <p class="ep">RR&nbsp;<span class="epm">no call — builds </span><code>app.researchrabbit.ai/search/{sid}/{step}</code></p>
       </div>
       <div class="tool-card">
-        <span class="tag tag-off">Sessions</span>
+        <span class="tag tag-off">Sesiones</span>
         <h3><code>export_bibtex</code></h3>
-        <p>Export a set of papers to BibTeX text, ready to paste into Zotero.</p>
+        <p>Exporta un conjunto de artículos a texto BibTeX, listo para pegar en Zotero.</p>
         <p class="ep">RR&nbsp;<code>GET /articles/{id}</code> <span class="epm">(per item)</span></p>
       </div>
       <div class="tool-card">
-        <span class="tag tag-write">Library</span>
+        <span class="tag tag-write">Biblioteca</span>
         <h3><code>list_collections</code></h3>
-        <p>List the user's ResearchRabbit folders with item counts and colours.</p>
+        <p>Lista las carpetas de ResearchRabbit del usuario con conteos y colores.</p>
         <p class="ep">RR&nbsp;<code>GET /folders</code></p>
       </div>
       <div class="tool-card">
-        <span class="tag tag-write">Library</span>
+        <span class="tag tag-write">Biblioteca</span>
         <h3><code>list_library</code></h3>
-        <p>List the user's saved articles (the ResearchRabbit library).</p>
+        <p>Lista los artículos guardados del usuario (la biblioteca de ResearchRabbit).</p>
         <p class="ep">RR&nbsp;<code>GET /user-articles</code></p>
       </div>
       <div class="tool-card">
-        <span class="tag tag-write">Library</span>
+        <span class="tag tag-write">Biblioteca</span>
         <h3><code>create_collection</code></h3>
-        <p>Create a ResearchRabbit folder with a name + optional colour. Write — gated by RR_ALLOW_WRITES.</p>
+        <p>Crea una carpeta de ResearchRabbit con nombre + color opcional. Escritura — protegida por RR_ALLOW_WRITES.</p>
         <p class="ep">RR&nbsp;<code>POST /folders</code></p>
       </div>
       <div class="tool-card">
-        <span class="tag tag-write">Library</span>
+        <span class="tag tag-write">Biblioteca</span>
         <h3><code>save_articles</code></h3>
-        <p>Save a shortlist of articles into a ResearchRabbit collection. Write — gated by RR_ALLOW_WRITES.</p>
+        <p>Guarda una lista de artículos en una colección de ResearchRabbit. Escritura — protegida por RR_ALLOW_WRITES.</p>
         <p class="ep">RR&nbsp;<code>POST /user-articles/batch</code></p>
       </div>
     </div>
     <p class="faq-note">
-      Pass seeds as <strong>titles or DOIs</strong>, never a numeric id from memory — the gateway
-      resolves them. That rule is what keeps citations honest across turns.
+      Pasa las semillas como <strong>títulos o DOIs</strong>, nunca un id numérico de memoria — el gateway los
+      resuelve. Esa regla es lo que mantiene las citas honestas entre turnos.
     </p>
   </div>
 </section>
 
-<!-- ============================ YOUR RR ACCOUNT ============================ -->
+<!-- ============================ TU CUENTA RR ============================ -->
 <section class="section" id="account">
   <div class="wrap">
     <div class="section-head">
-      <h2>Use your ResearchRabbit account</h2>
+      <h2>Usa tu cuenta de ResearchRabbit</h2>
       <p>
-        Warren runs on the ResearchRabbit API (<code>api.researchrabbit.ai</code>), so you must connect
-        your account with a <code>sessionToken</code> JWT — it is mandatory. Once connected, Warren uses
-        <em>your</em> data: real searches, sessions, collections, library, and the
-        <code>app.researchrabbit.ai/search/…</code> deep link. There are two ways to connect, one per
-        surface — both end up at the same gateway, which calls ResearchRabbit as you with
+        Warren corre sobre la API de ResearchRabbit (<code>api.researchrabbit.ai</code>), así que debes conectar
+        tu cuenta con un JWT <code>sessionToken</code> — es obligatorio. Una vez conectado, Warren usa
+        <em>tus</em> datos: búsquedas, sesiones, colecciones, biblioteca y el enlace profundo
+        <code>app.researchrabbit.ai/search/…</code> reales. Hay dos formas de conectar, una por superficie —
+        ambas terminan en el mismo gateway, que llama a ResearchRabbit como tú con
         <code>Authorization: Bearer</code>.
       </p>
     </div>
 
     <div class="grid-2">
       <div>
-        <h3>Method B — in your editor (Claude, Cursor, …)</h3>
+        <h3>Método B — en tu editor (Claude, Cursor, …)</h3>
         <p>
-          Send your credential as <strong>request headers</strong> on the MCP server. Each call then
-          uses <em>your</em> RR session, and the credential lives in <em>your</em> local config — never
-          on the server. This is the <strong>per-user</strong> path. See the exact
-          <code>.mcp.json</code> / <code>claude_desktop_config.json</code> with the
-          <code>headers</code> block in <a href="#mcp">MCP &amp; Claude</a> (Option B / C).
+          Envía tu credencial como <strong>cabeceras de petición</strong> en el servidor MCP. Cada llamada usa
+          entonces <em>tu</em> sesión de RR, y la credencial vive en <em>tu</em> configuración local — nunca en
+          el servidor. Este es el camino <strong>por usuario</strong>. Ver el <code>.mcp.json</code> /
+          <code>claude_desktop_config.json</code> exacto con el bloque <code>headers</code> en
+          <a href="#mcp">MCP y Claude</a> (Opción B / C).
         </p>
-        <h3 style="margin-top:18px">Method C — on this page (web chat)</h3>
+        <h3 style="margin-top:18px">Método C — en esta página (chat web)</h3>
         <p>
-          Use the panel on the right. Paste your <code>sessionToken</code> once; it is stored
-          <strong>only on the gateway</strong>, for this chat, and every Warren turn then runs against
-          your RR account. Disconnect any time. After about a day (or if the token expires) you
-          reconnect. Your <code>projectId</code> is auto-discovered — you don't need to paste it.
+          Usa el panel de la derecha. Pega tu <code>sessionToken</code> una vez; se guarda
+          <strong>solo en el gateway</strong>, para este chat, y cada turno de Warren corre entonces contra tu
+          cuenta de RR. Desconéctate cuando quieras. Tras unas horas (o si el token expira) vuelves a
+          conectarte. Tu <code>projectId</code> se descubre automáticamente — no necesitas pegarlo.
         </p>
         <p class="note warn">
-          <strong>One active web account at a time.</strong> The web chat channel keeps a single
-          connected account (the last one you connect). True simultaneous multi-user would need
-          per-request identity from Flowise's MCP node, which it doesn't provide — so the editor path
-          (Method B) is the per-user one; the web panel is the single-account one. For a shared demo
-          team setup, use Method A (one account in gateway env vars) instead.
+          <strong>Una cuenta web activa a la vez.</strong> El canal del chat web mantiene una sola cuenta
+          conectada (la última que conectas). Un multiusuario simultáneo real necesitaría identidad por
+          petición desde el nodo MCP de Flowise, que no proporciona — así que el camino del editor (Método B) es
+          el por usuario; el panel web es el de cuenta única. Para una configuración de equipo demo compartida,
+          usa el Método A (una cuenta en las variables de entorno del gateway).
         </p>
       </div>
 
       <div class="rr-panel">
-        <h3>Connect your account</h3>
+        <h3>Conecta tu cuenta</h3>
         <label class="rr-lbl">sessionToken (JWT)
-          <input id="rr-token" type="text" placeholder="paste the sessionToken value from localStorage" autocomplete="off" />
+          <input id="rr-token" type="text" placeholder="pega el valor de sessionToken de localStorage" autocomplete="off" />
         </label>
-        <p class="rr-foot" style="margin-top:-4px;margin-bottom:10px">projectId is auto-discovered — no need to paste it.</p>
+        <p class="rr-foot" style="margin-top:-4px;margin-bottom:10px">projectId se descubre automáticamente — no hace falta pegarlo.</p>
         <div class="rr-btns">
-          <button class="btn btn-primary" onclick="rrConnect()">Connect</button>
-          <button class="btn btn-outline-rr" onclick="rrStatus()">Check status</button>
-          <button class="btn btn-outline-rr" onclick="rrDisconnect()">Disconnect</button>
+          <button class="btn btn-primary" onclick="rrConnect()">Conectar</button>
+          <button class="btn btn-outline-rr" onclick="rrStatus()">Comprobar estado</button>
+          <button class="btn btn-outline-rr" onclick="rrDisconnect()">Desconectar</button>
         </div>
-        <div id="rr-status" class="rr-status rr-info">Checking…</div>
+        <div id="rr-status" class="rr-status rr-info">Comprobando…</div>
         <p class="rr-foot">
-          Stored only on the gateway for this chat — never in the chat transcript or the repo.
-          <a href="#how-to-token">How do I get my sessionToken?</a>
+          Guardado solo en el gateway para este chat — nunca en la transcripción del chat ni en el repo.
+          <a href="#how-to-token">¿Cómo obtengo mi sessionToken?</a>
         </p>
       </div>
     </div>
 
     <div class="rr-howto" id="how-to-token">
-      <h3>How to get your sessionToken</h3>
-      <p>ResearchRabbit keeps your signed-in session as a JWT in the app's <code>localStorage</code>.
-         Copying it takes about a minute:</p>
+      <h3>Cómo obtener tu sessionToken</h3>
+      <p>ResearchRabbit guarda tu sesión iniciada como un JWT en el <code>localStorage</code> de la app.
+         Copiarlo toma un minuto:</p>
       <ol class="rr-steps">
-        <li>Open <a href="https://app.researchrabbit.ai/" target="_blank" rel="noopener">app.researchrabbit.ai</a> and sign in (email/password or Google).</li>
-        <li>Open DevTools (F12) → <strong>Application</strong> → <strong>Local Storage</strong> →
-            <code>https://app.researchrabbit.ai</code>. Click the <code>tokens</code> key. The value is
-            JSON like <code>{"sessionToken":"eyJ…"}</code> — copy just the <code>sessionToken</code>
-            string (the long <code>eyJ…</code> JWT, not the whole JSON).</li>
-        <li>Paste it into the panel above (Method C) or into the <code>X-RR-Token</code> header of your
-            <code>.mcp.json</code> (Method B), and you're connected. Your <code>projectId</code> is
-            auto-discovered — you don't need it.</li>
+        <li>Abre <a href="https://app.researchrabbit.ai/" target="_blank" rel="noopener">app.researchrabbit.ai</a> e inicia sesión (email/contraseña o Google).</li>
+        <li>Abre DevTools (F12) → <strong>Application</strong> → <strong>Local Storage</strong> →
+            <code>https://app.researchrabbit.ai</code>. Haz clic en la clave <code>tokens</code>. El valor es
+            un JSON como <code>{"sessionToken":"eyJ…"}</code> — copia solo la cadena
+            <code>sessionToken</code> (el JWT largo <code>eyJ…</code>, no todo el JSON).</li>
+        <li>Pégalo en el panel de arriba (Método C) o en la cabecera <code>X-RR-Token</code> de tu
+            <code>.mcp.json</code> (Método B), y estás conectado. Tu <code>projectId</code> se descubre
+            automáticamente — no lo necesitas.</li>
       </ol>
       <p class="note">
-        <strong>What is a session token?</strong> It's a bearer credential — anyone who has it can act
-        as you on ResearchRabbit. That's why it's stored only on the gateway (not in the chat
-        transcript, not in the repo) and why you should disconnect when you're done. It expires on its
-        own; if Warren says “session expired”, just repeat the steps with a fresh token.
+        <strong>¿Qué es un token de sesión?</strong> Es una credencial bearer — quien la tenga puede actuar como
+        tú en ResearchRabbit. Por eso se guarda solo en el gateway (no en la transcripción del chat, no en el
+        repo) y por eso deberías desconectarte al terminar. Expira por sí solo; si Warren dice «sesión
+        expirada», solo repite los pasos con un token nuevo.
       </p>
       <p class="note warn">
-        <strong>Deploy note:</strong> the Connect panel talks to the gateway's
-        <code>/api/rr/*</code> endpoints. Those are live once the new multi-tenant gateway is deployed
-        (push <code>server/</code> to Render) and the gateway's <code>ALLOWED_ORIGINS</code> includes
-        this page's origin. Until then the panel reports “not available on this gateway yet”. The MCP
-        header path (Method B) works as soon as the new <code>mcp-server/</code> is deployed too.
+        <strong>Nota de despliegue:</strong> el panel Conectar habla con los endpoints
+        <code>/api/rr/*</code> del gateway. Están activos una vez que el nuevo gateway multiusuario está
+        desplegado (sube <code>server/</code> a Render) y el <code>ALLOWED_ORIGINS</code> del gateway incluye
+        el origen de esta página. Hasta entonces el panel informa «no disponible aún en este gateway». El
+        camino de cabeceras MCP (Método B) funciona en cuanto el nuevo <code>mcp-server/</code> también está
+        desplegado.
       </p>
     </div>
   </div>
 </section>
 
-<!-- ============================ EXAMPLES ============================ -->
+<!-- ============================ EJEMPLOS ============================ -->
 <section class="section" id="examples">
   <div class="wrap">
     <div class="section-head">
-      <h2>Examples — the MCP directly, and through the chatbot</h2>
+      <h2>Ejemplos — el MCP directamente, y a través del chatbot</h2>
       <p>
-        Same 22 tools, two ways in. The raw MCP examples below are real requests against the hosted
-        endpoint — paste the curl with your own <code>sessionToken</code> in the <code>X-RR-Token</code>
-        header and you get the same shape of answer. The chatbot example is a real reply from Warren.
+        Las mismas 22 herramientas, dos formas de entrar. Los ejemplos en crudo del MCP de abajo son peticiones
+        reales contra el endpoint alojado — pega el curl con tu <code>sessionToken</code> en la cabecera
+        <code>X-RR-Token</code> y obtendrás la misma forma de respuesta. El ejemplo del chatbot es una
+        respuesta real de Warren (mostrada aquí en español).
       </p>
     </div>
 
-    <h3>1. List the tools (raw MCP over HTTP)</h3>
-    <p>A single JSON-RPC <code>tools/list</code> to <code>POST /mcp</code>. The server responds with
-       Server-Sent Events (<code>event: message</code> then a <code>data:</code> line).</p>
+    <h3>1. Lista las herramientas (MCP en crudo por HTTP)</h3>
+    <p>Un único <code>tools/list</code> JSON-RPC a <code>POST /mcp</code>. El servidor responde con Server-Sent
+       Events (<code>event: message</code> y luego una línea <code>data:</code>).</p>
     <div class="code-block">
-      <div class="cb-head"><span class="dot"></span> request<button class="cb-copy" onclick="copyCode(this)">copy</button><span class="lang">bash</span></div>
+      <div class="cb-head"><span class="dot"></span> petición<button class="cb-copy" onclick="copyCode(this)">copiar</button><span class="lang">bash</span></div>
 <pre>curl -X POST https://researchrabbit-mcp-server.onrender.com/mcp \
   -H 'content-type: application/json' \
   -H 'accept: application/json, text/event-stream' \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'</pre>
     </div>
     <div class="code-block">
-      <div class="cb-head"><span class="dot"></span> response (first tool shown)<span class="lang">sse</span></div>
+      <div class="cb-head"><span class="dot"></span> respuesta (primera herramienta mostrada)<span class="lang">sse</span></div>
 <pre>event: message
 data: {"result":{"tools":[
   {
@@ -977,24 +980,25 @@ data: {"result":{"tools":[
       "required": [<span class="s">"q"</span>]
     }
   }
-  <span class="c">/* …21 more tools… */</span>
+  <span class="c">/* …21 herramientas más… */</span>
 ]}}</pre>
     </div>
 
-    <h3>2. Call a tool — <code>search_keyword</code> (real output)</h3>
-    <p>Ask for seed papers on a topic. The gateway queries ResearchRabbit and returns real papers with real DOIs.</p>
+    <h3>2. Llama a una herramienta — <code>search_keyword</code> (salida real)</h3>
+    <p>Pide artículos semilla sobre un tema. El gateway consulta ResearchRabbit y devuelve artículos reales con
+       DOIs reales.</p>
     <div class="code-block">
-      <div class="cb-head"><span class="dot"></span> request<button class="cb-copy" onclick="copyCode(this)">copy</button><span class="lang">bash</span></div>
+      <div class="cb-head"><span class="dot"></span> petición<button class="cb-copy" onclick="copyCode(this)">copiar</button><span class="lang">bash</span></div>
 <pre>curl -X POST https://researchrabbit-mcp-server.onrender.com/mcp \
   -H 'content-type: application/json' \
   -H 'accept: application/json, text/event-stream' \
-  -H 'X-RR-Token: &lt;your sessionToken&gt;' \
+  -H 'X-RR-Token: &lt;tu sessionToken&gt;' \
   -d '{"jsonrpc":"2.0","id":2,"method":"tools/call",
        "params":{"name":"search_keyword",
                  "arguments":{"q":"urban tree canopy heat equity","per":3}}}'</pre>
     </div>
     <div class="code-block">
-      <div class="cb-head"><span class="dot"></span> response (real, captured live)<span class="lang">json</span></div>
+      <div class="cb-head"><span class="dot"></span> respuesta (real, capturada en vivo)<span class="lang">json</span></div>
 <pre>{
   "query": { "kind": <span class="s">"keyword"</span>, "q": <span class="s">"urban tree canopy heat equity"</span>, "per": <span class="n">3</span> },
   "totalCount": <span class="n">33100</span>,
@@ -1047,20 +1051,20 @@ data: {"result":{"tools":[
 }</pre>
     </div>
     <p class="note">
-      <strong>SSE wrapping:</strong> the real response is <code>event: message</code> then a
-      <code>data:</code> line containing the JSON above. With a Claude/MCP client you never see the
-      wrapping — the SDK parses it for you. With raw curl, read the <code>data:</code> payload.
+      <strong>Envoltorio SSE:</strong> la respuesta real es <code>event: message</code> y luego una línea
+      <code>data:</code> con el JSON de arriba. Con un cliente Claude/MCP nunca ves el envoltorio — el SDK lo
+      parsea por ti. Con curl en crudo, lee la carga <code>data:</code>.
     </p>
 
-    <h3>3. Grow the frontier — <code>expand_frontier</code></h3>
-    <p>One call that runs N network iterations server-side and returns a deduped, consensus-ranked
-       shortlist — the “Grow and go!” loop in a single tool call.</p>
+    <h3>3. Haz crecer la frontera — <code>expand_frontier</code></h3>
+    <p>Una llamada que ejecuta N iteraciones de red en el servidor y devuelve una lista corta deduplicada y
+       clasificada por consenso — el bucle «¡Crece y vete!» en una sola llamada a herramienta.</p>
     <div class="code-block">
-      <div class="cb-head"><span class="dot"></span> request<button class="cb-copy" onclick="copyCode(this)">copy</button><span class="lang">bash</span></div>
+      <div class="cb-head"><span class="dot"></span> petición<button class="cb-copy" onclick="copyCode(this)">copiar</button><span class="lang">bash</span></div>
 <pre>curl -X POST https://researchrabbit-mcp-server.onrender.com/mcp \
   -H 'content-type: application/json' \
   -H 'accept: application/json, text/event-stream' \
-  -H 'X-RR-Token: &lt;your sessionToken&gt;' \
+  -H 'X-RR-Token: &lt;tu sessionToken&gt;' \
   -d '{"jsonrpc":"2.0","id":3,"method":"tools/call",
        "params":{"name":"expand_frontier",
                  "arguments":{"seeds":[
@@ -1068,68 +1072,69 @@ data: {"result":{"tools":[
                    "Trees Grow on Money: Urban Tree Canopy Cover and Environmental Justice"
                  ],"iterations":2,"limit":10}}}'</pre>
     </div>
-    <p>Each returned item carries <code>seedHits</code> (how many of your seeds connect to it) and
-       <code>citationsPerYear</code>, so you can say “cited by 4 of your 5 seeds” — a reason a human
-       accepts.</p>
+    <p>Cada elemento devuelto lleva <code>seedHits</code> (cuántas de tus semillas se conectan a él) y
+       <code>citationsPerYear</code>, para que puedas decir «citedado por 4 de tus 5 semillas» — una razón que
+       un humano acepta.</p>
 
-    <h3>4. Through the chatbot — a real Warren reply</h3>
-    <p>Same tools, but Warren picks them for you, frames the answer, and formats it mobile-first. This is
-       a real reply captured from the live agentflow on the question below.</p>
+    <h3>4. A través del chatbot — una respuesta real de Warren</h3>
+    <p>Las mismas herramientas, pero Warren las elige por ti, encuadra la respuesta y la formatea para móvil
+       primero. Esta es una respuesta real de Warren (mostrada aquí en español) sobre la pregunta de abajo.</p>
     <div class="grid-2">
       <div class="chat-sample">
         <div class="msg user">
-          <div class="who">You</div>
-          <div class="bubble">Find me 3 seed papers on urban tree canopy and heat equity, each with a DOI.</div>
+          <div class="who">Tú</div>
+          <div class="bubble">Encuéntrame 3 artículos semilla sobre doseles arbóreas urbanas y equidad térmica, cada uno con un DOI.</div>
         </div>
         <div class="msg bot">
           <div class="who">Warren</div>
           <div class="bubble">
-            1. <strong>Schwarz et al. 2015</strong> — Trees Grow on Money: Urban Tree Canopy Cover and Environmental Justice · PLoS ONE · cited 614× (56/yr) · <span class="doi">doi:10.1371/journal.pone.0122051</span>
-            <span class="why">why: directly links tree canopy cover to environmental justice across 7 US cities.</span>
-            2. <strong>Hsu et al. 2021</strong> — Disproportionate exposure to urban heat island intensity across major US cities · Nature Communications · cited 787× (157/yr) · <span class="doi">doi:10.1038/s41467-021-22799-5</span>
-            <span class="why">why: quantifies heat exposure inequity across 175 US cities — the heat-equity anchor.</span>
-            3. <strong>Locke et al. 2021</strong> — Residential housing segregation and urban tree canopy in 37 US Cities · npj Urban Sustainability · cited 291× (58/yr) · <span class="doi">doi:10.1038/s42949-021-00022-0</span>
-            <span class="why">why: connects historical redlining to present-day canopy disparities.</span>
-            <br/>Would you like me to grow the frontier — later work since 2021, earlier foundations, or a broad similar-work net?
+            1. <strong>Schwarz et al. 2015</strong> — Trees Grow on Money: Urban Tree Canopy Cover and Environmental Justice · PLoS ONE · 614 citas (56/año) · <span class="doi">doi:10.1371/journal.pone.0122051</span>
+            <span class="why">por qué: vincula directamente la cobertura del dosel arbóreo con la justicia ambiental en 7 ciudades de EE. UU.</span>
+            2. <strong>Hsu et al. 2021</strong> — Disproportionate exposure to urban heat island intensity across major US cities · Nature Communications · 787 citas (157/año) · <span class="doi">doi:10.1038/s41467-021-22799-5</span>
+            <span class="why">por qué: cuantifica la inequidad de exposición al calor en 175 ciudades de EE. UU. — el ancla de equidad térmica.</span>
+            3. <strong>Locke et al. 2021</strong> — Residential housing segregation and urban tree canopy in 37 US Cities · npj Urban Sustainability · 291 citas (58/año) · <span class="doi">doi:10.1038/s42949-021-00022-0</span>
+            <span class="why">por qué: conecta el redlining histórico con las disparidades actuales del dosel.</span>
+            <br/>¿Quieres que haga crecer la frontera — trabajo posterior desde 2021, fundamentos anteriores, o una red amplia de trabajo similar?
           </div>
         </div>
       </div>
       <div>
-        <h3>More things to ask</h3>
-        <p>Try any of these in the chat bubble, or as a prompt to Claude once the MCP is connected:</p>
+        <h3>Más cosas que preguntar</h3>
+        <p>Prueba cualquiera de estas en la burbuja de chat, o como prompt a Claude una vez conectado el MCP:</p>
         <ul style="font-size:.95rem;line-height:1.8;padding-left:1.1rem">
-          <li>“What are the foundational papers behind <em>Redlining and intra-urban heat</em>?”</li>
-          <li>“What has been published since 2022 that cites <em>Disproportionate exposure to urban heat island intensity</em>?”</li>
-          <li>“Grow me a broad shortlist around urban greening and heat-vulnerability equity — 10 papers, ranked by consensus.”</li>
-          <li>“I only have a title: <em>Trees Grow on Money</em>. What is its DOI and is it retracted?”</li>
-          <li>“List Carly Ziter’s most-cited papers with her h-index.”</li>
-          <li>“From these candidates, keep only reviews from 2018 onward with 50+ citations, and drop any retracted ones.”</li>
-          <li>“Give me the BibTeX for the 5 seed papers you found.”</li>
-          <li>“I have no idea where to start on <em>climate change adaptation effectiveness</em>. Walk me through it and finish with a link I can open.”</li>
+          <li>«¿Cuáles son los artículos fundamentales detrás de <em>Redlining and intra-urban heat</em>?»</li>
+          <li>«¿Qué se ha publicado desde 2022 que cite <em>Disproportionate exposure to urban heat island intensity</em>?»</li>
+          <li>«Dame una lista corta amplia sobre reverdecimiento urbano y equidad de vulnerabilidad al calor — 10 artículos, clasificados por consenso.»</li>
+          <li>«Solo tengo un título: <em>Trees Grow on Money</em>. ¿Cuál es su DOI y está retractado?»</li>
+          <li>«Lista los artículos más citados de Carly Ziter con su h-index.»</li>
+          <li>«De estos candidatos, conserva solo las revisiones desde 2018 con 50+ citas, y descarta las retractadas.»</li>
+          <li>«Dame el BibTeX de los 5 artículos semilla que encontraste.»</li>
+          <li>«No tengo idea de por dónde empezar en <em>climate change adaptation effectiveness</em>. Guíame y termina con un enlace que pueda abrir.»</li>
         </ul>
         <p class="note warn">
-          <strong>Pass seeds by title or DOI, never a numeric id.</strong> Tool results are not remembered
-          between turns — only the conversation text. The gateway resolves titles/DOIs to ids so Warren
-          never cites the wrong paper by guessing a number.
+          <strong>Pasa las semillas por título o DOI, nunca un id numérico.</strong> Los resultados de las
+          herramientas no se recuerdan entre turnos — solo el texto de la conversación. El gateway resuelve
+          títulos/DOIs a ids para que Warren nunca cite el artículo equivocado adivinando un número.
         </p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============================ TRY IT ============================ -->
+<!-- ============================ PRUÉBALO ============================ -->
 <section class="section section-alt" id="try">
   <div class="wrap">
     <div class="callout">
-      <h2>Try it right here</h2>
+      <h2>Pruébalo aquí mismo</h2>
       <p>
-        Warren is one click away. Click the chat bubble in the bottom-right corner — it opens Warren's
-        chat in a new tab — and start with something like <em>"Find me 5 seed papers on urban tree canopy
-        and heat equity, each with a DOI."</em> The first reply can take a few seconds while the services
-        wake up from a cold start.
+        Warren está a un clic. Pulsa la burbuja de chat en la esquina inferior derecha — abre el chat de
+        Warren en una pestaña nueva — y empieza con algo como <em>«Encuéntrame 5 artículos semilla sobre
+        doseles arbóreas urbanas y equidad térmica, cada uno con un DOI.»</em> La primera respuesta puede
+        tardar unos segundos mientras los servicios despiertan de un arranque en frío.
       </p>
       <p style="margin-bottom:0;font-size:.92rem;opacity:.85">
-        Or skip the UI and use the tools in your editor — see <a href="#mcp" style="color:#fde68a">MCP &amp; Claude</a> above.
+        O sáltate la interfaz y usa las herramientas en tu editor — ver <a href="#mcp" style="color:#fde68a">MCP
+        y Claude</a> arriba.
       </p>
     </div>
   </div>
@@ -1137,22 +1142,22 @@ data: {"result":{"tools":[
 
 <footer class="site-footer">
   <div class="wrap">
-    <span>Warren — ResearchRabbit Copilot · Flowise agentflow + Fireworks LLM + 22-tool MCP server.</span>
+    <span>Warren — Copiloto de ResearchRabbit · agentflow de Flowise + LLM de Fireworks + servidor MCP de 22 herramientas.</span>
     <span>Backend: ResearchRabbit (<code>api.researchrabbit.ai</code>) · <a href="https://www.researchrabbit.ai/">researchrabbit.ai</a></span>
   </div>
 </footer>
 
 <script>
-  // tiny copy-to-clipboard for the code blocks
+  // copiar-al-portapapeles mínimo para los bloques de código
   function copyCode(btn){
     var pre = btn.closest('.code-block').querySelector('pre');
     var text = pre.innerText;
     navigator.clipboard.writeText(text).then(function(){
-      var old = btn.textContent; btn.textContent = 'copied!';
+      var old = btn.textContent; btn.textContent = '¡copiado!';
       setTimeout(function(){ btn.textContent = old; }, 1200);
     });
   }
-  // mobile nav toggle (hamburger)
+  // menú móvil (hamburguesa)
   function toggleNav(btn){
     var nav = document.getElementById('main-nav');
     var open = nav.classList.toggle('open');
@@ -1164,7 +1169,7 @@ data: {"result":{"tools":[
     if (nav && nav.classList.contains('open')) { nav.classList.remove('open'); }
     if (btn) { btn.setAttribute('aria-expanded', 'false'); }
   }
-  // close the menu when clicking outside it or on resize to desktop
+  // cerrar el menú al pulsar fuera o al redimensionar a escritorio
   document.addEventListener('click', function(e){
     var nav = document.getElementById('main-nav');
     var btn = document.querySelector('.nav-toggle');
@@ -1175,12 +1180,12 @@ data: {"result":{"tools":[
 </script>
 
 <script>
-  // Camino C — web "Connect account" panel. Talks to the gateway's
-  // /api/rr/connect | /api/rr/status | /api/rr/disconnect endpoints.
-  // Hosted gateway (needs the new multi-tenant server deployed + ALLOWED_ORIGINS
-  // to include this page's origin). For local testing, point this at your local
-  // gateway, e.g. http://localhost:8831, and make sure its ALLOWED_ORIGINS lists
-  // the origin this page is served from.
+  // Camino C — panel web «Conecta tu cuenta». Habla con los endpoints
+  // /api/rr/connect | /api/rr/status | /api/rr/disconnect del gateway.
+  // Gateway alojado (necesita el nuevo servidor multiusuario desplegado + ALLOWED_ORIGINS
+  // que incluya el origen de esta página). Para pruebas en local, apunta esto a tu gateway
+  // local, p. ej. http://localhost:8831, y asegúrate de que su ALLOWED_ORIGINS liste
+  // el origen desde el que se sirve esta página.
   const RR_GATEWAY = "https://researchrabbit-server.onrender.com";
 
   function rrSetStatus(msg, cls) {
@@ -1190,59 +1195,59 @@ data: {"result":{"tools":[
   }
 
   async function rrStatus() {
-    rrSetStatus("Checking…", "rr-info");
+    rrSetStatus("Comprobando…", "rr-info");
     try {
       const r = await fetch(RR_GATEWAY + "/api/rr/status", { headers: { Accept: "application/json" } });
-      if (r.status === 404) { rrSetStatus("Connect endpoint not available on this gateway yet — it needs the multi-tenant gateway deploy (push the new server/ code to Render).", "rr-err"); return; }
+      if (r.status === 404) { rrSetStatus("El endpoint Conectar no está disponible aún en este gateway — necesita el despliegue del gateway multiusuario (sube el nuevo código de server/ a Render).", "rr-err"); return; }
       const j = await r.json();
       if (j.connected) {
-        rrSetStatus("Connected as " + (j.user && j.user.email ? j.user.email : "(your account)") + (j.projectId ? " · projectId " + String(j.projectId).slice(0,8) + "…" : "") + " · backend: rr", "rr-ok");
+        rrSetStatus("Conectado como " + (j.user && j.user.email ? j.user.email : "(tu cuenta)") + (j.projectId ? " · projectId " + String(j.projectId).slice(0,8) + "…" : "") + " · backend: rr", "rr-ok");
       } else {
-        rrSetStatus("Not connected — connect your ResearchRabbit account (paste your sessionToken) to use Warren." + (j.error ? " · " + j.error : ""), "rr-err");
+        rrSetStatus("No conectado — conecta tu cuenta de ResearchRabbit (pega tu sessionToken) para usar Warren." + (j.error ? " · " + j.error : ""), "rr-err");
       }
     } catch (e) {
-      rrSetStatus("Could not reach the gateway (" + e.message + "). For local testing, set RR_GATEWAY to your local gateway (e.g. http://localhost:8831) and make sure its ALLOWED_ORIGINS includes this page's origin.", "rr-err");
+      rrSetStatus("No se pudo alcanzar el gateway (" + e.message + "). Para pruebas en local, pon RR_GATEWAY a tu gateway local (p. ej. http://localhost:8831) y asegúrate de que su ALLOWED_ORIGINS incluye el origen de esta página.", "rr-err");
     }
   }
 
   async function rrConnect() {
     const token = document.getElementById("rr-token").value.trim();
-    if (!token) { rrSetStatus("Paste your sessionToken (the eyJ… JWT from localStorage) first.", "rr-err"); return; }
-    rrSetStatus("Validating with ResearchRabbit…", "rr-info");
+    if (!token) { rrSetStatus("Pega tu sessionToken (el JWT eyJ… de localStorage) primero.", "rr-err"); return; }
+    rrSetStatus("Validando con ResearchRabbit…", "rr-info");
     try {
       const r = await fetch(RR_GATEWAY + "/api/rr/connect", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({ token }),
       });
-      if (r.status === 404) { rrSetStatus("Connect endpoint not available on this gateway yet — it needs the multi-tenant gateway deploy (push the new server/ code to Render).", "rr-err"); return; }
+      if (r.status === 404) { rrSetStatus("El endpoint Conectar no está disponible aún en este gateway — necesita el despliegue del gateway multiusuario (sube el nuevo código de server/ a Render).", "rr-err"); return; }
       const j = await r.json();
       if (j.ok) {
-        rrSetStatus("Connected as " + (j.user && j.user.email ? j.user.email : "(your account)") + (j.projectId ? " · projectId " + String(j.projectId).slice(0,8) + "…" : "") + (j.projectIdAutoDiscovered ? " (auto-discovered)" : ""), "rr-ok");
+        rrSetStatus("Conectado como " + (j.user && j.user.email ? j.user.email : "(tu cuenta)") + (j.projectId ? " · projectId " + String(j.projectId).slice(0,8) + "…" : "") + (j.projectIdAutoDiscovered ? " (auto-descubierto)" : ""), "rr-ok");
       } else {
-        rrSetStatus("Connect failed: " + (j.error || "unknown error"), "rr-err");
+        rrSetStatus("Conexión fallida: " + (j.error || "error desconocido"), "rr-err");
       }
     } catch (e) {
-      rrSetStatus("Could not reach the gateway (" + e.message + ").", "rr-err");
+      rrSetStatus("No se pudo alcanzar el gateway (" + e.message + ").", "rr-err");
     }
   }
 
   async function rrDisconnect() {
     try {
       await fetch(RR_GATEWAY + "/api/rr/disconnect", { method: "DELETE", headers: { Accept: "application/json" } });
-      rrSetStatus("Disconnected — connect your ResearchRabbit account to use Warren.", "rr-err");
+      rrSetStatus("Desconectado — conecta tu cuenta de ResearchRabbit para usar Warren.", "rr-err");
     } catch (e) {
-      rrSetStatus("Could not reach the gateway (" + e.message + ").", "rr-err");
+      rrSetStatus("No se pudo alcanzar el gateway (" + e.message + ").", "rr-err");
     }
   }
 
-  // Reflect the current gateway state when the page loads.
+  // Refleja el estado actual del gateway al cargar la página.
   rrStatus();
 </script>
 
 <!-- ============================ CHAT BUBBLE (links to hosted Flowise chatbot) ============================ -->
-<a class="chat-fab" href="https://researchrabbit-flowise.onrender.com/chatbot/3167de25-947c-4c94-8546-c98c3cd3fdd2" target="_blank" rel="noopener" aria-label="Chat with Warren">
-  <span class="fab-label">Chat with Warren</span>
+<a class="chat-fab" href="https://researchrabbit-flowise.onrender.com/chatbot/3167de25-947c-4c94-8546-c98c3cd3fdd2" target="_blank" rel="noopener" aria-label="Chatear con Warren">
+  <span class="fab-label">Chatea con Warren</span>
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
 </a>
 

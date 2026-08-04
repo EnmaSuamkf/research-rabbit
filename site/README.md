@@ -2,7 +2,7 @@
 
 A single, self-contained `index.html` (no build step, no external CSS file) that does four things:
 
-1. **Embedded chat** — a live Flowise chat bubble (bottom-right) wired to the hosted agentflow.
+1. **Embedded chat** — a live Flowise chat bubble (bottom-right) wired to the hosted agentflow, gated by a connection check: it opens only once the gateway reports a connected account, otherwise it asks for the `sessionToken` first (see [The chat bubble](#the-chat-bubble)).
 2. **How to configure the MCP on Claude** — `claude mcp add`, project `.mcp.json`, and Claude Desktop config, plus the 22-tool catalogue. The `.mcp.json` / Desktop configs include the optional `headers` block (Camino B) for per-user ResearchRabbit credentials.
 3. **Use your own ResearchRabbit account** — a "Connect account" panel (Camino C, web chat) plus a DevTools how-to for getting your `sessionToken` JWT from `localStorage`; and a recap of Method B (per-user `X-RR-Token` header in the editor).
 4. **Try it** — the nine example prompts to paste into the chat (`#try`, a stacked `.prompts` list), with a one-line note on where the chat bubble is and the cold-start delay. No pitch, no architecture: just what to type.
@@ -51,7 +51,30 @@ Then open the served URL (not `file://` — the embed's fetch to the Flowise API
 
 ## The chat bubble
 
-The widget renders inside a `<flowise-chatbot>` Shadow DOM. To inspect it programmatically:
+The bubble (`button.chat-fab`) never opens Warren directly — it opens the **chat gate**
+(`#chat-gate`), which checks the connection first:
+
+1. Clicking the bubble opens the gate and immediately calls `GET /api/rr/status` on the gateway
+   (`rrApiStatus()`, the same call the Connect panel makes).
+2. **Connected** → the chat opens in a new tab (`window.open`) and the gate closes. If the browser
+   blocks the tab — the check is async, so the open is no longer a direct click — the gate shows an
+   "Open Warren" button instead.
+3. **Not connected** → the gate shows a `sessionToken` field and a **Log in** button, which POSTs to
+   `/api/rr/connect` and then re-runs the status check; only a connected status opens Warren. A
+   rejected token leaves the gate open and asking, so it repeats until the check succeeds. A **Check
+   again** button re-runs the check on its own (for when the account was connected in the panel).
+
+Warren never opens on a failed or unreachable check, and the token is only ever sent to the gateway.
+The gate and the `#panel-chat` Connect panel share `rrApiStatus()` / `rrApiConnect()` and the same
+`RR_GATEWAY` const. Both token fields are `type="text"`, not `password`: the token is a long JWT
+pasted from `localStorage` and masking it makes a truncated paste impossible to spot.
+
+Both calls are cross-origin, so the page's origin **must** be in the gateway's `ALLOWED_ORIGINS`
+(see below). From any other origin — including `file://` — the browser discards the response,
+`fetch` rejects with a bare `Failed to fetch`, and even a valid `sessionToken` can never log in;
+serve the page from `http://localhost:8088` (or `:3000`) locally.
+
+The embedded widget renders inside a `<flowise-chatbot>` Shadow DOM. To inspect it programmatically:
 
 ```js
 const fe = document.querySelector('flowise-chatbot');

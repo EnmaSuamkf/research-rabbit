@@ -28,7 +28,13 @@ const ENV_TOKEN = process.env.RR_SESSION_TOKEN || "";
 const ENV_PROJECT = process.env.RR_PROJECT_ID || "";
 
 const PORT = process.env.PORT || 8821;
-const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || "http://localhost:3000")
+// An origin missing here can't read any answer from /api/rr/*, so the chat
+// gate's login silently fails in the browser: keep the usual local dev servers
+// (Flowise 3000, static site 8088, Vite 5173 / preview 4173) in the default.
+const ALLOWED_ORIGINS = (
+  process.env.ALLOWED_ORIGINS ||
+  "http://localhost:3000,http://localhost:8088,http://localhost:5173,http://localhost:4173"
+)
   .split(",")
   .map((s) => s.trim())
   .filter(Boolean);

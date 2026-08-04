@@ -1,3 +1,7 @@
 node_modules/
 .env
 *.log
+
+# Local agent-tooling scratch state, not part of the product.
+.code-graph/
+.target/

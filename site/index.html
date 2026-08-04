@@ -243,7 +243,9 @@ code {
 .tool-card .ep .epm { color: #9ca3af; font-style: italic; }
 .tool-note { max-width: 820px; margin: 14px 0 0; font-size: .9rem; color: #4b5563; line-height: 1.55; }
 
-/* ---------- Floating chat bubble (links to hosted Flowise chatbot) ---------- */
+/* ---------- Floating chat bubble (gated: opens the connection check) ---------- */
+/* It is a <button>, not a link: the chatbot URL must never be reachable
+   without the /api/rr/status check passing first. */
 .chat-fab {
   position: fixed; right: 24px; bottom: 24px; z-index: 9999;
   display: flex; align-items: center; justify-content: center;
@@ -251,6 +253,7 @@ code {
   background: var(--rr-purple); color: #fff;
   box-shadow: 0 6px 20px rgba(76,29,149,.4);
   text-decoration: none; cursor: pointer;
+  border: 0; padding: 0; font: inherit;
   transition: transform .15s, background-color .15s;
 }
 .chat-fab:hover { transform: translateY(-2px) scale(1.04); background: var(--rr-purple-hover); }
@@ -263,6 +266,25 @@ code {
 }
 .chat-fab:hover .fab-label { opacity: 1; }
 @media (max-width: 640px) { .chat-fab .fab-label { display: none; } }
+
+/* ---------- Chat gate (connection check shown before the chatbot opens) ---------- */
+.chat-gate[hidden] { display: none; }
+.chat-gate {
+  position: fixed; inset: 0; z-index: 10000;
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.chat-gate-backdrop { position: absolute; inset: 0; background: rgba(15,23,42,.55); }
+.chat-gate-box {
+  position: relative; width: 100%; max-width: 460px; max-height: 88vh; overflow-y: auto;
+  background: #fff; box-shadow: 0 18px 50px rgba(15,23,42,.35);
+}
+.chat-gate-box h3 { padding-right: 30px; font-size: 1.05rem; }
+.chat-gate-x {
+  position: absolute; top: 10px; right: 12px; background: none; border: 0;
+  font-size: .95rem; line-height: 1; color: var(--rr-muted); cursor: pointer; padding: 4px;
+}
+.chat-gate-x:hover { color: var(--rr-ink); }
+.chat-gate .rr-btns { margin-bottom: 10px; }
 
 /* ---------- Two-column layout ---------- */
 .grid-2 { display: grid; gap: 26px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); margin-top: 8px; }
@@ -1056,8 +1078,10 @@ claude mcp get researchrabbit</pre>
     <div class="section-head">
       <h2>Try it</h2>
       <p>
-        The chat bubble in the bottom-right corner opens the chat in a new tab. Type one of these to
-        start. The first reply can take a few seconds while the services wake up from a cold start.
+        The chat bubble in the bottom-right corner first checks that your ResearchRabbit account is
+        connected — if it isn't, it asks for your <code>sessionToken</code> right there and only opens
+        the chat in a new tab once the check passes. Type one of these to start. The first reply can
+        take a few seconds while the services wake up from a cold start.
       </p>
     </div>
     <ul class="prompts">
@@ -1189,6 +1213,32 @@ claude mcp get researchrabbit</pre>
   // the origin this page is served from.
   const RR_GATEWAY = "https://researchrabbit-server.onrender.com";
 
+  const RR_UNAVAILABLE_MSG = "Connect endpoint not available on this gateway yet — it needs the multi-tenant gateway deploy (push the new server/ code to Render).";
+
+  // Shared gateway calls — used by both the Connect panel and the chat gate.
+  // They return the parsed JSON, or { unavailable: true } when the gateway
+  // predates the multi-tenant endpoints.
+  async function rrApiStatus() {
+    const r = await fetch(RR_GATEWAY + "/api/rr/status", { headers: { Accept: "application/json" } });
+    if (r.status === 404) return { connected: false, unavailable: true };
+    return await r.json();
+  }
+
+  async function rrApiConnect(token) {
+    const r = await fetch(RR_GATEWAY + "/api/rr/connect", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ token }),
+    });
+    if (r.status === 404) return { ok: false, unavailable: true };
+    return await r.json();
+  }
+
+  function rrWho(j) {
+    return (j.user && j.user.email ? j.user.email : "(your account)")
+      + (j.projectId ? " · projectId " + String(j.projectId).slice(0,8) + "…" : "");
+  }
+
   function rrSetStatus(msg, cls) {
     const el = document.getElementById("rr-status");
     el.textContent = msg;
@@ -1198,11 +1248,10 @@ claude mcp get researchrabbit</pre>
   async function rrStatus() {
     rrSetStatus("Checking…", "rr-info");
     try {
-      const r = await fetch(RR_GATEWAY + "/api/rr/status", { headers: { Accept: "application/json" } });
-      if (r.status === 404) { rrSetStatus("Connect endpoint not available on this gateway yet — it needs the multi-tenant gateway deploy (push the new server/ code to Render).", "rr-err"); return; }
-      const j = await r.json();
+      const j = await rrApiStatus();
+      if (j.unavailable) { rrSetStatus(RR_UNAVAILABLE_MSG, "rr-err"); return; }
       if (j.connected) {
-        rrSetStatus("Connected as " + (j.user && j.user.email ? j.user.email : "(your account)") + (j.projectId ? " · projectId " + String(j.projectId).slice(0,8) + "…" : "") + " · backend: rr", "rr-ok");
+        rrSetStatus("Connected as " + rrWho(j) + " · backend: rr", "rr-ok");
       } else {
         rrSetStatus("Not connected — connect your ResearchRabbit account (paste your sessionToken) to use Warren." + (j.error ? " · " + j.error : ""), "rr-err");
       }
@@ -1216,15 +1265,10 @@ claude mcp get researchrabbit</pre>
     if (!token) { rrSetStatus("Paste your sessionToken (the eyJ… JWT from localStorage) first.", "rr-err"); return; }
     rrSetStatus("Validating with ResearchRabbit…", "rr-info");
     try {
-      const r = await fetch(RR_GATEWAY + "/api/rr/connect", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ token }),
-      });
-      if (r.status === 404) { rrSetStatus("Connect endpoint not available on this gateway yet — it needs the multi-tenant gateway deploy (push the new server/ code to Render).", "rr-err"); return; }
-      const j = await r.json();
+      const j = await rrApiConnect(token);
+      if (j.unavailable) { rrSetStatus(RR_UNAVAILABLE_MSG, "rr-err"); return; }
       if (j.ok) {
-        rrSetStatus("Connected as " + (j.user && j.user.email ? j.user.email : "(your account)") + (j.projectId ? " · projectId " + String(j.projectId).slice(0,8) + "…" : "") + (j.projectIdAutoDiscovered ? " (auto-discovered)" : ""), "rr-ok");
+        rrSetStatus("Connected as " + rrWho(j) + (j.projectIdAutoDiscovered ? " (auto-discovered)" : ""), "rr-ok");
       } else {
         rrSetStatus("Connect failed: " + (j.error || "unknown error"), "rr-err");
       }
@@ -1244,13 +1288,154 @@ claude mcp get researchrabbit</pre>
 
   // Reflect the current gateway state when the page loads.
   rrStatus();
+
+  // ---- Chat gate: check the connection BEFORE the chatbot opens -------------
+  // The bubble never opens Warren directly. It runs the same /api/rr/status
+  // check as the Connect panel and opens the chat only once the gateway reports
+  // a connected account. If it is not connected, the gate asks for the
+  // sessionToken and re-checks the status after every login attempt — it keeps
+  // asking until the check succeeds.
+  const WARREN_CHAT_URL = "https://researchrabbit-flowise.onrender.com/chatbot/3167de25-947c-4c94-8546-c98c3cd3fdd2";
+
+  function gateEl(id) { return document.getElementById(id); }
+
+  function gateSetStatus(msg, cls) {
+    const el = gateEl("chat-gate-status");
+    el.textContent = msg;
+    el.className = "rr-status " + (cls || "rr-info");
+  }
+
+  function gateShowForm(show) {
+    gateEl("chat-gate-form").hidden = !show;
+    if (show) gateEl("chat-gate-token").focus();
+  }
+
+  function gateShowOpen(show) { gateEl("chat-gate-open").hidden = !show; }
+
+  function gateOnKeydown(e) { if (e.key === "Escape") warrenGateClose(); }
+
+  function warrenGateOpen(ev) {
+    if (ev) ev.preventDefault();
+    gateEl("chat-gate").hidden = false;
+    gateShowForm(false);
+    gateShowOpen(false);
+    document.addEventListener("keydown", gateOnKeydown);
+    warrenGateCheck();
+  }
+
+  function warrenGateClose() {
+    gateEl("chat-gate").hidden = true;
+    document.removeEventListener("keydown", gateOnKeydown);
+    const fab = document.querySelector(".chat-fab");
+    if (fab) fab.focus();
+  }
+
+  // Opens Warren. Only ever called after a status check reported connected:true.
+  function warrenLaunch() {
+    const w = window.open(WARREN_CHAT_URL, "_blank", "noopener");
+    if (w) {
+      setTimeout(warrenGateClose, 600);
+    } else {
+      // Popup blocked (the check is async, so the open is no longer a direct
+      // click) — give the user a tappable link instead.
+      gateSetStatus("Connected — your browser blocked the new tab. Use the button below to open Warren.", "rr-ok");
+      gateShowOpen(true);
+    }
+  }
+
+  async function warrenGateCheck() {
+    gateSetStatus("Checking your ResearchRabbit connection…", "rr-info");
+    gateShowOpen(false);
+    let j;
+    try {
+      j = await rrApiStatus();
+    } catch (e) {
+      gateSetStatus("Could not reach the gateway (" + e.message + ") — Warren stays closed until the connection check succeeds.", "rr-err");
+      gateShowForm(true);
+      return false;
+    }
+    if (j.unavailable) {
+      gateSetStatus(RR_UNAVAILABLE_MSG + " Warren stays closed until the connection can be verified.", "rr-err");
+      gateShowForm(false);
+      return false;
+    }
+    if (!j.connected) {
+      gateSetStatus("Not connected — paste your sessionToken below and log in to open Warren." + (j.error ? " · " + j.error : ""), "rr-err");
+      gateShowForm(true);
+      return false;
+    }
+    gateSetStatus("Connected as " + rrWho(j) + " — opening Warren…", "rr-ok");
+    gateShowForm(false);
+    warrenLaunch();
+    return true;
+  }
+
+  async function warrenGateLogin() {
+    const input = gateEl("chat-gate-token");
+    const token = input.value.trim();
+    if (!token) { gateSetStatus("Paste your sessionToken (the eyJ… JWT from localStorage) first.", "rr-err"); input.focus(); return; }
+    gateSetStatus("Validating with ResearchRabbit…", "rr-info");
+    let j;
+    try {
+      j = await rrApiConnect(token);
+    } catch (e) {
+      gateSetStatus("Could not reach the gateway (" + e.message + ").", "rr-err");
+      return;
+    }
+    if (j.unavailable) { gateSetStatus(RR_UNAVAILABLE_MSG, "rr-err"); return; }
+    if (!j.ok) {
+      gateSetStatus("Login failed: " + (j.error || "unknown error") + " — try another sessionToken.", "rr-err");
+      input.select();
+      return;
+    }
+    input.value = "";
+    // Connected — but verify with a fresh status check before opening Warren.
+    await warrenGateCheck();
+    // Keep the Connect panel in sync with the new state.
+    rrStatus();
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const input = gateEl("chat-gate-token");
+    if (input) input.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); warrenGateLogin(); } });
+    const link = gateEl("chat-gate-open-link");
+    if (link) { link.href = WARREN_CHAT_URL; link.addEventListener("click", function () { setTimeout(warrenGateClose, 100); }); }
+  });
 </script>
 
-<!-- ============================ CHAT BUBBLE (links to hosted Flowise chatbot) ============================ -->
-<a class="chat-fab" href="https://researchrabbit-flowise.onrender.com/chatbot/3167de25-947c-4c94-8546-c98c3cd3fdd2" target="_blank" rel="noopener" aria-label="Chat with Warren">
+<!-- ====================== CHAT BUBBLE (gated by the connection check) ====================== -->
+<button class="chat-fab" type="button" onclick="warrenGateOpen(event)" aria-haspopup="dialog" aria-label="Chat with Warren">
   <span class="fab-label">Chat with Warren</span>
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
-</a>
+</button>
+
+<!-- ====================== CHAT GATE (status check + sessionToken login) ====================== -->
+<div class="chat-gate" id="chat-gate" role="dialog" aria-modal="true" aria-labelledby="chat-gate-title" hidden>
+  <div class="chat-gate-backdrop" onclick="warrenGateClose()"></div>
+  <div class="chat-gate-box rr-panel">
+    <button class="chat-gate-x" type="button" onclick="warrenGateClose()" aria-label="Close">&#10005;</button>
+    <h3 id="chat-gate-title">Connect your account to chat with Warren</h3>
+    <div id="chat-gate-status" class="rr-status rr-info">Checking your ResearchRabbit connection…</div>
+
+    <div id="chat-gate-form" hidden>
+      <label class="rr-lbl">sessionToken (JWT)
+        <input id="chat-gate-token" type="text" placeholder="paste the sessionToken value from localStorage" autocomplete="off" spellcheck="false" />
+      </label>
+      <div class="rr-btns">
+        <button class="btn btn-primary" type="button" onclick="warrenGateLogin()">Log in</button>
+        <button class="btn btn-outline-rr" type="button" onclick="warrenGateCheck()">Check again</button>
+      </div>
+      <p class="rr-foot">
+        Stored only on the gateway for this chat — never in the transcript or the repo.
+        <a href="#how-to-token" onclick="warrenGateClose()">How do I get my sessionToken?</a>
+      </p>
+    </div>
+
+    <p id="chat-gate-open" hidden style="margin:0">
+      <a class="btn btn-primary" id="chat-gate-open-link" href="#" target="_blank" rel="noopener">Open Warren</a>
+    </p>
+  </div>
+</div>
 
 </body>
 </html>
